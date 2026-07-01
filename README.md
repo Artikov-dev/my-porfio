@@ -1,78 +1,93 @@
-# Antigravity OS 1.0 - Technical Specification (TZ)
-**Author:** Roma Artikov
-**Role:** Senior Software Architect / Lead Full-Stack Engineer
+# 🚀 Roma Artikov - Senior Full-Stack Engineer Portfolio
 
-## 🚀 Overview
-Antigravity OS 1.0 is a premium, enterprise-grade portfolio and blog engine designed with a high-end minimalist dark corporate theme. It strictly adheres to Clean Architecture, SOLID, and DRY principles.
+Welcome to the repository of my personal portfolio and interactive digital resume. This project is engineered from the ground up to showcase my skills in building high-performance, secure, and visually stunning web applications.
 
----
+![Portfolio Banner](./frontend/public/og_banner.png)
 
-## 🏗 Backend Architecture (Node.js + Express + TypeScript + PostgreSQL)
-The backend is structured using the **Repository-Service-Controller Pattern**.
+> **Note:** This project serves as my personal portfolio. It is designed not just to display information, but to demonstrate complex architectural concepts, real-time communication, and advanced UI/UX engineering.
 
-### 1. Authentication Module
-- **Admin Only:** No public registration.
-- **Double-Layered Security:**
-  - JWT Tokens (Access & Refresh) stored securely in `HttpOnly`, `Secure`, `SameSite=Strict` cookies.
-  - Two-Factor Authentication (TOTP) powered by `otplib` and `qrcode` for Google Authenticator integration.
-  
-### 2. Database Layer (Native PostgreSQL & Redis)
-- **Driver:** Native `pg` driver (no ORM) utilizing raw SQL queries and connection pooling.
-- **Multi-Language Content:** Utilized native PostgreSQL `JSONB` to store localized content (EN, UZ, RU) for Projects and Blogs.
-- **Caching:** `ioredis` is integrated to cache high-traffic routes (`/projects`, `/blogs`). Cache is automatically invalidated upon Create/Update/Delete operations.
+## ✨ Core Features
 
-### 3. Telegram Webhook & Notifications
-- Integrated `telegraf` to serve as an instant notification layer.
-- Automatically sends structured Markdown alerts directly to the Admin's Telegram when a contact form is submitted (including IP, location, and message details).
-- Provides an internal `/stats` command pulling live metrics from Redis/DB.
+This portfolio goes beyond a static HTML page. It includes enterprise-grade features:
 
-### 4. Real-Time Analytics (WebSockets)
-- Integrated `socket.io` directly into the HTTP server.
-- Tracks `active_users` incrementally in Redis and broadcasts updates globally.
-- Instantly alerts the Admin Dashboard on new events without page reloads.
+- 🧊 **3D WebGL Hero Section:** An interactive, floating geometric core built with `Three.js` (`@react-three/fiber`) that reacts to mouse movements.
+- 👨‍💻 **Hidden Hacker Terminal:** Press `` ` `` or `~` anywhere on the site to drop down a custom-built Linux-style terminal. Execute commands like `whoami`, `projects`, and `skills` directly in the browser!
+- 💬 **Two-Way Real-Time Live Chat:** A fully functional, session-based customer support chat widget using **Socket.io**. Visitors can chat with me in real-time, and I can reply instantly from a secured Admin Dashboard.
+- 🌍 **Deep i18n Localization:** The entire UI is strictly localized in English, Uzbek, and Russian. Zero hardcoded strings. State managed seamlessly via Context API.
+- 🔐 **Secure Admin Dashboard:** A hidden, protected admin panel (`/aadminsecrect`) with full CRUD operations for managing projects, reading contact messages, and replying to live chats.
+- 🚀 **Dynamic SEO & Open Graph:** Fully optimized for social sharing with dynamic meta tags via `react-helmet-async` and custom Open Graph banners.
 
-### 5. Middleware & Security
-- `helmet`: Enforces strict HTTP headers.
-- `express-rate-limit`: Prevents brute-force attacks globally and specifically on Auth routes.
-- `cors`: Strict origin setup targeting the frontend application.
-- `winston` & `morgan`: Enterprise-grade rotational daily logging (`combined.log` and `error.log`).
-- **Global Error Handler:** Catches operational errors and formats responses cleanly to prevent stack-trace leaks in production.
-
----
-
-## 🎨 Frontend Engine (React 19 + TypeScript + Vite + Tailwind CSS)
-The frontend utilizes a feature-based atomic structure with absolute imports (`@/*`).
-
-### 1. Design System & Core Assets
-- **Antigravity Theme:** Deep dark background (`#0B0F19`), vibrant primary accents (`#2563EB`), and sleek borders (`#1E293B`).
-- **Components:** Created `Button` and `Skeleton` atoms using Tailwind variants, glassmorphism (`backdrop-blur-md`), and micro-interactions.
-- **i18n Context:** Lightweight, custom React Context built from scratch to seamlessly toggle UI dictionary languages (EN, UZ, RU).
-
-### 2. Interactive UI (Framer Motion)
-- **Command Palette:** Built a global `CMD+K / CTRL+K` interactive modal intercepting keyboard events for instant navigation.
-- **3D Parallax Hero:** Implemented a custom `useMousePosition` hook controlling Framer Motion properties to shift layers based on mouse coordinates, providing a high-fidelity depth illusion.
-
-### 3. Data Synchronization (TanStack Query)
-- **React Query v5:** Handles all server-state caching, synchronization, and complex loading states natively.
-- **Axios Interceptors:** Fully configured API client that silently catches `401 Unauthorized` responses to attempt automated token refreshing seamlessly.
-- **Dynamic Skeletons:** Implemented pulsing Skeleton layouts natively tied to TanStack Query's `isLoading` state.
-
-### 4. Admin Dashboard
-- Protected React Router dom routing.
-- **Recharts Integration:** Renders fluid area charts depicting historical traffic.
-- Live WebSockets hook mapping incoming connections to dashboard animated digits.
-
----
-
-## 🛠 Usage
-### Backend
-```bash
-cd backend
-npm run dev # Starts Nodemon + ts-node
-```
+## 🛠️ Tech Stack
 
 ### Frontend
+- **Framework:** React 19 + TypeScript (Vite)
+- **Styling:** Tailwind CSS v4 + Framer Motion (for smooth micro-animations)
+- **3D Graphics:** Three.js, React Three Fiber, React Three Drei
+- **State Management:** React Context API & Custom Hooks
+- **Icons:** Lucide React & Custom SVGs
+
+### Backend
+- **Runtime:** Node.js
+- **Framework:** Express.js
+- **Database:** PostgreSQL (with `pg` module)
+- **Real-Time:** Socket.io
+- **Security:** Helmet, CORS, Rate Limiting (express-rate-limit)
+
+---
+
+## 💻 Local Development Setup
+
+To run this project locally on your machine, follow these steps:
+
+### 1. Clone the repository
+```bash
+git clone https://github.com/Artikov-dev/my-porfio.git
+cd my-porfio
+```
+
+### 2. Setup the Backend
+Navigate to the backend directory and install dependencies:
+```bash
+cd backend
+npm install
+```
+Create a `.env` file in the `backend` folder and configure your PostgreSQL database:
+```env
+PORT=5000
+DB_USER=postgres
+DB_PASSWORD=your_password
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=portfolio_db
+CORS_ORIGIN=http://localhost:5173
+```
+Run the backend server:
+```bash
+npm run dev
+```
+
+### 3. Setup the Frontend
+Open a new terminal, navigate to the frontend directory, and install dependencies:
 ```bash
 cd frontend
-npm run dev # Starts Vite Server
+npm install
 ```
+Run the development server:
+```bash
+npm run dev
+```
+
+The frontend will be available at `http://localhost:5173` and the backend API at `http://localhost:5000`.
+
+---
+
+## 📬 Contact & Connect
+
+If you're interested in discussing system architecture, clean code, or potential collaborations:
+
+- **LinkedIn:** [Roma Artikov](https://www.linkedin.com/in/artikovdev/)
+- **Telegram:** [@artikov_06_tt](https://t.me/artikov_06_tt)
+- **Email:** artikovrozik52@gmail.com
+- **Instagram:** [@artikovv_r](https://instagram.com/artikovv_r)
+
+*Engineered with precision and art.* ☕
