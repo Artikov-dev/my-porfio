@@ -1,0 +1,33 @@
+[2026-07-01 17:18:08] error: ❌ Redis Connection Error:
+[2026-07-01 17:18:08] error: ❌ Redis Connection Error:
+[2026-07-01 17:18:08] error: ❌ Redis Connection Error:
+[2026-07-01 17:18:08] error: ❌ Redis Connection Error:
+[2026-07-01 17:18:08] error: ❌ Redis Connection Error:
+[2026-07-01 17:18:09] error: ❌ Redis Connection Error:
+[2026-07-01 17:18:09] error: ❌ Redis Connection Error:
+[2026-07-01 17:18:09] error: ❌ Redis Connection Error:
+[2026-07-01 17:18:10] error: ❌ Redis Connection Error:
+[2026-07-01 17:18:10] error: ❌ Redis Connection Error:
+[2026-07-01 17:18:11] error: ❌ Redis Connection Error:
+[2026-07-01 17:18:11] error: ❌ Redis Connection Error:
+[2026-07-01 17:18:12] error: ❌ Redis Connection Error:
+[2026-07-01 17:18:12] error: ❌ Redis Connection Error:
+[2026-07-01 17:18:13] error: ❌ Redis Connection Error:
+[2026-07-01 17:18:14] error: ❌ Redis Connection Error:
+[2026-07-01 17:18:15] error: ❌ Redis Connection Error:
+[2026-07-01 17:18:16] error: ❌ Redis Connection Error:
+[2026-07-01 17:18:17] error: ❌ Redis Connection Error:
+[2026-07-01 17:18:17] error: ❌ Redis Connection Error:
+[2026-07-01 17:18:19] error: ❌ Redis Connection Error:
+[2026-07-01 17:18:20] error: ❌ Redis Connection Error:
+[2026-07-01 17:18:21] error: ❌ Redis Connection Error:
+[2026-07-01 17:18:22] error: ❌ Redis Connection Error:
+[2026-07-01 17:18:23] error: ❌ Redis Connection Error:
+[2026-07-01 17:18:24] error: ❌ Redis Connection Error:
+[2026-07-01 17:18:26] error: ❌ Redis Connection Error:
+[2026-07-01 17:18:27] error: ❌ Redis Connection Error:
+[2026-07-01 17:18:28] error: ❌ Redis Connection Error:
+[2026-07-01 17:18:30] error: ❌ Redis Connection Error:
+[2026-07-01 17:18:31] error: ❌ Redis Connection Error:
+[2026-07-01 21:29:41] error: [POST] /api/projects/translate >> StatusCode:: 500, Message:: Cannot add property engine, object is not extensible
+[2026-07-01 21:29:41] error: [POST] /api/projects/translate >> StatusCode:: 500, Message:: Cannot add property engine, object is not extensible

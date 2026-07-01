@@ -1,0 +1,53 @@
+import React from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { api } from '@/lib/api';
+import { Skeleton } from '@/components/ui/Skeleton';
+import { useI18n } from '@/contexts/I18nContext';
+import { Helmet } from 'react-helmet-async';
+
+export const Blogs = () => {
+  const { t, language } = useI18n();
+  const { data, isLoading } = useQuery({
+    queryKey: ['blogs'],
+    queryFn: async () => {
+      const res = await api.get('/blogs');
+      return res.data.data;
+    }
+  });
+
+  return (
+    <div className="min-h-screen bg-background pt-32 px-6">
+      <Helmet>
+        <title>Roma Artikov | {t('blog')}</title>
+        <meta name="description" content={`Read technical articles and insights by Roma Artikov.`} />
+      </Helmet>
+      <div className="max-w-6xl mx-auto text-center">
+        <h1 className="text-4xl font-bold text-white mb-10">{t('blog')}</h1>
+        
+        {isLoading ? (
+          <div className="space-y-6">
+            {[1,2,3].map(i => (
+              <Skeleton key={i} className="h-32 w-full" />
+            ))}
+          </div>
+        ) : (
+          <div className="space-y-6">
+            {data?.map((blog: any) => (
+              <div key={blog.id} className="glass p-6 rounded-xl flex gap-6 hover:border-primary/50 transition-colors cursor-pointer">
+                <div className="w-32 h-24 bg-white/5 rounded-lg flex-shrink-0 bg-cover bg-center" style={{ backgroundImage: `url(${blog.image_url})`}} />
+                <div>
+                  <h3 className="text-xl font-semibold text-white mb-2">{blog.title[language] || blog.title.en}</h3>
+                  <div className="flex gap-2 text-sm text-gray-500">
+                    <span>{blog.reading_time} min read</span>
+                    <span>•</span>
+                    <span>{blog.views} views</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};

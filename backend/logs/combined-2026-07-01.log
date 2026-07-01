@@ -1,0 +1,203 @@
+[2026-07-01 17:18:08] error: ❌ Redis Connection Error:
+[2026-07-01 17:18:08] error: ❌ Redis Connection Error:
+[2026-07-01 17:18:08] error: ❌ Redis Connection Error:
+[2026-07-01 17:18:08] error: ❌ Redis Connection Error:
+[2026-07-01 17:18:08] error: ❌ Redis Connection Error:
+[2026-07-01 17:18:09] error: ❌ Redis Connection Error:
+[2026-07-01 17:18:09] error: ❌ Redis Connection Error:
+[2026-07-01 17:18:09] error: ❌ Redis Connection Error:
+[2026-07-01 17:18:10] error: ❌ Redis Connection Error:
+[2026-07-01 17:18:10] info: 🚀 Server running in development mode on port 5000
+[2026-07-01 17:18:10] error: ❌ Redis Connection Error:
+[2026-07-01 17:18:11] error: ❌ Redis Connection Error:
+[2026-07-01 17:18:11] error: ❌ Redis Connection Error:
+[2026-07-01 17:18:12] error: ❌ Redis Connection Error:
+[2026-07-01 17:18:12] error: ❌ Redis Connection Error:
+[2026-07-01 17:18:13] error: ❌ Redis Connection Error:
+[2026-07-01 17:18:14] error: ❌ Redis Connection Error:
+[2026-07-01 17:18:15] error: ❌ Redis Connection Error:
+[2026-07-01 17:18:16] error: ❌ Redis Connection Error:
+[2026-07-01 17:18:17] error: ❌ Redis Connection Error:
+[2026-07-01 17:18:17] error: ❌ Redis Connection Error:
+[2026-07-01 17:18:19] error: ❌ Redis Connection Error:
+[2026-07-01 17:18:20] error: ❌ Redis Connection Error:
+[2026-07-01 17:18:21] error: ❌ Redis Connection Error:
+[2026-07-01 17:18:22] error: ❌ Redis Connection Error:
+[2026-07-01 17:18:23] error: ❌ Redis Connection Error:
+[2026-07-01 17:18:24] error: ❌ Redis Connection Error:
+[2026-07-01 17:18:26] error: ❌ Redis Connection Error:
+[2026-07-01 17:18:27] error: ❌ Redis Connection Error:
+[2026-07-01 17:18:28] error: ❌ Redis Connection Error:
+[2026-07-01 17:18:30] error: ❌ Redis Connection Error:
+[2026-07-01 17:18:31] error: ❌ Redis Connection Error:
+[2026-07-01 17:19:49] warn: ⚠️ Could not connect to Redis. Caching will be disabled.
+[2026-07-01 17:19:51] info: 🚀 Server running in development mode on port 5000
+[2026-07-01 17:24:21] info: ::1 - - [01/Jul/2026:12:24:21 +0000] "GET /api/projects HTTP/1.1" 200 3493 "http://localhost:5173/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36"
+[2026-07-01 18:02:01] info: 🔌 Socket connected: N85SoMrLL0hmGyjzAAAC
+[2026-07-01 18:12:11] info: 🔌 Socket disconnected: N85SoMrLL0hmGyjzAAAC
+[2026-07-01 18:12:12] info: 🔌 Socket connected: Q9g2bfAwnUfHczH7AAAF
+[2026-07-01 18:12:55] info: 🔌 Socket disconnected: Q9g2bfAwnUfHczH7AAAF
+[2026-07-01 18:12:55] info: 🔌 Socket connected: QPFGEQc81zQTXpRRAAAH
+[2026-07-01 18:13:25] info: 🔌 Socket connected: eqELUJ5gy_ymivE4AAAK
+[2026-07-01 18:13:28] info: ::1 - - [01/Jul/2026:13:13:28 +0000] "GET /api/blogs HTTP/1.1" 200 983 "http://localhost:5173/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36"
+[2026-07-01 18:13:34] info: 🔌 Socket connected: EUDy7uE0fD0NRJFUAAAN
+[2026-07-01 18:13:35] info: ::1 - - [01/Jul/2026:13:13:35 +0000] "GET /api/projects HTTP/1.1" 304 - "http://localhost:5173/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36"
+[2026-07-01 18:13:50] info: 🔌 Socket disconnected: QPFGEQc81zQTXpRRAAAH
+[2026-07-01 18:14:10] info: 🔌 Socket disconnected: eqELUJ5gy_ymivE4AAAK
+[2026-07-01 18:14:54] info: 🔌 Socket connected: 7jD9lPwezHyqVy5cAAAQ
+[2026-07-01 18:14:56] info: ::1 - - [01/Jul/2026:13:14:56 +0000] "GET /api/projects HTTP/1.1" 304 - "http://localhost:5173/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36"
+[2026-07-01 18:14:56] info: 🔌 Socket connected: XfzNEtwG0VtP66L6AAAT
+[2026-07-01 18:15:20] info: 🔌 Socket disconnected: EUDy7uE0fD0NRJFUAAAN
+[2026-07-01 18:15:39] info: 🔌 Socket disconnected: 7jD9lPwezHyqVy5cAAAQ
+[2026-07-01 18:16:37] info: 🔌 Socket connected: pU3iG65r85DoPcEAAAAW
+[2026-07-01 18:16:39] info: ::1 - - [01/Jul/2026:13:16:39 +0000] "GET /api/projects HTTP/1.1" 304 - "http://localhost:5173/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36"
+[2026-07-01 18:16:42] info: 🔌 Socket connected: g8R7XmC04TqbuCKFAAAZ
+[2026-07-01 18:16:49] info: 🔌 Socket connected: CWT7qN4RdloFq-EFAAAc
+[2026-07-01 18:16:50] info: 🔌 Socket disconnected: XfzNEtwG0VtP66L6AAAT
+[2026-07-01 18:16:59] info: 🔌 Socket connected: ThDczkCE8sHJo1p5AAAf
+[2026-07-01 18:17:07] info: 🔌 Socket connected: OoaRaw8WdVzzuE-4AAAi
+[2026-07-01 18:17:09] info: ::1 - - [01/Jul/2026:13:17:09 +0000] "GET /api/blogs HTTP/1.1" 304 - "http://localhost:5173/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36"
+[2026-07-01 18:17:10] info: 🔌 Socket disconnected: pU3iG65r85DoPcEAAAAW
+[2026-07-01 18:17:10] info: 🔌 Socket disconnected: ThDczkCE8sHJo1p5AAAf
+[2026-07-01 18:17:10] info: 🔌 Socket disconnected: CWT7qN4RdloFq-EFAAAc
+[2026-07-01 18:17:11] info: 🔌 Socket connected: EO8ooToCwtdpd-A5AAAl
+[2026-07-01 18:17:15] info: 🔌 Socket disconnected: OoaRaw8WdVzzuE-4AAAi
+[2026-07-01 18:19:16] info: 🔌 Socket disconnected: EO8ooToCwtdpd-A5AAAl
+[2026-07-01 18:20:43] info: 🔌 Socket disconnected: g8R7XmC04TqbuCKFAAAZ
+[2026-07-01 18:22:19] info: 🔌 Socket connected: hexP9LEGTneqrcehAAAo
+[2026-07-01 18:22:56] info: 🔌 Socket disconnected: hexP9LEGTneqrcehAAAo
+[2026-07-01 18:26:07] warn: ⚠️ Could not connect to Redis. Caching will be disabled.
+[2026-07-01 18:26:09] info: 🚀 Server running in development mode on port 5000
+[2026-07-01 18:31:30] info: ::1 - - [01/Jul/2026:13:31:30 +0000] "GET /api/projects HTTP/1.1" 304 - "http://localhost:5174/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36"
+[2026-07-01 18:31:32] info: ::1 - - [01/Jul/2026:13:31:32 +0000] "GET /api/projects HTTP/1.1" 304 - "http://localhost:5174/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36"
+[2026-07-01 18:44:50] info: ::1 - - [01/Jul/2026:13:44:50 +0000] "GET /api/blogs HTTP/1.1" 304 - "http://localhost:5174/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36"
+[2026-07-01 18:44:52] info: ::1 - - [01/Jul/2026:13:44:52 +0000] "GET /api/projects HTTP/1.1" 304 - "http://localhost:5174/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36"
+[2026-07-01 20:04:31] warn: ⚠️ Could not connect to Redis. Caching will be disabled.
+[2026-07-01 20:04:33] info: 🚀 Server running in development mode on port 5000
+[2026-07-01 20:22:46] warn: ⚠️ Could not connect to Redis. Caching will be disabled.
+[2026-07-01 20:22:47] info: 🚀 Server running in development mode on port 5000
+[2026-07-01 20:22:57] warn: ⚠️ Could not connect to Redis. Caching will be disabled.
+[2026-07-01 20:22:57] info: 🚀 Server running in development mode on port 5000
+[2026-07-01 20:23:12] warn: ⚠️ Could not connect to Redis. Caching will be disabled.
+[2026-07-01 20:23:13] info: 🚀 Server running in development mode on port 5000
+[2026-07-01 20:23:27] warn: ⚠️ Could not connect to Redis. Caching will be disabled.
+[2026-07-01 20:23:28] info: 🚀 Server running in development mode on port 5000
+[2026-07-01 20:27:47] info: ::1 - - [01/Jul/2026:15:27:47 +0000] "OPTIONS /api/auth/login HTTP/1.1" 204 0 "http://localhost:5173/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36"
+[2026-07-01 20:27:48] info: ::1 - - [01/Jul/2026:15:27:48 +0000] "POST /api/auth/login HTTP/1.1" 200 55 "http://localhost:5173/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36"
+[2026-07-01 20:27:48] info: 🔌 Socket connected: L3yfiDoYqybow3NnAABb
+[2026-07-01 20:27:53] info: 🔌 Socket disconnected: L3yfiDoYqybow3NnAABb
+[2026-07-01 20:27:55] info: ::1 - - [01/Jul/2026:15:27:55 +0000] "GET /api/contact/messages HTTP/1.1" 200 54 "http://localhost:5173/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36"
+[2026-07-01 20:27:56] info: ::1 - - [01/Jul/2026:15:27:56 +0000] "GET /api/contact/messages HTTP/1.1" 304 - "http://localhost:5173/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36"
+[2026-07-01 20:28:15] info: 🔌 Socket connected: iy5eXmxmJlOrCl3SAABg
+[2026-07-01 20:28:15] info: 🔌 Socket connected: jZ3zU8gCaxAILQ3MAABh
+[2026-07-01 20:28:18] info: 🔌 Socket disconnected: iy5eXmxmJlOrCl3SAABg
+[2026-07-01 20:28:18] info: 🔌 Socket disconnected: jZ3zU8gCaxAILQ3MAABh
+[2026-07-01 20:28:18] info: 🔌 Socket connected: eR0vh5DhmE3bPHxxAABm
+[2026-07-01 20:28:18] info: 🔌 Socket connected: AS2MVm0cAIAMrzgtAABn
+[2026-07-01 20:28:29] info: Chat message from asa: salom
+[2026-07-01 20:28:32] info: ::1 - - [01/Jul/2026:15:28:32 +0000] "GET /api/contact/messages HTTP/1.1" 200 203 "http://localhost:5173/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36"
+[2026-07-01 20:28:32] info: ::1 - - [01/Jul/2026:15:28:32 +0000] "GET /api/contact/messages HTTP/1.1" 304 - "http://localhost:5173/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36"
+[2026-07-01 20:28:48] info: 🔌 Socket connected: 8VKxxj_sqQDNJOlmAABq
+[2026-07-01 21:22:44] warn: ⚠️ Could not connect to Redis. Caching will be disabled.
+[2026-07-01 21:22:46] info: 🚀 Server running in development mode on port 5000
+[2026-07-01 21:22:46] info: 🔌 Socket connected: UYSMlw7ZQ5_jSURcAAAB
+[2026-07-01 21:22:47] info: 🔌 Socket connected: KlR5dVPFwQHLXaL2AAAD
+[2026-07-01 21:22:47] info: 🔌 Socket connected: otqSXgrhJiOMetl-AAAF
+[2026-07-01 21:22:56] warn: ⚠️ Could not connect to Redis. Caching will be disabled.
+[2026-07-01 21:22:57] info: 🚀 Server running in development mode on port 5000
+[2026-07-01 21:22:57] info: 🔌 Socket connected: 5-tE93RX_lfr307IAAAC
+[2026-07-01 21:22:57] info: 🔌 Socket connected: kagPQAuwHZrOy4eOAAAD
+[2026-07-01 21:22:59] info: 🔌 Socket connected: GsJ8s4goXsda5CrAAAAF
+[2026-07-01 21:23:05] warn: ⚠️ Could not connect to Redis. Caching will be disabled.
+[2026-07-01 21:23:07] info: 🚀 Server running in development mode on port 5000
+[2026-07-01 21:23:07] info: 🔌 Socket connected: gqmTBvcVWRPRuujXAAAC
+[2026-07-01 21:23:07] info: 🔌 Socket connected: K-DtE6HhNJn17qsEAAAE
+[2026-07-01 21:23:07] info: 🔌 Socket connected: mReBzjY3wvB5OgJ3AAAF
+[2026-07-01 21:25:44] info: 🔌 Socket disconnected: K-DtE6HhNJn17qsEAAAE
+[2026-07-01 21:26:38] info: 🔌 Socket disconnected: gqmTBvcVWRPRuujXAAAC
+[2026-07-01 21:26:38] info: 🔌 Socket disconnected: mReBzjY3wvB5OgJ3AAAF
+[2026-07-01 21:27:09] info: ::1 - - [01/Jul/2026:16:27:09 +0000] "OPTIONS /api/auth/login HTTP/1.1" 204 0 "http://localhost:5173/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36"
+[2026-07-01 21:27:09] info: ::1 - - [01/Jul/2026:16:27:09 +0000] "POST /api/auth/login HTTP/1.1" 200 55 "http://localhost:5173/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36"
+[2026-07-01 21:27:09] info: 🔌 Socket connected: c-nlHjPEG6Tybrr4AAAQ
+[2026-07-01 21:27:17] info: 🔌 Socket disconnected: c-nlHjPEG6Tybrr4AAAQ
+[2026-07-01 21:27:19] info: ::1 - - [01/Jul/2026:16:27:19 +0000] "GET /api/projects HTTP/1.1" 304 - "http://localhost:5173/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36"
+[2026-07-01 21:27:19] info: ::1 - - [01/Jul/2026:16:27:19 +0000] "GET /api/projects HTTP/1.1" 304 - "http://localhost:5173/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36"
+[2026-07-01 21:27:25] info: ::1 - - [01/Jul/2026:16:27:25 +0000] "GET /api/projects HTTP/1.1" 304 - "http://localhost:5173/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36"
+[2026-07-01 21:27:25] info: ::1 - - [01/Jul/2026:16:27:25 +0000] "GET /api/projects HTTP/1.1" 304 - "http://localhost:5173/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36"
+[2026-07-01 21:27:50] info: ::1 - - [01/Jul/2026:16:27:50 +0000] "GET /api/projects HTTP/1.1" 200 3493 "http://localhost:5173/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36"
+[2026-07-01 21:27:50] info: ::1 - - [01/Jul/2026:16:27:50 +0000] "GET /api/projects HTTP/1.1" 200 3493 "http://localhost:5173/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36"
+[2026-07-01 21:29:41] info: ::1 - - [01/Jul/2026:16:29:41 +0000] "OPTIONS /api/projects/translate HTTP/1.1" 204 0 "http://localhost:5173/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36"
+[2026-07-01 21:29:41] info: ::1 - - [01/Jul/2026:16:29:41 +0000] "OPTIONS /api/projects/translate HTTP/1.1" 204 0 "http://localhost:5173/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36"
+[2026-07-01 21:29:41] error: [POST] /api/projects/translate >> StatusCode:: 500, Message:: Cannot add property engine, object is not extensible
+[2026-07-01 21:29:41] info: ::1 - - [01/Jul/2026:16:29:41 +0000] "POST /api/projects/translate HTTP/1.1" 500 1400 "http://localhost:5173/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36"
+[2026-07-01 21:29:41] error: [POST] /api/projects/translate >> StatusCode:: 500, Message:: Cannot add property engine, object is not extensible
+[2026-07-01 21:29:41] info: ::1 - - [01/Jul/2026:16:29:41 +0000] "POST /api/projects/translate HTTP/1.1" 500 1400 "http://localhost:5173/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36"
+[2026-07-01 21:31:21] warn: ⚠️ Could not connect to Redis. Caching will be disabled.
+[2026-07-01 21:31:22] info: 🚀 Server running in development mode on port 5000
+[2026-07-01 21:32:00] info: ::1 - - [01/Jul/2026:16:32:00 +0000] "GET /api/projects HTTP/1.1" 200 3493 "http://localhost:5173/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36"
+[2026-07-01 21:32:01] info: ::1 - - [01/Jul/2026:16:32:01 +0000] "GET /api/projects HTTP/1.1" 200 3493 "http://localhost:5173/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36"
+[2026-07-01 21:33:17] info: ::1 - - [01/Jul/2026:16:33:17 +0000] "GET /api/projects HTTP/1.1" 200 3493 "http://localhost:5173/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36"
+[2026-07-01 21:33:17] info: ::1 - - [01/Jul/2026:16:33:17 +0000] "GET /api/projects HTTP/1.1" 200 3493 "http://localhost:5173/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36"
+[2026-07-01 21:35:32] info: ::1 - - [01/Jul/2026:16:35:32 +0000] "OPTIONS /api/auth/login HTTP/1.1" 204 0 "http://localhost:5173/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36"
+[2026-07-01 21:35:32] info: ::1 - - [01/Jul/2026:16:35:32 +0000] "POST /api/auth/login HTTP/1.1" 200 55 "http://localhost:5173/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36"
+[2026-07-01 21:35:32] info: 🔌 Socket connected: -WcFEkA3OiE-6Gn7AAAC
+[2026-07-01 21:35:42] info: 🔌 Socket disconnected: -WcFEkA3OiE-6Gn7AAAC
+[2026-07-01 21:35:44] info: ::1 - - [01/Jul/2026:16:35:44 +0000] "GET /api/projects HTTP/1.1" 200 3493 "http://localhost:5173/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36"
+[2026-07-01 21:35:44] info: ::1 - - [01/Jul/2026:16:35:44 +0000] "GET /api/projects HTTP/1.1" 304 - "http://localhost:5173/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36"
+[2026-07-01 21:36:29] info: ::1 - - [01/Jul/2026:16:36:29 +0000] "OPTIONS /api/projects/translate HTTP/1.1" 204 0 "http://localhost:5173/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36"
+[2026-07-01 21:36:29] info: ::1 - - [01/Jul/2026:16:36:29 +0000] "OPTIONS /api/projects/translate HTTP/1.1" 204 0 "http://localhost:5173/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36"
+[2026-07-01 21:36:31] info: ::1 - - [01/Jul/2026:16:36:31 +0000] "POST /api/projects/translate HTTP/1.1" 200 132 "http://localhost:5173/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36"
+[2026-07-01 21:36:31] info: ::1 - - [01/Jul/2026:16:36:31 +0000] "POST /api/projects/translate HTTP/1.1" 200 107 "http://localhost:5173/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36"
+[2026-07-01 21:37:43] info: ::1 - - [01/Jul/2026:16:37:43 +0000] "GET /api/projects HTTP/1.1" - - "http://localhost:5173/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36"
+[2026-07-01 21:37:43] info: ::1 - - [01/Jul/2026:16:37:43 +0000] "GET /api/projects HTTP/1.1" - - "http://localhost:5173/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36"
+[2026-07-01 21:37:45] info: ::1 - - [01/Jul/2026:16:37:45 +0000] "GET /api/projects HTTP/1.1" - - "http://localhost:5173/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36"
+[2026-07-01 21:37:46] info: ::1 - - [01/Jul/2026:16:37:46 +0000] "GET /api/projects HTTP/1.1" - - "http://localhost:5173/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36"
+[2026-07-01 21:37:47] info: ::1 - - [01/Jul/2026:16:37:47 +0000] "GET /api/projects HTTP/1.1" 200 3493 "http://localhost:5173/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36"
+[2026-07-01 21:37:47] info: ::1 - - [01/Jul/2026:16:37:47 +0000] "GET /api/projects HTTP/1.1" 304 - "http://localhost:5173/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36"
+[2026-07-01 21:37:57] info: 🔌 Socket connected: 2y79IjKxngCYum0lAAAF
+[2026-07-01 21:37:59] info: 🔌 Socket disconnected: 2y79IjKxngCYum0lAAAF
+[2026-07-01 21:38:01] info: ::1 - - [01/Jul/2026:16:38:01 +0000] "GET /api/projects HTTP/1.1" 304 - "http://localhost:5173/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36"
+[2026-07-01 21:38:01] info: ::1 - - [01/Jul/2026:16:38:01 +0000] "GET /api/projects HTTP/1.1" 304 - "http://localhost:5173/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36"
+[2026-07-01 21:39:42] info: ::1 - - [01/Jul/2026:16:39:42 +0000] "OPTIONS /api/projects/translate HTTP/1.1" 204 0 "http://localhost:5173/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36"
+[2026-07-01 21:39:42] info: ::1 - - [01/Jul/2026:16:39:42 +0000] "OPTIONS /api/projects/translate HTTP/1.1" 204 0 "http://localhost:5173/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36"
+[2026-07-01 21:39:42] info: ::1 - - [01/Jul/2026:16:39:42 +0000] "OPTIONS /api/projects/translate HTTP/1.1" 204 0 "http://localhost:5173/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36"
+[2026-07-01 21:39:44] info: ::1 - - [01/Jul/2026:16:39:44 +0000] "POST /api/projects/translate HTTP/1.1" 200 217 "http://localhost:5173/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36"
+[2026-07-01 21:39:44] info: ::1 - - [01/Jul/2026:16:39:44 +0000] "POST /api/projects/translate HTTP/1.1" 200 131 "http://localhost:5173/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36"
+[2026-07-01 21:39:44] info: ::1 - - [01/Jul/2026:16:39:44 +0000] "POST /api/projects/translate HTTP/1.1" 200 160 "http://localhost:5173/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36"
+[2026-07-01 21:48:49] info: ::1 - - [01/Jul/2026:16:48:49 +0000] "GET /api/projects HTTP/1.1" 200 3493 "http://localhost:5173/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36"
+[2026-07-01 21:48:50] info: ::1 - - [01/Jul/2026:16:48:50 +0000] "GET /api/projects HTTP/1.1" 200 3493 "http://localhost:5173/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36"
+[2026-07-01 21:48:55] info: 🔌 Socket connected: XDslcX4f4vOi_rLZAAAK
+[2026-07-01 21:48:55] info: 🔌 Socket connected: NuljdVPLVZ7LlbbMAAAL
+[2026-07-01 21:49:26] info: ::1 - - [01/Jul/2026:16:49:26 +0000] "GET /api/contact/messages HTTP/1.1" 304 - "http://localhost:5173/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36"
+[2026-07-01 21:49:27] info: ::1 - - [01/Jul/2026:16:49:27 +0000] "GET /api/contact/messages HTTP/1.1" 304 - "http://localhost:5173/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36"
+[2026-07-01 21:50:44] info: ::1 - - [01/Jul/2026:16:50:44 +0000] "GET /api/contact/messages HTTP/1.1" 304 - "http://localhost:5173/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36"
+[2026-07-01 21:50:45] info: ::1 - - [01/Jul/2026:16:50:45 +0000] "GET /api/contact/messages HTTP/1.1" 304 - "http://localhost:5173/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36"
+[2026-07-01 21:51:54] info: 🔌 Socket disconnected: XDslcX4f4vOi_rLZAAAK
+[2026-07-01 21:51:54] info: 🔌 Socket disconnected: NuljdVPLVZ7LlbbMAAAL
+[2026-07-01 21:51:55] info: 🔌 Socket connected: a1UzWXzz_ZgFqz_lAAAQ
+[2026-07-01 21:51:55] info: 🔌 Socket connected: e3JFFjpIFtJVOATzAAAR
+[2026-07-01 21:51:58] info: ::1 - - [01/Jul/2026:16:51:58 +0000] "GET /api/projects HTTP/1.1" 304 - "http://localhost:5173/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36"
+[2026-07-01 21:51:58] info: ::1 - - [01/Jul/2026:16:51:58 +0000] "GET /api/contact/messages HTTP/1.1" 304 - "http://localhost:5173/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36"
+[2026-07-01 21:51:58] info: ::1 - - [01/Jul/2026:16:51:58 +0000] "GET /api/projects HTTP/1.1" 304 - "http://localhost:5173/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36"
+[2026-07-01 21:51:58] info: ::1 - - [01/Jul/2026:16:51:58 +0000] "GET /api/contact/messages HTTP/1.1" 304 - "http://localhost:5173/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36"
+[2026-07-01 21:52:03] info: 🔌 Socket disconnected: a1UzWXzz_ZgFqz_lAAAQ
+[2026-07-01 21:52:03] info: 🔌 Socket disconnected: e3JFFjpIFtJVOATzAAAR
+[2026-07-01 21:52:03] info: ::1 - - [01/Jul/2026:16:52:03 +0000] "GET /api/projects HTTP/1.1" 304 - "http://localhost:5173/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36"
+[2026-07-01 21:52:03] info: 🔌 Socket connected: 5dWWSsYIKH09hlipAAAW
+[2026-07-01 21:52:03] info: 🔌 Socket connected: zPWamSMpR3A6zKZ-AAAX
+[2026-07-01 21:52:03] info: ::1 - - [01/Jul/2026:16:52:03 +0000] "GET /api/projects HTTP/1.1" 304 - "http://localhost:5173/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36"
+[2026-07-01 21:52:04] info: ::1 - - [01/Jul/2026:16:52:04 +0000] "GET /api/contact/messages HTTP/1.1" 304 - "http://localhost:5173/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36"
+[2026-07-01 21:52:04] info: ::1 - - [01/Jul/2026:16:52:04 +0000] "GET /api/contact/messages HTTP/1.1" 304 - "http://localhost:5173/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36"
+[2026-07-01 21:52:13] info: 🔌 Socket disconnected: 5dWWSsYIKH09hlipAAAW
+[2026-07-01 21:52:13] info: 🔌 Socket disconnected: zPWamSMpR3A6zKZ-AAAX
+[2026-07-01 21:52:16] info: 🔌 Socket connected: KBQHrWd9xYGcnu-PAAAc
+[2026-07-01 21:52:16] info: 🔌 Socket connected: HDxdJCRi7EpWgytSAAAd
+[2026-07-01 21:52:16] info: ::1 - - [01/Jul/2026:16:52:16 +0000] "GET /api/contact/messages HTTP/1.1" - - "http://localhost:5173/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36"
+[2026-07-01 21:52:16] info: 🔌 Socket disconnected: HDxdJCRi7EpWgytSAAAd
+[2026-07-01 21:52:18] info: 🔌 Socket connected: NY38IvIOdAuDhbQFAAAi
+[2026-07-01 21:52:18] info: 🔌 Socket connected: AJsZ9W6xsEC9LFReAAAj
+[2026-07-01 21:52:20] info: ::1 - - [01/Jul/2026:16:52:20 +0000] "GET /api/projects HTTP/1.1" 304 - "http://localhost:5173/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36"
+[2026-07-01 21:52:20] info: ::1 - - [01/Jul/2026:16:52:20 +0000] "GET /api/projects HTTP/1.1" 304 - "http://localhost:5173/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36"
+[2026-07-01 21:52:20] info: ::1 - - [01/Jul/2026:16:52:20 +0000] "GET /api/contact/messages HTTP/1.1" 200 203 "http://localhost:5173/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36"
+[2026-07-01 21:52:21] info: ::1 - - [01/Jul/2026:16:52:21 +0000] "GET /api/contact/messages HTTP/1.1" 304 - "http://localhost:5173/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36"
+[2026-07-01 21:53:01] info: 🔌 Socket disconnected: KBQHrWd9xYGcnu-PAAAc
