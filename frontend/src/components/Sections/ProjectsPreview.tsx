@@ -4,9 +4,20 @@ import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/Button';
 import { TiltCard } from '@/components/ui/TiltCard';
 import { useI18n } from '@/contexts/I18nContext';
+import { useQuery } from '@tanstack/react-query';
+import { api } from '@/lib/api';
+import { Skeleton } from '@/components/ui/Skeleton';
 
 export const ProjectsPreviewSection = () => {
-  const { t } = useI18n();
+  const { t, language } = useI18n();
+
+  const { data: projects, isLoading } = useQuery({
+    queryKey: ['projects'],
+    queryFn: async () => {
+      const res = await api.get('/projects');
+      return res.data.data;
+    }
+  });
 
   return (
     <section id="projects" className="py-32 px-6 relative max-w-6xl mx-auto text-center">
@@ -19,33 +30,37 @@ export const ProjectsPreviewSection = () => {
         </p>
       </ScrollReveal>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16 text-left">
-        <ScrollReveal delay={0.2}>
-          <TiltCard>
-            <div className="glass p-8 rounded-2xl h-[300px] flex flex-col justify-end relative overflow-hidden group cursor-pointer border border-border hover:border-primary/50 transition-colors">
-              <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent z-10"></div>
-              <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center opacity-30 group-hover:scale-105 transition-transform duration-700"></div>
-              <div className="relative z-20" style={{ transform: 'translateZ(50px)' }}>
-                <h3 className="text-2xl font-bold text-foreground dark:text-white mb-2">E-Commerce Microservices</h3>
-                <p className="text-foreground/70">Node.js • Redis • Kubernetes</p>
-              </div>
-            </div>
-          </TiltCard>
-        </ScrollReveal>
-
-        <ScrollReveal delay={0.4}>
-          <TiltCard>
-            <div className="glass p-8 rounded-2xl h-[300px] flex flex-col justify-end relative overflow-hidden group cursor-pointer border border-border hover:border-primary/50 transition-colors">
-              <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent z-10"></div>
-              <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1618401471353-b98afee0b2eb?q=80&w=2088&auto=format&fit=crop')] bg-cover bg-center opacity-30 group-hover:scale-105 transition-transform duration-700"></div>
-              <div className="relative z-20" style={{ transform: 'translateZ(50px)' }}>
-                <h3 className="text-2xl font-bold text-foreground dark:text-white mb-2">FinTech Analytics Dashboard</h3>
-                <p className="text-foreground/70">React • D3.js • WebSockets</p>
-              </div>
-            </div>
-          </TiltCard>
-        </ScrollReveal>
-      </div>
+      {isLoading ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16 text-left">
+          {[1, 2, 3].map((i) => (
+            <Skeleton key={i} className="h-[300px] w-full rounded-2xl" />
+          ))}
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16 text-left">
+          {projects?.slice(0, 3).map((project: any, index: number) => (
+            <ScrollReveal key={project.id} delay={0.2 + (index * 0.1)}>
+              <TiltCard>
+                <div className="glass p-8 rounded-2xl h-[300px] flex flex-col justify-end relative overflow-hidden group cursor-pointer border border-border hover:border-primary/50 transition-colors">
+                  <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent z-10"></div>
+                  <div 
+                    className="absolute inset-0 bg-cover bg-center opacity-30 group-hover:scale-105 transition-transform duration-700" 
+                    style={{ backgroundImage: `url(${project.image_url})` }}
+                  ></div>
+                  <div className="relative z-20" style={{ transform: 'translateZ(50px)' }}>
+                    <h3 className="text-2xl font-bold text-foreground dark:text-white mb-2">
+                      {project.title[language] || project.title.en}
+                    </h3>
+                    <p className="text-foreground/70 line-clamp-2">
+                      {project.tech_stack || project.description?.[language] || project.description?.en}
+                    </p>
+                  </div>
+                </div>
+              </TiltCard>
+            </ScrollReveal>
+          ))}
+        </div>
+      )}
 
       <ScrollReveal delay={0.6}>
         <Link to="/projects">

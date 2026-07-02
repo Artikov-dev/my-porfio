@@ -3,16 +3,28 @@ import { useI18n } from '@/contexts/I18nContext';
 
 const experience = [
   {
-    roleKey: "exp1_role",
-    companyKey: "exp1_comp",
-    period: "2024 - Present",
-    descKey: "exp1_desc"
+    roleKey: "exp4_role",
+    companyKey: "exp4_comp",
+    period: "2026",
+    descKey: "exp4_desc"
+  },
+  {
+    roleKey: "exp3_role",
+    companyKey: "exp3_comp",
+    period: "Dec 2025 - Apr 2026",
+    descKey: "exp3_desc"
   },
   {
     roleKey: "exp2_role",
     companyKey: "exp2_comp",
-    period: "2021 - 2024",
+    period: "Jul 2025 - Sep 2025",
     descKey: "exp2_desc"
+  },
+  {
+    roleKey: "exp1_role",
+    companyKey: "exp1_comp",
+    period: "Nov 2024 - Jan 2025",
+    descKey: "exp1_desc"
   }
 ];
 
