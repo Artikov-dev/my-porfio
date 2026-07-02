@@ -37,3 +37,5 @@
 [2026-07-02 11:48:46] info: 🤖 Telegram bot launched
 [2026-07-02 11:48:47] warn: ⚠️ Could not connect to Redis. Caching will be disabled.
 [2026-07-02 11:48:48] info: 🚀 Server running in development mode on port 5000
+[2026-07-02 13:42:40] warn: ⚠️ Could not connect to Redis. Caching will be disabled.
+[2026-07-02 13:42:42] info: 🚀 Server running in development mode on port 5000
