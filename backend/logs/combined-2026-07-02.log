@@ -17,3 +17,14 @@
 [2026-07-02 10:23:55] info: 🔌 Socket connected: cH7URZeFnB8qeWuxAAAX
 [2026-07-02 10:27:15] info: 🔌 Socket disconnected: cH7URZeFnB8qeWuxAAAX
 [2026-07-02 10:38:02] info: ::1 - - [02/Jul/2026:05:38:02 +0000] "GET /api/projects HTTP/1.1" 200 3493 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36"
+[2026-07-02 10:54:54] info: ::1 - - [02/Jul/2026:05:54:54 +0000] "GET /api/blogs HTTP/1.1" 200 983 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36"
+[2026-07-02 10:54:56] info: 🔌 Socket connected: jgscbejeEiBwkX-FAAKt
+[2026-07-02 10:54:57] info: 🔌 Socket disconnected: jgscbejeEiBwkX-FAAKt
+[2026-07-02 10:54:59] info: 🔌 Socket connected: I4HTsCtgm9jOKXMpAAK0
+[2026-07-02 10:54:59] info: 🔌 Socket connected: OMreiGzRz7VWKhRlAAK1
+[2026-07-02 11:09:33] info: 🔌 Socket disconnected: OMreiGzRz7VWKhRlAAK1
+[2026-07-02 11:09:33] info: 🔌 Socket disconnected: I4HTsCtgm9jOKXMpAAK0
+[2026-07-02 11:22:51] warn: ⚠️ Could not connect to Redis. Caching will be disabled.
+[2026-07-02 11:22:52] info: 🚀 Server running in development mode on port 5000
+[2026-07-02 11:23:06] warn: ⚠️ Could not connect to Redis. Caching will be disabled.
+[2026-07-02 11:23:08] info: 🚀 Server running in development mode on port 5000

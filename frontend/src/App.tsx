@@ -1,5 +1,7 @@
 import React from 'react';
+import { useEffect } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
+import { api } from '@/lib/api';
 import { CommandPalette } from '@/components/CommandPalette';
 import { Home } from '@/pages/Home';
 import { Projects } from '@/pages/Projects';
@@ -22,6 +24,12 @@ import { AdminProjects } from '@/pages/Admin/AdminProjects';
 
 function App() {
   const location = useLocation();
+
+  useEffect(() => {
+    // Saytga kirganda 1 marta backend ga xabar berish
+    api.post('/analytics/visit').catch(() => {});
+  }, []);
+
   const isResumePage = location.pathname === '/resume';
   const isAdminRoute = location.pathname.startsWith('/admin') || location.pathname === '/aadminsecrect';
   const hidePublicUI = isResumePage || isAdminRoute;
