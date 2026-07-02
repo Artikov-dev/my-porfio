@@ -24,7 +24,7 @@ const PORT = process.env.PORT || 5000;
 
 // Middlewares
 app.use(helmet());
-app.use(morgan('combined', { stream: { write: (message) => logger.info(message.trim()) } }));
+app.use(morgan('combined', { stream: { write: (message: string) => logger.info(message.trim()) } }));
 app.use(globalLimiter);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

@@ -8,7 +8,7 @@ const pool = new Pool({
   ssl: { rejectUnauthorized: false }, // Render requires SSL even in dev from local
 });
 
-pool.on('error', (err) => {
+pool.on('error', (err: Error) => {
   console.error('Unexpected error on idle client', err);
   process.exit(-1);
 });
