@@ -32,9 +32,9 @@ export const ExperienceSection = () => {
           <ScrollReveal key={index} delay={index * 0.2}>
             <div className="relative">
               <div className="absolute -left-[41px] top-2 h-4 w-4 rounded-full bg-primary ring-4 ring-background"></div>
-              <h3 className="text-2xl font-bold text-white mb-1">{t(exp.roleKey)}</h3>
+              <h3 className="text-2xl font-bold text-foreground dark:text-white mb-1">{t(exp.roleKey)}</h3>
               <div className="text-primary font-medium mb-4">{t(exp.companyKey)} <span className="text-gray-500 text-sm ml-2">{exp.period}</span></div>
-              <p className="text-gray-400 leading-relaxed">{t(exp.descKey)}</p>
+              <p className="text-foreground/60 leading-relaxed">{t(exp.descKey)}</p>
             </div>
           </ScrollReveal>
         ))}

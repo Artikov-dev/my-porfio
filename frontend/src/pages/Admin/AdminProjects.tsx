@@ -138,12 +138,12 @@ export const AdminProjects = () => {
     }
   };
 
-  if (loading) return <div className="text-white">Loading projects...</div>;
+  if (loading) return <div className="text-foreground dark:text-white">Loading projects...</div>;
 
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center border-b border-border pb-4">
-        <h2 className="text-2xl font-bold text-white flex items-center gap-2">
+        <h2 className="text-2xl font-bold text-foreground dark:text-white flex items-center gap-2">
           <Globe className="text-primary" /> Projects ({projects.length})
         </h2>
         <button
@@ -160,21 +160,21 @@ export const AdminProjects = () => {
             <div className="h-48 overflow-hidden relative group">
               <img src={p.image_url} alt={p.title.en} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
               <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
-                <button onClick={() => openModal(p)} className="bg-white/20 hover:bg-primary p-3 rounded-full text-white backdrop-blur-md transition-colors">
+                <button onClick={() => openModal(p)} className="bg-foreground/10 hover:bg-primary p-3 rounded-full text-white backdrop-blur-md transition-colors">
                   <Edit2 className="w-5 h-5" />
                 </button>
-                <button onClick={() => handleDelete(p.id)} className="bg-white/20 hover:bg-red-500 p-3 rounded-full text-white backdrop-blur-md transition-colors">
+                <button onClick={() => handleDelete(p.id)} className="bg-foreground/10 hover:bg-red-500 p-3 rounded-full text-white backdrop-blur-md transition-colors">
                   <Trash2 className="w-5 h-5" />
                 </button>
               </div>
             </div>
             <div className="p-5 flex flex-col flex-1">
-              <h3 className="text-xl font-bold text-white mb-2">{p.title.en}</h3>
+              <h3 className="text-xl font-bold text-foreground dark:text-white mb-2">{p.title.en}</h3>
               <p className="text-foreground/70 text-sm line-clamp-2 mb-4 flex-1">{p.description.en}</p>
 
               <div className="flex flex-wrap gap-2 mb-4">
                 {(p.tech_stack || []).slice(0, 3).map(tech => (
-                  <span key={tech} className="bg-white/5 border border-white/10 text-xs px-2 py-1 rounded-md text-foreground/80">
+                  <span key={tech} className="bg-foreground/5 border border-border text-xs px-2 py-1 rounded-md text-foreground/80">
                     {tech}
                   </span>
                 ))}
@@ -188,7 +188,7 @@ export const AdminProjects = () => {
                   </a>
                 )}
                 {p.github_url && (
-                  <a href={p.github_url} target="_blank" rel="noreferrer" className="flex items-center gap-2 text-sm text-foreground/70 hover:text-white ml-auto">
+                  <a href={p.github_url} target="_blank" rel="noreferrer" className="flex items-center gap-2 text-sm text-foreground/70 hover:text-foreground dark:text-white ml-auto">
                     <GithubIcon className="w-4 h-4" /> Code
                   </a>
                 )}
@@ -200,10 +200,10 @@ export const AdminProjects = () => {
 
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-          <div className="bg-background border border-white/10 rounded-3xl w-full max-w-4xl max-h-[90vh] overflow-y-auto flex flex-col shadow-2xl">
+          <div className="bg-background border border-border rounded-3xl w-full max-w-4xl max-h-[90vh] overflow-y-auto flex flex-col shadow-2xl">
             <div className="sticky top-0 bg-background/90 backdrop-blur-md p-6 border-b border-border flex justify-between items-center z-10">
-              <h2 className="text-2xl font-bold text-white">{editingId ? 'Edit Project' : 'Create New Project'}</h2>
-              <button onClick={() => setIsModalOpen(false)} className="text-foreground/50 hover:text-white p-2">
+              <h2 className="text-2xl font-bold text-foreground dark:text-white">{editingId ? 'Edit Project' : 'Create New Project'}</h2>
+              <button onClick={() => setIsModalOpen(false)} className="text-foreground/50 hover:text-foreground dark:text-white p-2">
                 <X className="w-6 h-6" />
               </button>
             </div>
@@ -238,7 +238,7 @@ export const AdminProjects = () => {
                         required
                         value={title[lang as keyof LocalizedString]}
                         onChange={e => setTitle(prev => ({ ...prev, [lang]: e.target.value }))}
-                        className="w-full bg-black/30 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:border-primary focus:outline-none"
+                        className="w-full bg-black/30 border border-border rounded-xl px-4 py-2.5 text-foreground dark:text-white text-sm focus:border-primary focus:outline-none"
                       />
                     </div>
                   ))}
@@ -251,7 +251,7 @@ export const AdminProjects = () => {
                         required rows={2}
                         value={description[lang as keyof LocalizedString]}
                         onChange={e => setDescription(prev => ({ ...prev, [lang]: e.target.value }))}
-                        className="w-full bg-black/30 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:border-primary focus:outline-none resize-none"
+                        className="w-full bg-black/30 border border-border rounded-xl px-4 py-2.5 text-foreground dark:text-white text-sm focus:border-primary focus:outline-none resize-none"
                       />
                     </div>
                   ))}
@@ -265,7 +265,7 @@ export const AdminProjects = () => {
                         required rows={4}
                         value={content[lang as keyof LocalizedString]}
                         onChange={e => setContent(prev => ({ ...prev, [lang]: e.target.value }))}
-                        className="w-full bg-black/30 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:border-primary focus:outline-none resize-none"
+                        className="w-full bg-black/30 border border-border rounded-xl px-4 py-2.5 text-foreground dark:text-white text-sm focus:border-primary focus:outline-none resize-none"
                       />
                     </div>
                   ))}
@@ -278,25 +278,25 @@ export const AdminProjects = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <label className="text-xs font-mono uppercase text-foreground/50">Image URL</label>
-                    <input required value={imageUrl} onChange={e => setImageUrl(e.target.value)} placeholder="/projects/img1.jpg or https://..." className="w-full bg-black/30 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm" />
+                    <input required value={imageUrl} onChange={e => setImageUrl(e.target.value)} placeholder="/projects/img1.jpg or https://..." className="w-full bg-black/30 border border-border rounded-xl px-4 py-2.5 text-foreground dark:text-white text-sm" />
                   </div>
                   <div className="space-y-2">
                     <label className="text-xs font-mono uppercase text-foreground/50">Tech Stack (comma separated)</label>
-                    <input required value={techStack} onChange={e => setTechStack(e.target.value)} placeholder="React, Node.js, PostgreSQL" className="w-full bg-black/30 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm" />
+                    <input required value={techStack} onChange={e => setTechStack(e.target.value)} placeholder="React, Node.js, PostgreSQL" className="w-full bg-black/30 border border-border rounded-xl px-4 py-2.5 text-foreground dark:text-white text-sm" />
                   </div>
                   <div className="space-y-2">
                     <label className="text-xs font-mono uppercase text-foreground/50">GitHub URL</label>
-                    <input value={githubUrl} onChange={e => setGithubUrl(e.target.value)} className="w-full bg-black/30 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm" />
+                    <input value={githubUrl} onChange={e => setGithubUrl(e.target.value)} className="w-full bg-black/30 border border-border rounded-xl px-4 py-2.5 text-foreground dark:text-white text-sm" />
                   </div>
                   <div className="space-y-2">
                     <label className="text-xs font-mono uppercase text-foreground/50">Live Demo URL</label>
-                    <input value={liveUrl} onChange={e => setLiveUrl(e.target.value)} className="w-full bg-black/30 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm" />
+                    <input value={liveUrl} onChange={e => setLiveUrl(e.target.value)} className="w-full bg-black/30 border border-border rounded-xl px-4 py-2.5 text-foreground dark:text-white text-sm" />
                   </div>
                 </div>
               </div>
 
               <div className="flex justify-end gap-4 pt-6 border-t border-white/5">
-                <button type="button" onClick={() => setIsModalOpen(false)} className="px-6 py-2.5 rounded-xl text-foreground/70 hover:bg-white/5 hover:text-white transition-colors">
+                <button type="button" onClick={() => setIsModalOpen(false)} className="px-6 py-2.5 rounded-xl text-foreground/70 hover:bg-foreground/5 hover:text-foreground dark:text-white transition-colors">
                   Cancel
                 </button>
                 <button type="submit" className="bg-primary hover:bg-teal-500 text-white px-8 py-2.5 rounded-xl flex items-center gap-2 font-medium transition-colors shadow-lg shadow-primary/20">

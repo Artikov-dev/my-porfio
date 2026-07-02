@@ -37,7 +37,7 @@ export const AdminDashboard = () => {
           <div key={stat.label} className={`p-6 rounded-2xl border ${stat.color} flex items-center justify-between`}>
             <div>
               <p className="text-foreground/60 text-sm font-medium mb-1">{stat.label}</p>
-              <h3 className="text-3xl font-bold text-white">{stat.value}</h3>
+              <h3 className="text-3xl font-bold text-foreground dark:text-white">{stat.value}</h3>
             </div>
             <div className="w-12 h-12 rounded-xl bg-background/50 flex items-center justify-center backdrop-blur-md">
               {stat.icon}
@@ -49,7 +49,7 @@ export const AdminDashboard = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Area Chart */}
         <div className="glass p-6 rounded-2xl border border-white/5 h-96 flex flex-col">
-          <h3 className="text-white font-medium mb-4">Traffic Overview (Last 7 Days)</h3>
+          <h3 className="text-foreground dark:text-white font-medium mb-4">Traffic Overview (Last 7 Days)</h3>
           <div className="flex-1 w-full">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={areaData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
@@ -74,7 +74,7 @@ export const AdminDashboard = () => {
         
         {/* Bar Chart */}
         <div className="glass p-6 rounded-2xl border border-white/5 h-96 flex flex-col">
-          <h3 className="text-white font-medium mb-4">Top Project Engagements</h3>
+          <h3 className="text-foreground dark:text-white font-medium mb-4">Top Project Engagements</h3>
           <div className="flex-1 w-full">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={barData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }} barSize={32}>

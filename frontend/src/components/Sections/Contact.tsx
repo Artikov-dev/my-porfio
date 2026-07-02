@@ -65,7 +65,7 @@ export const ContactSection = () => {
       name: 'GitHub',
       icon: <GithubIcon className="w-8 h-8" />,
       href: 'https://github.com/Artikov-dev',
-      color: 'hover:text-white hover:border-white/50 hover:bg-white/10'
+      color: 'hover:text-foreground dark:text-white hover:border-white/50 hover:bg-foreground/10'
     },
     {
       name: 'Email',
@@ -81,7 +81,7 @@ export const ContactSection = () => {
         <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-8 tracking-tight text-center">
           {t('get_in_touch')}
         </h2>
-        <p className="text-center text-gray-400 mb-16 text-lg max-w-2xl mx-auto">
+        <p className="text-center text-foreground/60 mb-16 text-lg max-w-2xl mx-auto">
           {t('contact_desc')}
         </p>
 

@@ -34,7 +34,7 @@ export const FloatingNav = () => {
 
   return (
     <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50">
-      <div className="glass px-6 py-4 rounded-full flex items-center gap-6 shadow-2xl border border-white/10">
+      <div className="glass px-6 py-4 rounded-full flex items-center gap-6 shadow-2xl border border-border">
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = active === item.id;
@@ -44,11 +44,11 @@ export const FloatingNav = () => {
               onClick={() => document.getElementById(item.id)?.scrollIntoView({ behavior: 'smooth' })}
               className={cn(
                 "relative group p-2 transition-colors cursor-pointer",
-                isActive ? "text-primary" : "text-gray-500 hover:text-white"
+                isActive ? "text-primary" : "text-gray-500 hover:text-foreground dark:text-white"
               )}
             >
               <Icon className="w-5 h-5" />
-              <span className="absolute -top-10 left-1/2 -translate-x-1/2 bg-background border border-border px-3 py-1 rounded-md text-xs text-white opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+              <span className="absolute -top-10 left-1/2 -translate-x-1/2 bg-background border border-border px-3 py-1 rounded-md text-xs text-foreground dark:text-white opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
                 {item.label}
               </span>
               {isActive && (

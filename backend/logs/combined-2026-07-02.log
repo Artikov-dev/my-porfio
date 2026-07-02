@@ -70,3 +70,5 @@
 [2026-07-02 14:20:55] info: ::1 - - [02/Jul/2026:09:20:55 +0000] "OPTIONS /api/auth/login HTTP/1.1" 204 0 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36"
 [2026-07-02 14:51:42] info: 🔌 Socket connected: FEYCxjpD2KCyWQ3OAAC1
 [2026-07-02 14:51:42] info: 🔌 Socket connected: ccDL8sApOVAMVJYBAAC2
+[2026-07-02 15:05:49] warn: ⚠️ Could not connect to Redis. Caching will be disabled.
+[2026-07-02 15:05:51] info: 🚀 Server running in production mode on port 5000

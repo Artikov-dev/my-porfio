@@ -66,7 +66,7 @@ export const AdminMessages = () => {
   }, [socket]);
 
   if (loading) {
-    return <div className="text-white">Loading messages...</div>;
+    return <div className="text-foreground dark:text-white">Loading messages...</div>;
   }
 
   // Group chats by session_id
@@ -101,7 +101,7 @@ export const AdminMessages = () => {
           }`}
         >
           <MessageCircle className="w-5 h-5" /> Live Chat Sessions
-          <span className="bg-white/20 px-2 py-0.5 rounded-full text-xs">{Object.keys(chatSessions).length}</span>
+          <span className="bg-foreground/10 px-2 py-0.5 rounded-full text-xs">{Object.keys(chatSessions).length}</span>
         </button>
         <button 
           onClick={() => setActiveTab('contacts')}
@@ -110,7 +110,7 @@ export const AdminMessages = () => {
           }`}
         >
           <Mail className="w-5 h-5" /> Contact Form Submissions
-          <span className="bg-white/20 px-2 py-0.5 rounded-full text-xs">{contacts.length}</span>
+          <span className="bg-foreground/10 px-2 py-0.5 rounded-full text-xs">{contacts.length}</span>
         </button>
       </div>
 
@@ -122,12 +122,12 @@ export const AdminMessages = () => {
             const userName = sessionChats.find(c => !c.is_admin)?.name || 'Visitor';
             return (
               <div key={sessionId} className="glass p-5 rounded-2xl border border-white/5 flex flex-col gap-4">
-                <div className="flex items-center gap-3 border-b border-white/10 pb-3">
+                <div className="flex items-center gap-3 border-b border-border pb-3">
                   <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary">
                     <User className="w-5 h-5" />
                   </div>
                   <div>
-                    <h4 className="font-bold text-white text-lg">{userName}</h4>
+                    <h4 className="font-bold text-foreground dark:text-white text-lg">{userName}</h4>
                     <p className="text-xs text-foreground/50 font-mono">Session: {sessionId.slice(0,8)}...</p>
                   </div>
                 </div>
@@ -138,7 +138,7 @@ export const AdminMessages = () => {
                       <div className={`px-4 py-2 rounded-2xl max-w-[80%] ${
                         chat.is_admin 
                           ? 'bg-primary text-white rounded-tr-sm' 
-                          : 'bg-white/10 text-foreground/90 rounded-tl-sm border border-white/5'
+                          : 'bg-foreground/10 text-foreground/90 rounded-tl-sm border border-white/5'
                       }`}>
                         <p className="text-sm">{chat.text}</p>
                       </div>
@@ -155,7 +155,7 @@ export const AdminMessages = () => {
                     placeholder="Type your reply..."
                     value={replyText[sessionId] || ''}
                     onChange={e => setReplyText(prev => ({ ...prev, [sessionId]: e.target.value }))}
-                    className="flex-1 bg-black/30 border border-white/10 rounded-xl px-4 text-sm text-white focus:outline-none focus:border-primary"
+                    className="flex-1 bg-black/30 border border-border rounded-xl px-4 text-sm text-foreground dark:text-white focus:outline-none focus:border-primary"
                   />
                   <button 
                     type="submit"
@@ -176,7 +176,7 @@ export const AdminMessages = () => {
             <div key={contact.id} className="glass p-5 rounded-2xl border border-white/5 flex flex-col gap-3">
               <div className="flex justify-between items-start">
                 <div>
-                  <h4 className="font-bold text-white text-lg">{contact.name}</h4>
+                  <h4 className="font-bold text-foreground dark:text-white text-lg">{contact.name}</h4>
                   <a href={`mailto:${contact.email}`} className="text-primary hover:underline text-sm flex items-center gap-1">
                     <Mail className="w-3 h-3" /> {contact.email}
                   </a>

@@ -42,7 +42,7 @@ export const ParallaxHero = () => {
           <h1 className="text-5xl md:text-7xl font-bold text-foreground tracking-tight mb-6 leading-tight">
             {t('hero_title1')} <br/> <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-teal-300">{t('hero_title2')}</span>
           </h1>
-          <p className="max-w-2xl mx-auto text-lg md:text-xl text-gray-400 mb-10">
+          <p className="max-w-2xl mx-auto text-lg md:text-xl text-foreground/60 mb-10">
             {t('hero_subtitle')}
           </p>
 

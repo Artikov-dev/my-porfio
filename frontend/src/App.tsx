@@ -53,7 +53,7 @@ function App() {
               <Route path="dashboard" element={<AdminDashboard />} />
               <Route path="messages" element={<AdminMessages />} />
               <Route path="projects" element={<AdminProjects />} />
-              <Route path="blogs" element={<div className="text-white p-6">Blogs Management (Coming Soon)</div>} />
+              <Route path="blogs" element={<div className="text-foreground dark:text-white p-6">Blogs Management (Coming Soon)</div>} />
             </Route>
           </Route>
         </Routes>

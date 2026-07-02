@@ -88,14 +88,14 @@ export const LiveChat = () => {
           {/* Header */}
           <div className="bg-primary/20 backdrop-blur-xl border-b border-white/5 p-4 flex justify-between items-center">
             <div>
-              <h3 className="font-semibold text-white">Live Chat</h3>
+              <h3 className="font-semibold text-foreground dark:text-white">Live Chat</h3>
               <p className="text-xs text-primary/80">
                 {hasStarted ? 'We typically reply in a few minutes' : 'Enter your name to start'}
               </p>
             </div>
             <button 
               onClick={() => setIsOpen(false)}
-              className="text-white/60 hover:text-white transition-colors p-1"
+              className="text-foreground dark:text-white/60 hover:text-foreground dark:text-white transition-colors p-1"
             >
               <X className="w-5 h-5" />
             </button>
@@ -115,7 +115,7 @@ export const LiveChat = () => {
                     value={name}
                     onChange={e => setName(e.target.value)}
                     placeholder="John Doe"
-                    className="w-full bg-background/50 border border-border rounded-lg px-4 py-2 text-white focus:border-primary focus:outline-none transition-colors"
+                    className="w-full bg-background/50 border border-border rounded-lg px-4 py-2 text-foreground dark:text-white focus:border-primary focus:outline-none transition-colors"
                   />
                 </div>
                 <button 
@@ -158,7 +158,7 @@ export const LiveChat = () => {
                     value={input}
                     onChange={e => setInput(e.target.value)}
                     placeholder="Type a message..."
-                    className="flex-1 bg-background/50 border border-border rounded-full px-4 py-2 text-sm text-white focus:border-primary focus:outline-none transition-colors"
+                    className="flex-1 bg-background/50 border border-border rounded-full px-4 py-2 text-sm text-foreground dark:text-white focus:border-primary focus:outline-none transition-colors"
                   />
                   <button 
                     type="submit"

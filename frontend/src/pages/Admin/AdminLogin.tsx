@@ -37,7 +37,7 @@ export const AdminLogin = () => {
             <div className="w-16 h-16 bg-primary/20 rounded-2xl flex items-center justify-center mb-4 border border-primary/30">
               <Lock className="w-8 h-8 text-primary" />
             </div>
-            <h1 className="text-2xl font-bold text-white">System Override</h1>
+            <h1 className="text-2xl font-bold text-foreground dark:text-white">System Override</h1>
             <p className="text-foreground/60 text-sm mt-2">Enter credentials to access the command center</p>
           </div>
 
@@ -52,7 +52,7 @@ export const AdminLogin = () => {
                 autoComplete="username"
                 value={email}
                 onChange={e => setEmail(e.target.value)}
-                className="w-full bg-background/50 border border-border rounded-xl px-4 py-3 text-white focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-all"
+                className="w-full bg-background/50 border border-border rounded-xl px-4 py-3 text-foreground dark:text-white focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-all"
                 placeholder="operator@system.com"
               />
             </div>
@@ -67,7 +67,7 @@ export const AdminLogin = () => {
                 autoComplete="current-password"
                 value={password}
                 onChange={e => setPassword(e.target.value)}
-                className="w-full bg-background/50 border border-border rounded-xl px-4 py-3 text-white focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-all"
+                className="w-full bg-background/50 border border-border rounded-xl px-4 py-3 text-foreground dark:text-white focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-all"
                 placeholder="••••••••"
               />
             </div>

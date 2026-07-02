@@ -17,7 +17,7 @@ export const AboutSection = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
         <ScrollReveal delay={0.2}>
-          <div className="space-y-6 text-gray-400 text-lg leading-relaxed">
+          <div className="space-y-6 text-foreground/60 text-lg leading-relaxed">
             <p>{t('about_p1')}</p>
             <p dangerouslySetInnerHTML={{ __html: t('about_p2').replace('Clean Architecture', '<strong>Clean Architecture</strong>') }}></p>
             <p>{t('about_p3')}</p>
@@ -27,7 +27,7 @@ export const AboutSection = () => {
         <ScrollReveal delay={0.4}>
           <div className="relative group h-full">
             <div className="absolute -inset-1 bg-gradient-to-r from-primary to-purple-600 rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
-            <div className="relative glass aspect-square rounded-2xl overflow-hidden border border-white/10 flex items-center justify-center bg-foreground/5">
+            <div className="relative glass aspect-square rounded-2xl overflow-hidden border border-border flex items-center justify-center bg-foreground/5">
               <img
                 src="/imRA.jpg"
                 alt="Roma Artikov"

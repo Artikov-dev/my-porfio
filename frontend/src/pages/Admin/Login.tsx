@@ -33,25 +33,25 @@ export const Login = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-background px-4">
       <div className="max-w-md w-full glass p-8 rounded-xl shadow-2xl border-t border-primary/50">
-        <h2 className="text-3xl font-bold text-white mb-6 text-center">Admin Secure Login</h2>
+        <h2 className="text-3xl font-bold text-foreground dark:text-white mb-6 text-center">Admin Secure Login</h2>
         
         {step === 1 ? (
           <form onSubmit={handleLogin} className="space-y-4">
             <div>
-              <label className="block text-sm text-gray-400 mb-1">Email</label>
-              <input type="email" value={email} onChange={e=>setEmail(e.target.value)} required className="w-full bg-white/5 border border-border rounded-md px-4 py-2 text-white focus:outline-none focus:border-primary" />
+              <label className="block text-sm text-foreground/60 mb-1">Email</label>
+              <input type="email" value={email} onChange={e=>setEmail(e.target.value)} required className="w-full bg-foreground/5 border border-border rounded-md px-4 py-2 text-foreground dark:text-white focus:outline-none focus:border-primary" />
             </div>
             <div>
-              <label className="block text-sm text-gray-400 mb-1">Password</label>
-              <input type="password" value={password} onChange={e=>setPassword(e.target.value)} required className="w-full bg-white/5 border border-border rounded-md px-4 py-2 text-white focus:outline-none focus:border-primary" />
+              <label className="block text-sm text-foreground/60 mb-1">Password</label>
+              <input type="password" value={password} onChange={e=>setPassword(e.target.value)} required className="w-full bg-foreground/5 border border-border rounded-md px-4 py-2 text-foreground dark:text-white focus:outline-none focus:border-primary" />
             </div>
             <Button type="submit" className="w-full">Continue</Button>
           </form>
         ) : (
           <form onSubmit={handle2FA} className="space-y-4">
             <div>
-              <label className="block text-sm text-gray-400 mb-1">Authenticator Code (TOTP)</label>
-              <input type="text" maxLength={6} value={token2FA} onChange={e=>setToken2FA(e.target.value)} required className="w-full bg-white/5 border border-border rounded-md px-4 py-2 text-white focus:outline-none focus:border-primary text-center text-2xl tracking-widest" />
+              <label className="block text-sm text-foreground/60 mb-1">Authenticator Code (TOTP)</label>
+              <input type="text" maxLength={6} value={token2FA} onChange={e=>setToken2FA(e.target.value)} required className="w-full bg-foreground/5 border border-border rounded-md px-4 py-2 text-foreground dark:text-white focus:outline-none focus:border-primary text-center text-2xl tracking-widest" />
             </div>
             <Button type="submit" className="w-full">Verify & Access</Button>
           </form>

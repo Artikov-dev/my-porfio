@@ -56,11 +56,11 @@ export const TerminalOverlay = () => {
       case 'help':
         response = (
           <div className="flex flex-col gap-1 mt-2 text-primary/90">
-            <div><span className="text-white font-bold w-20 inline-block">whoami</span> - Display my short bio</div>
-            <div><span className="text-white font-bold w-20 inline-block">skills</span> - List my technical skills</div>
-            <div><span className="text-white font-bold w-20 inline-block">projects</span> - Go to projects page</div>
-            <div><span className="text-white font-bold w-20 inline-block">clear</span> - Clear the terminal</div>
-            <div><span className="text-white font-bold w-20 inline-block">exit</span> - Close the terminal</div>
+            <div><span className="text-foreground dark:text-white font-bold w-20 inline-block">whoami</span> - Display my short bio</div>
+            <div><span className="text-foreground dark:text-white font-bold w-20 inline-block">skills</span> - List my technical skills</div>
+            <div><span className="text-foreground dark:text-white font-bold w-20 inline-block">projects</span> - Go to projects page</div>
+            <div><span className="text-foreground dark:text-white font-bold w-20 inline-block">clear</span> - Clear the terminal</div>
+            <div><span className="text-foreground dark:text-white font-bold w-20 inline-block">exit</span> - Close the terminal</div>
           </div>
         );
         break;
@@ -114,14 +114,14 @@ export const TerminalOverlay = () => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed top-0 left-0 w-full h-[60vh] bg-background/95 backdrop-blur-xl border-b border-white/10 z-[100] flex flex-col font-mono shadow-2xl animate-in slide-in-from-top duration-300">
+    <div className="fixed top-0 left-0 w-full h-[60vh] bg-background/95 backdrop-blur-xl border-b border-border z-[100] flex flex-col font-mono shadow-2xl animate-in slide-in-from-top duration-300">
       {/* Terminal Header */}
       <div className="flex items-center justify-between px-4 py-2 bg-black/50 border-b border-white/5">
-        <div className="flex items-center gap-2 text-white/50">
+        <div className="flex items-center gap-2 text-foreground dark:text-white/50">
           <TerminalIcon className="w-4 h-4" />
           <span className="text-xs tracking-wider">ROMA_TERMINAL</span>
         </div>
-        <button onClick={() => setIsOpen(false)} className="text-white/50 hover:text-white transition-colors">
+        <button onClick={() => setIsOpen(false)} className="text-foreground dark:text-white/50 hover:text-foreground dark:text-white transition-colors">
           <X className="w-4 h-4" />
         </button>
       </div>
@@ -131,21 +131,21 @@ export const TerminalOverlay = () => {
         {history.map(item => (
           <div key={item.id} className="mb-2">
             {item.type === 'input' ? (
-              <div className="text-white font-medium">{item.text}</div>
+              <div className="text-foreground dark:text-white font-medium">{item.text}</div>
             ) : (
               <div>{item.text}</div>
             )}
           </div>
         ))}
         
-        <form onSubmit={handleSubmit} className="flex items-center gap-2 mt-4 text-white">
+        <form onSubmit={handleSubmit} className="flex items-center gap-2 mt-4 text-foreground dark:text-white">
           <span className="text-primary">admin@roma-artikov:~$</span>
           <input
             ref={inputRef}
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            className="flex-1 bg-transparent border-none outline-none text-white focus:ring-0"
+            className="flex-1 bg-transparent border-none outline-none text-foreground dark:text-white focus:ring-0"
             spellCheck={false}
             autoComplete="off"
           />

@@ -22,7 +22,7 @@ export const Projects = () => {
         <meta name="description" content={`Explore my latest projects and case studies. | Roma Artikov`} />
       </Helmet>
       <div className="max-w-6xl mx-auto">
-        <h1 className="text-4xl font-bold text-white mb-10">{t('projects')}</h1>
+        <h1 className="text-4xl font-bold text-foreground dark:text-white mb-10">{t('projects')}</h1>
         
         {isLoading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -34,9 +34,9 @@ export const Projects = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {data?.map((project: any) => (
               <div key={project.id} className="glass p-6 rounded-xl hover:border-primary/50 transition-colors">
-                <div className="h-40 bg-white/5 rounded-lg mb-4 bg-cover bg-center" style={{ backgroundImage: `url(${project.image_url})`}} />
-                <h3 className="text-xl font-semibold text-white mb-2">{project.title[language] || project.title.en}</h3>
-                <p className="text-gray-400 text-sm line-clamp-2">{project.description[language] || project.description.en}</p>
+                <div className="h-40 bg-foreground/5 rounded-lg mb-4 bg-cover bg-center" style={{ backgroundImage: `url(${project.image_url})`}} />
+                <h3 className="text-xl font-semibold text-foreground dark:text-white mb-2">{project.title[language] || project.title.en}</h3>
+                <p className="text-foreground/60 text-sm line-clamp-2">{project.description[language] || project.description.en}</p>
               </div>
             ))}
           </div>
