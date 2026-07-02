@@ -3,6 +3,7 @@ import { ScrollReveal } from '@/components/ui/ScrollReveal';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/Button';
 import { TiltCard } from '@/components/ui/TiltCard';
+import { Github, ExternalLink } from 'lucide-react';
 import { useI18n } from '@/contexts/I18nContext';
 import { useQuery } from '@tanstack/react-query';
 import { api } from '@/lib/api';
@@ -41,19 +42,56 @@ export const ProjectsPreviewSection = () => {
           {projects?.slice(0, 3).map((project: any, index: number) => (
             <ScrollReveal key={project.id} delay={0.2 + (index * 0.1)}>
               <TiltCard>
-                <div className="glass p-8 rounded-2xl h-[300px] flex flex-col justify-end relative overflow-hidden group cursor-pointer border border-border hover:border-primary/50 transition-colors">
-                  <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent z-10"></div>
-                  <div 
-                    className="absolute inset-0 bg-cover bg-center opacity-30 group-hover:scale-105 transition-transform duration-700" 
-                    style={{ backgroundImage: `url(${project.image_url})` }}
-                  ></div>
-                  <div className="relative z-20" style={{ transform: 'translateZ(50px)' }}>
-                    <h3 className="text-2xl font-bold text-foreground dark:text-white mb-2">
+                <div className="glass rounded-2xl flex flex-col overflow-hidden group cursor-pointer border border-border hover:border-primary/50 transition-all duration-300 h-full">
+                  {/* Image Container */}
+                  <div className="relative h-48 w-full overflow-hidden">
+                    <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors z-10" />
+                    <div 
+                      className="absolute inset-0 bg-cover bg-center group-hover:scale-110 transition-transform duration-700" 
+                      style={{ backgroundImage: `url(${project.image_url})` }}
+                    />
+                  </div>
+                  
+                  {/* Content Container */}
+                  <div className="p-6 flex flex-col flex-grow">
+                    <h3 className="text-2xl font-bold text-foreground dark:text-white mb-3">
                       {project.title[language] || project.title.en}
                     </h3>
-                    <p className="text-foreground/70 line-clamp-2">
-                      {project.tech_stack || project.description?.[language] || project.description?.en}
+                    
+                    <p className="text-foreground/70 line-clamp-3 mb-6 flex-grow">
+                      {project.description?.[language] || project.description?.en || project.content?.[language]}
                     </p>
+
+                    {/* Tech Stack Tags */}
+                    {project.tech_stack && project.tech_stack.length > 0 && (
+                      <div className="flex flex-wrap gap-2 mb-6">
+                        {project.tech_stack.map((tech: string, i: number) => (
+                          <span key={i} className="px-3 py-1 text-xs font-medium bg-primary/10 text-primary rounded-full">
+                            {tech}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                    
+                    {/* Action Buttons */}
+                    <div className="flex items-center gap-3 pt-4 border-t border-border">
+                      {project.live_url && (
+                        <a href={project.live_url} target="_blank" rel="noopener noreferrer" className="flex-1" onClick={(e) => e.stopPropagation()}>
+                          <Button variant="solid" className="w-full flex items-center justify-center gap-2">
+                            <ExternalLink size={16} />
+                            {t('view_online')}
+                          </Button>
+                        </a>
+                      )}
+                      {project.github_url && (
+                        <a href={project.github_url} target="_blank" rel="noopener noreferrer" className="flex-1" onClick={(e) => e.stopPropagation()}>
+                          <Button variant="outline" className="w-full flex items-center justify-center gap-2">
+                            <Github size={16} />
+                            {t('view_github')}
+                          </Button>
+                        </a>
+                      )}
+                    </div>
                   </div>
                 </div>
               </TiltCard>

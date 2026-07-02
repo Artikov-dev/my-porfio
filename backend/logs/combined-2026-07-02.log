@@ -84,3 +84,5 @@
 [2026-07-02 17:20:26] info: 🚀 Server running in production mode on port 5000
 [2026-07-02 17:48:51] warn: ⚠️ Could not connect to Redis. Caching will be disabled.
 [2026-07-02 17:48:52] info: 🚀 Server running in production mode on port 5000
+[2026-07-02 17:49:00] warn: ⚠️ Could not connect to Redis. Caching will be disabled.
+[2026-07-02 17:49:01] info: 🚀 Server running in production mode on port 5000

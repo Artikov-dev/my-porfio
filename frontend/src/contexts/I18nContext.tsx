@@ -69,7 +69,9 @@ const translations = {
     // Projects Preview
     featured_eng: 'My Projects',
     featured_desc: 'A selection of recent web applications and systems I have developed.',
-    view_all_projects: 'View All Projects'
+    view_all_projects: 'View All Projects',
+    view_online: 'Live Demo',
+    view_github: 'Source Code'
   },
   uz: {
     home: 'Asosiy',
@@ -128,7 +130,9 @@ const translations = {
     // Projects Preview
     featured_eng: 'Mening Loyihalarim',
     featured_desc: 'Men yaratgan so\'nggi veb-ilovalar va tizimlarning ayrimlari bilan tanishing.',
-    view_all_projects: 'Barcha Loyihalarni Ko\'rish'
+    view_all_projects: 'Barcha Loyihalarni Ko\'rish',
+    view_online: 'Saytni Ko\'rish',
+    view_github: 'Kodni Ko\'rish'
   },
   ru: {
     home: 'Главная',
@@ -187,7 +191,9 @@ const translations = {
     // Projects Preview
     featured_eng: 'Мои Проекты',
     featured_desc: 'Ознакомьтесь с подборкой недавних веб-приложений и систем, которые я разработал.',
-    view_all_projects: 'Смотреть Все Проекты'
+    view_all_projects: 'Смотреть Все Проекты',
+    view_online: 'Посмотреть Сайт',
+    view_github: 'Исходный Код'
   }
 };
 
