@@ -5,7 +5,7 @@ import { Skeleton } from '@/components/ui/Skeleton';
 import { useI18n } from '@/contexts/I18nContext';
 import { Helmet } from 'react-helmet-async';
 import { Button } from '@/components/ui/Button';
-import { Github, ExternalLink } from 'lucide-react';
+import { Code2, ExternalLink } from 'lucide-react';
 
 export const Projects = () => {
   const { t, language } = useI18n();
@@ -79,7 +79,7 @@ export const Projects = () => {
                     {project.github_url && (
                       <a href={project.github_url} target="_blank" rel="noopener noreferrer" className="flex-1">
                         <Button variant="outline" className="w-full flex items-center justify-center gap-2">
-                          <Github size={16} />
+                          <Code2 size={16} />
                           {t('view_github')}
                         </Button>
                       </a>

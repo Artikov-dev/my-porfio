@@ -3,7 +3,7 @@ import { ScrollReveal } from '@/components/ui/ScrollReveal';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/Button';
 import { TiltCard } from '@/components/ui/TiltCard';
-import { Github, ExternalLink } from 'lucide-react';
+import { Code2, ExternalLink } from 'lucide-react';
 import { useI18n } from '@/contexts/I18nContext';
 import { useQuery } from '@tanstack/react-query';
 import { api } from '@/lib/api';
@@ -86,7 +86,7 @@ export const ProjectsPreviewSection = () => {
                       {project.github_url && (
                         <a href={project.github_url} target="_blank" rel="noopener noreferrer" className="flex-1" onClick={(e) => e.stopPropagation()}>
                           <Button variant="outline" className="w-full flex items-center justify-center gap-2">
-                            <Github size={16} />
+                            <Code2 size={16} />
                             {t('view_github')}
                           </Button>
                         </a>
