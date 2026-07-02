@@ -24,7 +24,7 @@ function App() {
   const location = useLocation();
 
   const isResumePage = location.pathname === '/resume';
-  const isAdminRoute = location.pathname.startsWith('/admin') || location.pathname === '/aadminsecrect';
+  const isAdminRoute = location.pathname.startsWith('/admin') || location.pathname === '/aadminsecret';
   const hidePublicUI = isResumePage || isAdminRoute;
 
   return (
@@ -45,7 +45,7 @@ function App() {
           <Route path="/blogs" element={<Blogs />} />
           
           {/* Secret Admin Route */}
-          <Route path="/aadminsecrect" element={<AdminLogin />} />
+          <Route path="/aadminsecret" element={<AdminLogin />} />
 
           {/* Protected Admin Routes */}
           <Route path="/admin" element={<ProtectedRoute />}>
