@@ -47,3 +47,5 @@
 [2026-07-02 13:46:57] info: 🔌 Socket disconnected: eFe9dBgBwfYdF7TXAABg
 [2026-07-02 13:46:57] info: 🔌 Socket connected: GREgi5BHvSd8p6ieAAB8
 [2026-07-02 13:46:57] info: 🔌 Socket connected: URIvOthVclMr_Rx8AAB9
+[2026-07-02 13:49:03] info: ::1 - - [02/Jul/2026:08:49:03 +0000] "OPTIONS /api/auth/login HTTP/1.1" 204 0 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36"
+[2026-07-02 13:49:07] info: ::1 - - [02/Jul/2026:08:49:07 +0000] "OPTIONS /api/auth/login HTTP/1.1" 204 0 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36"

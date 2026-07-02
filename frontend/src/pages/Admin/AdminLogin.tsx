@@ -49,6 +49,7 @@ export const AdminLogin = () => {
               <input 
                 type="email"
                 required
+                autoComplete="username"
                 value={email}
                 onChange={e => setEmail(e.target.value)}
                 className="w-full bg-background/50 border border-border rounded-xl px-4 py-3 text-white focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-all"
