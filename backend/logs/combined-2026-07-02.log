@@ -1,2 +1,19 @@
 [2026-07-02 10:00:30] warn: ⚠️ Could not connect to Redis. Caching will be disabled.
 [2026-07-02 10:00:32] info: 🚀 Server running in development mode on port 5000
+[2026-07-02 10:02:12] info: 🔌 Socket connected: GyQh0VRx4Ni6sxvQAAAE
+[2026-07-02 10:02:12] info: 🔌 Socket connected: OEYu0tCLhD0bv5_NAAAF
+[2026-07-02 10:02:15] info: 🔌 Socket connected: cREkCcm-BDEIcMioAAAI
+[2026-07-02 10:14:49] info: 🔌 Socket disconnected: OEYu0tCLhD0bv5_NAAAF
+[2026-07-02 10:14:49] info: 🔌 Socket disconnected: GyQh0VRx4Ni6sxvQAAAE
+[2026-07-02 10:16:51] info: 🔌 Socket disconnected: cREkCcm-BDEIcMioAAAI
+[2026-07-02 10:16:52] info: 🔌 Socket connected: x0hNfn6GTlRyBr_oAAAL
+[2026-07-02 10:20:54] info: 🔌 Socket disconnected: x0hNfn6GTlRyBr_oAAAL
+[2026-07-02 10:20:55] info: 🔌 Socket connected: DWg9JlgfwbmtP1yPAAAO
+[2026-07-02 10:23:20] info: 🔌 Socket disconnected: DWg9JlgfwbmtP1yPAAAO
+[2026-07-02 10:23:20] info: 🔌 Socket connected: gwSAhsLKSkF9gmKuAAAR
+[2026-07-02 10:23:48] info: 🔌 Socket disconnected: gwSAhsLKSkF9gmKuAAAR
+[2026-07-02 10:23:48] info: 🔌 Socket connected: rpbCn23SkinuwufzAAAU
+[2026-07-02 10:23:55] info: 🔌 Socket disconnected: rpbCn23SkinuwufzAAAU
+[2026-07-02 10:23:55] info: 🔌 Socket connected: cH7URZeFnB8qeWuxAAAX
+[2026-07-02 10:27:15] info: 🔌 Socket disconnected: cH7URZeFnB8qeWuxAAAX
+[2026-07-02 10:38:02] info: ::1 - - [02/Jul/2026:05:38:02 +0000] "GET /api/projects HTTP/1.1" 200 3493 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36"
