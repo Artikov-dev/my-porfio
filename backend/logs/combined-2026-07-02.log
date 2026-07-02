@@ -41,3 +41,9 @@
 [2026-07-02 13:42:42] info: 🚀 Server running in development mode on port 5000
 [2026-07-02 13:43:09] warn: ⚠️ Could not connect to Redis. Caching will be disabled.
 [2026-07-02 13:43:10] info: 🚀 Server running in development mode on port 5000
+[2026-07-02 13:46:46] info: 🔌 Socket connected: jCPue2dO3Zli3E3bAABf
+[2026-07-02 13:46:46] info: 🔌 Socket connected: eFe9dBgBwfYdF7TXAABg
+[2026-07-02 13:46:57] info: 🔌 Socket disconnected: jCPue2dO3Zli3E3bAABf
+[2026-07-02 13:46:57] info: 🔌 Socket disconnected: eFe9dBgBwfYdF7TXAABg
+[2026-07-02 13:46:57] info: 🔌 Socket connected: GREgi5BHvSd8p6ieAAB8
+[2026-07-02 13:46:57] info: 🔌 Socket connected: URIvOthVclMr_Rx8AAB9
