@@ -40,8 +40,8 @@ export const ProjectsPreviewSection = () => {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16 text-left">
           {projects?.slice(0, 3).map((project: any, index: number) => (
-            <ScrollReveal key={project.id} delay={0.2 + (index * 0.1)}>
-              <TiltCard>
+            <ScrollReveal key={project.id} delay={0.2 + (index * 0.1)} className="h-full">
+              <TiltCard className="h-full">
                 <div className="glass rounded-2xl flex flex-col overflow-hidden group cursor-pointer border border-border hover:border-primary/50 transition-all duration-300 h-full">
                   {/* Image Container */}
                   <div className="relative h-48 w-full overflow-hidden">
