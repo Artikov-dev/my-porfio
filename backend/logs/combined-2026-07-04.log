@@ -1,0 +1,2 @@
+[2026-07-04 16:25:11] warn: ⚠️ Could not connect to Redis. Caching will be disabled.
+[2026-07-04 16:25:12] info: 🚀 Server running in production mode on port 5000

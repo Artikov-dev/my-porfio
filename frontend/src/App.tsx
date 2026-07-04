@@ -11,6 +11,8 @@ import { LiveChat } from '@/components/ui/LiveChat';
 import { Navbar } from '@/components/Navigation/Navbar';
 import { Footer } from '@/components/Navigation/Footer';
 import { TerminalOverlay } from '@/components/Terminal/TerminalOverlay';
+import { Spotlight } from '@/components/ui/Spotlight';
+import { MusicPlayer } from '@/components/ui/MusicPlayer';
 
 // Admin imports
 import { AdminLogin } from '@/pages/Admin/AdminLogin';
@@ -34,6 +36,8 @@ function App() {
       {!hidePublicUI && <LiveChat />}
       {!isAdminRoute && <CommandPalette />}
       {!isAdminRoute && <TerminalOverlay />}
+      {!hidePublicUI && <Spotlight />}
+      {!hidePublicUI && <MusicPlayer />}
       
       {!hidePublicUI && <Navbar />}
 
