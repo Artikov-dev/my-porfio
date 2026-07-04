@@ -2,6 +2,7 @@ import { Server as HttpServer } from 'http';
 import { Server } from 'socket.io';
 import { logger } from './logger';
 import redisClient from './redis';
+import { db } from './database';
 
 export const setupSocket = (server: HttpServer) => {
   const allowedOrigins = process.env.CLIENT_URL ? process.env.CLIENT_URL.split(',') : ['http://localhost:5173'];
@@ -61,7 +62,6 @@ export const setupSocket = (server: HttpServer) => {
       logger.info(`Chat message from ${data.name}: ${data.text}`);
       
       try {
-        const { db } = require('./database');
         const result = await db.query(
           'INSERT INTO chat_messages (name, text, session_id, is_admin) VALUES ($1, $2, $3, false) RETURNING *',
           [data.name, data.text, socket.id]
@@ -77,7 +77,6 @@ export const setupSocket = (server: HttpServer) => {
       logger.info(`Admin replying to ${data.session_id}: ${data.text}`);
       
       try {
-        const { db } = require('./database');
         const result = await db.query(
           'INSERT INTO chat_messages (name, text, session_id, is_admin) VALUES ($1, $2, $3, true) RETURNING *',
           ['Roma Artikov', data.text, data.session_id]
