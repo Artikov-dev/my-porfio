@@ -69,6 +69,7 @@ const createTables = async () => {
         session_id TEXT NOT NULL,
         name TEXT NOT NULL,
         text TEXT NOT NULL,
+        is_admin BOOLEAN DEFAULT false,
         created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
       );
     `);

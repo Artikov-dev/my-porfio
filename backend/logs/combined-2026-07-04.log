@@ -1,2 +1,17 @@
 [2026-07-04 16:25:11] warn: ⚠️ Could not connect to Redis. Caching will be disabled.
 [2026-07-04 16:25:12] info: 🚀 Server running in production mode on port 5000
+[2026-07-04 23:36:19] warn: ⚠️ Could not connect to Redis. Caching will be disabled.
+[2026-07-04 23:36:20] info: 🚀 Server running in production mode on port 5000
+[2026-07-04 23:41:39] info: 🔌 Socket connected: m0cbX8gXWxuPQjdSAAAE
+[2026-07-04 23:41:39] info: 🔌 Socket connected: pu-lNUPZQpYei1pVAAAF
+[2026-07-04 23:41:41] info: ::1 - - [04/Jul/2026:18:41:41 +0000] "GET /api/projects HTTP/1.1" 200 2844 "http://localhost:5173/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36"
+[2026-07-04 23:43:53] warn: ⚠️ Could not connect to Redis. Caching will be disabled.
+[2026-07-04 23:43:54] info: 🚀 Server running in production mode on port 5000
+[2026-07-04 23:43:56] info: 🔌 Socket connected: iDac6cVsqJ0WNBjeAAAC
+[2026-07-04 23:43:56] info: 🔌 Socket connected: z1Aa63bqUS1e-iIdAAAD
+[2026-07-04 23:44:00] warn: ⚠️ Could not connect to Redis. Caching will be disabled.
+[2026-07-04 23:44:01] info: 🚀 Server running in production mode on port 5000
+[2026-07-04 23:44:01] info: 🔌 Socket connected: qnnJzOvrz-7Y6GSLAAAC
+[2026-07-04 23:44:01] info: 🔌 Socket connected: kL3RdQHtntjqymHuAAAD
+[2026-07-04 23:44:39] info: 🔌 Socket disconnected: qnnJzOvrz-7Y6GSLAAAC
+[2026-07-04 23:44:39] info: 🔌 Socket disconnected: kL3RdQHtntjqymHuAAAD
