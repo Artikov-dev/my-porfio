@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { X, Terminal as TerminalIcon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { MatrixRain } from './MatrixRain';
+import { SnakeGame } from './SnakeGame';
 
 interface CommandOutput {
   id: string;
@@ -15,6 +17,8 @@ export const TerminalOverlay = () => {
     { id: 'welcome', type: 'output', text: 'Welcome to Roma OS v2.0.0' },
     { id: 'welcome2', type: 'output', text: 'Type "help" to see available commands.' },
   ]);
+  const [showMatrix, setShowMatrix] = useState(false);
+  const [showSnake, setShowSnake] = useState(false);
   
   const inputRef = useRef<HTMLInputElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
@@ -84,6 +88,13 @@ export const TerminalOverlay = () => {
           </span>
         );
         break;
+      case 'matrix':
+        setShowMatrix(true);
+        response = 'Initiating Matrix protocol...';
+        break;
+      case 'play snake':
+        setShowSnake(true);
+        return; // do not add to history
       case 'clear':
         setHistory([]);
         return;
@@ -124,6 +135,8 @@ export const TerminalOverlay = () => {
   }
 
   return (
+    <>
+    {showMatrix && <MatrixRain onComplete={() => setShowMatrix(false)} />}
     <div className="fixed top-0 left-0 w-full h-[60vh] bg-background/95 backdrop-blur-xl border-b border-border z-[100] flex flex-col font-mono shadow-2xl animate-in slide-in-from-top duration-300">
       {/* Terminal Header */}
       <div className="flex items-center justify-between px-4 py-2 bg-black/50 border-b border-white/5">
@@ -137,7 +150,12 @@ export const TerminalOverlay = () => {
       </div>
 
       {/* Terminal Body */}
-      <div className="flex-1 overflow-y-auto p-6 text-sm text-green-400 custom-scrollbar">
+      <div className="flex-1 overflow-y-auto p-6 text-sm text-green-400 custom-scrollbar relative">
+        {showSnake && (
+          <div className="absolute inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm">
+            <SnakeGame onExit={() => setShowSnake(false)} />
+          </div>
+        )}
         {history.map(item => (
           <div key={item.id} className="mb-2">
             {item.type === 'input' ? (
@@ -163,5 +181,6 @@ export const TerminalOverlay = () => {
         <div ref={bottomRef} />
       </div>
     </div>
+    </>
   );
 };

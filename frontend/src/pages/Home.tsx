@@ -2,6 +2,7 @@ import React from 'react';
 import { ParallaxHero } from '@/components/Hero/ParallaxHero';
 import { AboutSection } from '@/components/Sections/About';
 import { SkillsSection } from '@/components/Sections/Skills';
+import { GithubActivity } from '@/components/Sections/GithubActivity';
 import { ExperienceSection } from '@/components/Sections/Experience';
 import { ProjectsPreviewSection } from '@/components/Sections/ProjectsPreview';
 import { ContactSection } from '@/components/Sections/Contact';
@@ -24,6 +25,7 @@ export const Home = () => {
       <div className="relative z-10 bg-background">
         <AboutSection />
         <SkillsSection />
+        <GithubActivity />
         <ExperienceSection />
         <ProjectsPreviewSection />
         <ContactSection />
