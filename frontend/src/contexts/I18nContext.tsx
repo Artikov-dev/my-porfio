@@ -56,6 +56,9 @@ const translations = {
     exp4_role: 'Quality Control Specialist',
     exp4_comp: 'PDP University',
     exp4_desc: 'Worked in the Education Quality Control Department, monitoring academic processes, preparing analytical reports, and contributing to improvements in internal educational systems through data analysis and quality assurance activities.',
+    exp5_role: 'Frontend Developer Intern',
+    exp5_comp: 'Anorbank',
+    exp5_desc: 'Started an internship as a Frontend Developer, participating in the development of the bank\'s digital products and improving user interfaces.',
     
     // Contact
     get_in_touch: 'Get In Touch',
@@ -117,6 +120,9 @@ const translations = {
     exp4_role: 'Sifat Nazorati Mutaxassisi',
     exp4_comp: 'PDP University',
     exp4_desc: 'Ta\'lim sifatini nazorat qilish bo\'limida ishladim, akademik jarayonlarni monitoring qildim, tahliliy hisobotlar tayyorladim hamda ma\'lumotlarni tahlil qilish va sifat kafolati faoliyati orqali ichki ta\'lim tizimlarini takomillashtirishga hissa qo\'shdim.',
+    exp5_role: 'Frontend Dasturchi (Stajyor)',
+    exp5_comp: 'Anorbank',
+    exp5_desc: 'Frontend dasturchi sifatida stajirovkaga qabul qilindim va bankning raqamli mahsulotlarini rivojlantirish hamda foydalanuvchi interfeyslarini yaxshilashda ishtirok etmoqdaman.',
     
     // Contact
     get_in_touch: 'Bog\'lanish',
@@ -178,6 +184,9 @@ const translations = {
     exp4_role: 'Специалист по Контролю Качества',
     exp4_comp: 'PDP University',
     exp4_desc: 'Работал в отделе контроля качества образования, контролируя академические процессы, подготавливая аналитические отчеты и внося вклад в улучшение внутренних образовательных систем посредством анализа данных и мероприятий по обеспечению качества.',
+    exp5_role: 'Frontend-разработчик (Стажер)',
+    exp5_comp: 'Anorbank',
+    exp5_desc: 'Начал стажировку в качестве frontend-разработчика, принимая участие в разработке цифровых продуктов банка и улучшении пользовательских интерфейсов.',
     
     // Contact
     get_in_touch: 'Связаться',
