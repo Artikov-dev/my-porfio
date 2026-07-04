@@ -35,7 +35,7 @@ export const Navbar = () => {
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 glass border-b border-border shadow-sm transition-colors duration-500">
+    <header className="fixed top-0 left-0 right-0 z-50 glass border-b border-border shadow-sm">
       <div className="max-w-7xl mx-auto px-6 h-20 flex justify-between items-center">
         {/* Logo */}
         <Link 
@@ -83,7 +83,7 @@ export const Navbar = () => {
           </div>
 
           <button 
-            onClick={() => { playClick(); toggleTheme(); }}
+            onClick={(e) => { playClick(); toggleTheme(e); }}
             onMouseEnter={playHover}
             className="p-2 rounded-full hover:bg-foreground/10 text-foreground transition-colors cursor-pointer"
             aria-label="Toggle Theme"
@@ -133,7 +133,7 @@ export const Navbar = () => {
               ))}
             </div>
             <button 
-              onClick={() => { playClick(); toggleTheme(); setIsOpen(false); }}
+              onClick={(e) => { playClick(); toggleTheme(e); setIsOpen(false); }}
               className="p-3 rounded-lg bg-foreground/5 text-foreground flex items-center gap-2 font-medium"
             >
               {theme === 'dark' ? <><Sun className="w-5 h-5"/> Light</> : <><Moon className="w-5 h-5"/> Dark</>}

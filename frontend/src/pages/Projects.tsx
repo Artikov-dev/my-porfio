@@ -6,6 +6,7 @@ import { useI18n } from '@/contexts/I18nContext';
 import { Helmet } from 'react-helmet-async';
 import { Button } from '@/components/ui/Button';
 import { Code2, ExternalLink } from 'lucide-react';
+import { PageWrapper } from '@/components/Layout/PageWrapper';
 
 export const Projects = () => {
   const { t, language } = useI18n();
@@ -18,7 +19,8 @@ export const Projects = () => {
   });
 
   return (
-    <div className="min-h-screen bg-background pt-32 px-6">
+    <PageWrapper>
+      <div className="min-h-screen bg-background pt-32 px-6">
       <Helmet>
         <title>Roma Artikov | {t('projects')}</title>
         <meta name="description" content={`Explore my latest projects and case studies. | Roma Artikov`} />
@@ -27,9 +29,28 @@ export const Projects = () => {
         <h1 className="text-4xl font-bold text-foreground dark:text-white mb-10">{t('projects')}</h1>
         
         {isLoading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[1,2,3,4,5,6].map(i => (
-              <Skeleton key={i} className="h-64 w-full" />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {[1, 2, 3, 4, 5, 6].map(i => (
+              <div key={i} className="glass rounded-2xl flex flex-col overflow-hidden border border-border h-[500px]">
+                <Skeleton className="h-48 w-full rounded-none" />
+                <div className="p-6 flex flex-col flex-grow">
+                  <Skeleton className="h-8 w-3/4 mb-4" />
+                  <div className="space-y-2 mb-6">
+                    <Skeleton className="h-4 w-full" />
+                    <Skeleton className="h-4 w-full" />
+                    <Skeleton className="h-4 w-2/3" />
+                  </div>
+                  <div className="flex gap-2 mb-6">
+                    <Skeleton className="h-6 w-16 rounded-full" />
+                    <Skeleton className="h-6 w-20 rounded-full" />
+                    <Skeleton className="h-6 w-14 rounded-full" />
+                  </div>
+                  <div className="flex gap-3 mt-auto pt-4 border-t border-border">
+                    <Skeleton className="h-10 flex-1 rounded-md" />
+                    <Skeleton className="h-10 flex-1 rounded-md" />
+                  </div>
+                </div>
+              </div>
             ))}
           </div>
         ) : (
@@ -91,6 +112,7 @@ export const Projects = () => {
           </div>
         )}
       </div>
-    </div>
+      </div>
+    </PageWrapper>
   );
 };

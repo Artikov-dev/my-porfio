@@ -23,12 +23,27 @@
   }
 
   body {
-    @apply bg-background text-foreground antialiased selection:bg-primary selection:text-white transition-colors duration-500;
+    @apply bg-background text-foreground antialiased selection:bg-primary selection:text-white;
   }
 }
 
 @layer components {
   .glass {
-    @apply bg-background/50 backdrop-blur-md border border-border transition-colors duration-500;
+    @apply bg-background/50 backdrop-blur-md border border-border;
   }
+}
+
+/* View Transitions for Dark/Light mode toggle */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+::view-transition-old(root) {
+  z-index: 1;
+}
+
+::view-transition-new(root) {
+  z-index: 2147483646;
 }

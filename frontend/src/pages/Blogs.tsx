@@ -4,6 +4,7 @@ import { api } from '@/lib/api';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { useI18n } from '@/contexts/I18nContext';
 import { Helmet } from 'react-helmet-async';
+import { PageWrapper } from '@/components/Layout/PageWrapper';
 
 export const Blogs = () => {
   const { t, language } = useI18n();
@@ -16,7 +17,8 @@ export const Blogs = () => {
   });
 
   return (
-    <div className="min-h-screen bg-background pt-32 px-6">
+    <PageWrapper>
+      <div className="min-h-screen bg-background pt-32 px-6">
       <Helmet>
         <title>Roma Artikov | {t('blog')}</title>
         <meta name="description" content={`Read technical articles and insights by Roma Artikov.`} />
@@ -26,8 +28,17 @@ export const Blogs = () => {
         
         {isLoading ? (
           <div className="space-y-6">
-            {[1,2,3].map(i => (
-              <Skeleton key={i} className="h-32 w-full" />
+            {[1, 2, 3].map(i => (
+              <div key={i} className="glass p-6 rounded-xl flex gap-6">
+                <Skeleton className="w-32 h-24 rounded-lg flex-shrink-0" />
+                <div className="flex-1 flex flex-col justify-center">
+                  <Skeleton className="h-6 w-3/4 mb-4" />
+                  <div className="flex gap-4">
+                    <Skeleton className="h-4 w-24" />
+                    <Skeleton className="h-4 w-24" />
+                  </div>
+                </div>
+              </div>
             ))}
           </div>
         ) : (
@@ -48,6 +59,7 @@ export const Blogs = () => {
           </div>
         )}
       </div>
-    </div>
+      </div>
+    </PageWrapper>
   );
 };

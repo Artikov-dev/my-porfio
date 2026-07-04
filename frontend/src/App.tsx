@@ -1,5 +1,6 @@
 import React from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
+import { AnimatePresence } from 'framer-motion';
 import { CommandPalette } from '@/components/CommandPalette';
 import { Home } from '@/pages/Home';
 import { Projects } from '@/pages/Projects';
@@ -30,7 +31,7 @@ function App() {
   const hidePublicUI = isResumePage || isAdminRoute;
 
   return (
-    <div className="min-h-screen bg-background relative selection:bg-primary selection:text-white transition-colors duration-500 flex flex-col">
+    <div className="min-h-screen bg-background relative selection:bg-primary selection:text-white flex flex-col">
       {!hidePublicUI && <FloatingNav />}
       {!hidePublicUI && <LiveStatus />}
       {!hidePublicUI && <LiveChat />}
@@ -42,25 +43,27 @@ function App() {
       {!hidePublicUI && <Navbar />}
 
       <div className="flex-1">
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/resume" element={<ResumeViewer />} />
-          <Route path="/projects" element={<Projects />} />
-          <Route path="/blogs" element={<Blogs />} />
-          
-          {/* Secret Admin Route */}
-          <Route path="/aadminsecret" element={<AdminLogin />} />
+        <AnimatePresence mode="wait">
+          <Routes location={location} key={location.pathname}>
+            <Route path="/" element={<Home />} />
+            <Route path="/resume" element={<ResumeViewer />} />
+            <Route path="/projects" element={<Projects />} />
+            <Route path="/blogs" element={<Blogs />} />
+            
+            {/* Secret Admin Route */}
+            <Route path="/aadminsecret" element={<AdminLogin />} />
 
-          {/* Protected Admin Routes */}
-          <Route path="/admin" element={<ProtectedRoute />}>
-            <Route element={<AdminLayout />}>
-              <Route path="dashboard" element={<AdminDashboard />} />
-              <Route path="messages" element={<AdminMessages />} />
-              <Route path="projects" element={<AdminProjects />} />
-              <Route path="blogs" element={<div className="text-foreground dark:text-white p-6">Blogs Management (Coming Soon)</div>} />
+            {/* Protected Admin Routes */}
+            <Route path="/admin" element={<ProtectedRoute />}>
+              <Route element={<AdminLayout />}>
+                <Route path="dashboard" element={<AdminDashboard />} />
+                <Route path="messages" element={<AdminMessages />} />
+                <Route path="projects" element={<AdminProjects />} />
+                <Route path="blogs" element={<div className="text-foreground dark:text-white p-6">Blogs Management (Coming Soon)</div>} />
+              </Route>
             </Route>
-          </Route>
-        </Routes>
+          </Routes>
+        </AnimatePresence>
       </div>
 
       {!hidePublicUI && <Footer />}

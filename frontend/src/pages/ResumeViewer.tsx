@@ -3,6 +3,7 @@ import { useI18n } from '@/contexts/I18nContext';
 import { Button } from '@/components/ui/Button';
 import { Download, ArrowLeft, FileText } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { PageWrapper } from '@/components/Layout/PageWrapper';
 
 export const ResumeViewer = () => {
   const { language } = useI18n();
@@ -29,7 +30,8 @@ export const ResumeViewer = () => {
   }, [pdfUrl]);
 
   return (
-    <div className="min-h-screen pt-28 pb-16 px-6 max-w-5xl mx-auto flex flex-col items-center">
+    <PageWrapper>
+      <div className="min-h-screen pt-28 pb-16 px-6 max-w-5xl mx-auto flex flex-col items-center">
       
       <div className="w-full flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
         <Link to="/">
@@ -92,5 +94,6 @@ export const ResumeViewer = () => {
       </div>
 
     </div>
+    </PageWrapper>
   );
 };
