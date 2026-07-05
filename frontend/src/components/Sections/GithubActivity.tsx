@@ -1,11 +1,13 @@
 import React from 'react';
 import { GitHubCalendar } from 'react-github-calendar';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useI18n } from '@/contexts/I18nContext';
 import { ScrollReveal } from '@/components/ui/ScrollReveal';
 import { ExternalLink, GitCommit, GitPullRequest, Star, GitBranch } from 'lucide-react';
 
 export const GithubActivity = () => {
   const { theme } = useTheme();
+  const { t } = useI18n();
 
   return (
     <section className="py-16 md:py-24 px-4 md:px-6 relative max-w-6xl mx-auto">
@@ -16,13 +18,13 @@ export const GithubActivity = () => {
         <div className="flex flex-col items-center justify-center text-center mb-16 relative z-10">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-green-500/10 text-green-600 dark:text-green-400 font-medium text-sm mb-6 border border-green-500/20">
             <GitCommit size={16} />
-            <span>Open Source Contributions</span>
+            <span>{t('github_title')}</span>
           </div>
           <h2 className="text-3xl md:text-5xl font-bold text-foreground mb-6 tracking-tight">
-            Days I <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-emerald-600">Code</span>
+            {t('github_days')}
           </h2>
           <p className="text-foreground/60 max-w-2xl text-lg">
-            Consistent efforts build great products. Here is a snapshot of my daily coding activity on GitHub.
+            {t('github_desc')}
           </p>
         </div>
       </ScrollReveal>

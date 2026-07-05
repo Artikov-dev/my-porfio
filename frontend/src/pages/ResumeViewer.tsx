@@ -7,7 +7,7 @@ import { PageWrapper } from '@/components/Layout/PageWrapper';
 import { motion } from 'framer-motion';
 
 export const ResumeViewer = () => {
-  const { language } = useI18n();
+  const { language, setLanguage, t } = useI18n();
   const [pdfExists, setPdfExists] = useState<boolean | null>(null);
   
   // Construct the PDF file name based on the current language
@@ -53,17 +53,24 @@ export const ResumeViewer = () => {
               </Button>
             </Link>
             <h1 className="text-3xl md:text-5xl font-bold text-foreground tracking-tight">
-              Curriculum <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-purple-500">Vitae</span>
+              {t('cv_title1')} <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-purple-500">{t('cv_title2')}</span>
             </h1>
           </div>
           
-          <div className="flex items-center gap-4">
-            <div className="glass px-4 py-2 rounded-full border border-border flex items-center gap-2 shadow-lg">
-              <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-              <span className="text-sm font-medium text-foreground uppercase tracking-wider">
-                Lang: {language}
-              </span>
-            </div>
+          <div className="flex items-center gap-2 glass p-1 rounded-2xl md:rounded-full border border-border shadow-lg">
+            {(['en', 'ru', 'uz'] as const).map(lang => (
+              <button
+                key={lang}
+                onClick={() => setLanguage(lang)}
+                className={`w-12 h-10 rounded-xl md:rounded-full flex items-center justify-center text-xs font-bold uppercase transition-all duration-300 ${
+                  language === lang 
+                  ? 'bg-primary text-white shadow-md' 
+                  : 'hover:bg-foreground/5 text-foreground/70'
+                }`}
+              >
+                {lang}
+              </button>
+            ))}
           </div>
         </motion.div>
 

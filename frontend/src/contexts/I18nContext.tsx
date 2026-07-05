@@ -74,7 +74,16 @@ const translations = {
     featured_desc: 'A selection of recent web applications and systems I have developed.',
     view_all_projects: 'View All Projects',
     view_online: 'Live Demo',
-    view_github: 'Source Code'
+    view_github: 'Source Code',
+    
+    // Resume / CV
+    cv_title1: 'My',
+    cv_title2: 'CV',
+    
+    // Github Activity
+    github_title: 'Open Source Contributions',
+    github_days: 'Days I Code',
+    github_desc: 'Consistent efforts build great products. Here is a snapshot of my daily coding activity on GitHub.'
   },
   uz: {
     home: 'Asosiy',
@@ -138,7 +147,16 @@ const translations = {
     featured_desc: 'Men yaratgan so\'nggi veb-ilovalar va tizimlarning ayrimlari bilan tanishing.',
     view_all_projects: 'Barcha Loyihalarni Ko\'rish',
     view_online: 'Saytni Ko\'rish',
-    view_github: 'Kodni Ko\'rish'
+    view_github: 'Kodni Ko\'rish',
+    
+    // Resume / CV
+    cv_title1: 'Mening',
+    cv_title2: 'CV yim',
+    
+    // Github Activity
+    github_title: 'Open Source Hissalarim',
+    github_days: 'Kod Yozish Kunlarim',
+    github_desc: 'Muntazam harakatlar ajoyib mahsulotlarni yaratadi. Quyida GitHub\'dagi kunlik faolligimning qisqacha ko\'rinishi.'
   },
   ru: {
     home: 'Главная',
@@ -202,7 +220,16 @@ const translations = {
     featured_desc: 'Ознакомьтесь с подборкой недавних веб-приложений и систем, которые я разработал.',
     view_all_projects: 'Смотреть Все Проекты',
     view_online: 'Посмотреть Сайт',
-    view_github: 'Исходный Код'
+    view_github: 'Исходный Код',
+    
+    // Resume / CV
+    cv_title1: 'Моё',
+    cv_title2: 'Резюме',
+    
+    // Github Activity
+    github_title: 'Вклад в Open Source',
+    github_days: 'Дни Программирования',
+    github_desc: 'Постоянные усилия создают отличные продукты. Вот снимок моей ежедневной активности на GitHub.'
   }
 };
 
