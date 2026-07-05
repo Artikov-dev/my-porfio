@@ -36,7 +36,7 @@ export const MusicPlayer = () => {
 
   return (
     <div 
-      className="fixed bottom-24 left-6 z-[90] flex items-end"
+      className="fixed bottom-24 left-4 md:bottom-24 md:left-6 z-[90] flex items-end"
       onMouseEnter={() => setShowControls(true)}
       onMouseLeave={() => setShowControls(false)}
     >
@@ -70,13 +70,13 @@ export const MusicPlayer = () => {
       <button
         onClick={togglePlay}
         className={`
-          relative flex items-center justify-center w-12 h-12 rounded-full 
+          relative flex items-center justify-center w-10 h-10 md:w-12 md:h-12 rounded-full 
           shadow-lg backdrop-blur-md border border-slate-200 dark:border-slate-800
           transition-all duration-300 z-10
           ${isPlaying ? 'bg-primary text-white animate-pulse' : 'bg-white/80 dark:bg-slate-900/80 text-primary hover:bg-primary/10'}
         `}
       >
-        <Music size={20} className={isPlaying ? 'animate-spin-slow' : ''} />
+        <Music size={18} className={isPlaying ? 'animate-spin-slow' : ''} />
         {isPlaying && (
           <span className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white dark:border-slate-900"></span>
         )}

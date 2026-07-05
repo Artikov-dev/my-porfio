@@ -126,10 +126,10 @@ export const TerminalOverlay = () => {
     return (
       <button
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-24 right-6 z-[90] flex items-center justify-center w-12 h-12 rounded-full bg-slate-900 dark:bg-slate-800 text-green-400 shadow-lg hover:scale-110 transition-transform border border-slate-700"
+        className="fixed bottom-40 right-4 md:bottom-24 md:right-6 z-[90] flex items-center justify-center w-10 h-10 md:w-12 md:h-12 rounded-full bg-slate-900 dark:bg-slate-800 text-green-400 shadow-lg hover:scale-110 transition-transform border border-slate-700"
         title="Open Terminal (~)"
       >
-        <TerminalIcon size={20} />
+        <TerminalIcon size={18} />
       </button>
     );
   }

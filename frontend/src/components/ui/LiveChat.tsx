@@ -82,7 +82,7 @@ export const LiveChat = () => {
   };
 
   return (
-    <div className="fixed bottom-8 right-8 z-[60] flex flex-col items-end">
+    <div className="fixed bottom-24 right-4 md:bottom-8 md:right-8 z-[60] flex flex-col items-end">
       {isOpen && (
         <div className="mb-4 w-[350px] h-[450px] glass border border-border rounded-2xl flex flex-col overflow-hidden shadow-2xl origin-bottom-right animate-in zoom-in duration-300">
           {/* Header */}
@@ -177,9 +177,9 @@ export const LiveChat = () => {
       {/* Floating Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-14 h-14 bg-primary text-white rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(20,184,166,0.3)] hover:scale-105 hover:shadow-[0_0_30px_rgba(20,184,166,0.5)] transition-all duration-300"
+        className="w-12 h-12 md:w-14 md:h-14 bg-primary text-white rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(20,184,166,0.3)] hover:scale-105 hover:shadow-[0_0_30px_rgba(20,184,166,0.5)] transition-all duration-300"
       >
-        {isOpen ? <X className="w-6 h-6" /> : <MessageCircle className="w-6 h-6" />}
+        {isOpen ? <X className="w-5 h-5 md:w-6 md:h-6" /> : <MessageCircle className="w-5 h-5 md:w-6 md:h-6" />}
       </button>
     </div>
   );
