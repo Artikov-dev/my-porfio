@@ -31,7 +31,7 @@ function App() {
   const hidePublicUI = isResumePage || isAdminRoute;
 
   return (
-    <div className="min-h-screen bg-background relative selection:bg-primary selection:text-white flex flex-col">
+    <div className="min-h-screen bg-background relative selection:bg-primary selection:text-white flex flex-col overflow-x-hidden w-full">
       {!hidePublicUI && <FloatingNav />}
       {!hidePublicUI && <LiveStatus />}
       {!hidePublicUI && <LiveChat />}

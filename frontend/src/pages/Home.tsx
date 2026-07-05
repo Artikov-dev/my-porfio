@@ -14,7 +14,7 @@ export const Home = () => {
   const { t } = useI18n();
   return (
     <PageWrapper>
-      <main className="bg-background min-h-screen relative pb-32">
+      <main className="bg-background min-h-screen relative pb-32 overflow-x-hidden w-full">
       <Helmet>
         <title>Roma Artikov | {t('welcome') || 'Full-Stack Engineer'}</title>
         <meta name="description" content="I build high-performance, secure, and enterprise-grade web applications with a focus on Clean Architecture." />
