@@ -8,7 +8,7 @@ export const GithubActivity = () => {
   const { theme } = useTheme();
 
   return (
-    <section className="py-24 px-6 relative max-w-6xl mx-auto">
+    <section className="py-16 md:py-24 px-4 md:px-6 relative max-w-6xl mx-auto">
       {/* Background Glows */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-green-500/10 dark:bg-green-500/5 blur-[120px] rounded-full pointer-events-none" />
 
@@ -18,7 +18,7 @@ export const GithubActivity = () => {
             <GitCommit size={16} />
             <span>Open Source Contributions</span>
           </div>
-          <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-6 tracking-tight">
+          <h2 className="text-3xl md:text-5xl font-bold text-foreground mb-6 tracking-tight">
             Days I <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-emerald-600">Code</span>
           </h2>
           <p className="text-foreground/60 max-w-2xl text-lg">
@@ -33,8 +33,8 @@ export const GithubActivity = () => {
           <div className="glass rounded-3xl p-1 border border-white/10 shadow-2xl bg-gradient-to-br from-background/80 to-background overflow-hidden transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_0_50px_-15px_rgba(34,197,94,0.4)] hover:border-green-500/30">
             
             {/* Header Section */}
-            <div className="flex flex-col md:flex-row items-center justify-between p-8 border-b border-white/5 bg-foreground/[0.02]">
-              <div className="flex items-center gap-6 mb-6 md:mb-0">
+            <div className="flex flex-col md:flex-row items-center justify-between p-6 md:p-8 border-b border-white/5 bg-foreground/[0.02]">
+              <div className="flex items-center gap-4 md:gap-6 mb-6 md:mb-0">
                 <div className="relative group/avatar cursor-pointer">
                   <div className="absolute -inset-1 bg-gradient-to-r from-green-400 to-emerald-600 rounded-full blur opacity-50 group-hover/avatar:opacity-100 transition-opacity duration-500 animate-pulse"></div>
                   <img 

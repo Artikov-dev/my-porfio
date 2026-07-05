@@ -76,9 +76,9 @@ export const ContactSection = () => {
   ];
 
   return (
-    <section id="contact" className="py-32 px-6 relative max-w-5xl mx-auto">
+    <section id="contact" className="py-20 md:py-32 px-4 md:px-6 relative max-w-5xl mx-auto">
       <ScrollReveal>
-        <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-8 tracking-tight text-center">
+        <h2 className="text-3xl md:text-5xl font-bold text-foreground mb-8 tracking-tight text-center">
           {t('get_in_touch')}
         </h2>
         <p className="text-center text-foreground/60 mb-16 text-lg max-w-2xl mx-auto">
@@ -92,7 +92,7 @@ export const ContactSection = () => {
               href={social.href}
               target="_blank"
               rel="noopener noreferrer"
-              className={`flex flex-col items-center justify-center p-8 rounded-2xl glass border border-white/5 transition-all duration-300 group ${social.color}`}
+              className={`flex flex-col items-center justify-center p-6 md:p-8 rounded-2xl glass border border-white/5 transition-all duration-300 group ${social.color}`}
             >
               <div className="text-foreground/70 transition-colors duration-300 group-hover:text-inherit mb-4">
                 {social.icon}

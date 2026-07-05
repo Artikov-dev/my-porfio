@@ -20,13 +20,13 @@ export const Projects = () => {
 
   return (
     <PageWrapper>
-      <div className="min-h-screen bg-background pt-32 px-6">
+      <div className="min-h-screen bg-background pt-24 md:pt-32 px-4 md:px-6">
       <Helmet>
         <title>Roma Artikov | {t('projects')}</title>
         <meta name="description" content={`Explore my latest projects and case studies. | Roma Artikov`} />
       </Helmet>
       <div className="max-w-6xl mx-auto">
-        <h1 className="text-4xl font-bold text-foreground dark:text-white mb-10">{t('projects')}</h1>
+        <h1 className="text-3xl md:text-4xl font-bold text-foreground dark:text-white mb-8 md:mb-10">{t('projects')}</h1>
         
         {isLoading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -45,7 +45,7 @@ export const Projects = () => {
                     <Skeleton className="h-6 w-20 rounded-full" />
                     <Skeleton className="h-6 w-14 rounded-full" />
                   </div>
-                  <div className="flex gap-3 mt-auto pt-4 border-t border-border">
+                  <div className="flex flex-col sm:flex-row gap-3 mt-auto pt-4 border-t border-border">
                     <Skeleton className="h-10 flex-1 rounded-md" />
                     <Skeleton className="h-10 flex-1 rounded-md" />
                   </div>
@@ -54,7 +54,7 @@ export const Projects = () => {
             ))}
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
             {data?.map((project: any) => (
               <div key={project.id} className="glass rounded-2xl flex flex-col overflow-hidden group border border-border hover:border-primary/50 transition-all duration-300 h-full">
                 {/* Image Container */}
@@ -88,9 +88,9 @@ export const Projects = () => {
                   )}
                   
                   {/* Action Buttons */}
-                  <div className="flex items-center gap-3 pt-4 border-t border-border mt-auto">
+                  <div className="flex flex-col sm:flex-row items-center gap-3 pt-4 border-t border-border mt-auto">
                     {project.live_url && (
-                      <a href={project.live_url} target="_blank" rel="noopener noreferrer" className="flex-1">
+                      <a href={project.live_url} target="_blank" rel="noopener noreferrer" className="flex-1 w-full">
                         <Button variant="solid" className="w-full flex items-center justify-center gap-2">
                           <ExternalLink size={16} />
                           {t('view_online')}
@@ -98,7 +98,7 @@ export const Projects = () => {
                       </a>
                     )}
                     {project.github_url && (
-                      <a href={project.github_url} target="_blank" rel="noopener noreferrer" className="flex-1">
+                      <a href={project.github_url} target="_blank" rel="noopener noreferrer" className="flex-1 w-full">
                         <Button variant="outline" className="w-full flex items-center justify-center gap-2">
                           <Code2 size={16} />
                           {t('view_github')}

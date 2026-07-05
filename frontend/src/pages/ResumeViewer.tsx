@@ -31,9 +31,9 @@ export const ResumeViewer = () => {
 
   return (
     <PageWrapper>
-      <div className="min-h-screen pt-28 pb-16 px-6 max-w-5xl mx-auto flex flex-col items-center">
+      <div className="min-h-screen pt-24 md:pt-28 pb-16 px-4 md:px-6 max-w-5xl mx-auto flex flex-col items-center">
       
-      <div className="w-full flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+      <div className="w-full flex flex-col md:flex-row justify-between items-center mb-6 md:mb-8 gap-4">
         <Link to="/">
           <Button variant="ghost" className="flex items-center gap-2 text-foreground/70 hover:text-primary">
             <ArrowLeft className="w-4 h-4" /> Back to Portfolio
@@ -47,7 +47,7 @@ export const ResumeViewer = () => {
         </div>
       </div>
 
-      <div className="w-full h-[75vh] bg-foreground/5 border border-border rounded-2xl overflow-hidden shadow-2xl relative flex flex-col">
+      <div className="w-full h-[65vh] md:h-[75vh] bg-foreground/5 border border-border rounded-2xl overflow-hidden shadow-2xl relative flex flex-col">
         {/* We use an object tag for better PDF rendering and hide native toolbars */}
         <div className="flex-1 w-full relative flex items-center justify-center">
           {pdfExists === null ? (
@@ -79,7 +79,7 @@ export const ResumeViewer = () => {
         </div>
 
         {/* Custom Actions Footer */}
-        <div className="h-20 bg-background/80 backdrop-blur-md border-t border-border flex items-center justify-center gap-6 px-6">
+        <div className="h-auto py-4 sm:h-20 sm:py-0 bg-background/80 backdrop-blur-md border-t border-border flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 px-6">
           <a href={pdfUrl} target="_blank" rel="noopener noreferrer">
             <Button variant="outline" className="flex items-center gap-2 px-8">
               View CV

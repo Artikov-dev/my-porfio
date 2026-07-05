@@ -38,9 +38,9 @@ export const SkillsSection = () => {
   const { t } = useI18n();
 
   return (
-    <section id="skills" className="py-32 px-6 relative max-w-6xl mx-auto">
+    <section id="skills" className="py-20 md:py-32 px-4 md:px-6 relative max-w-6xl mx-auto">
       <ScrollReveal>
-        <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-16 tracking-tight text-center">
+        <h2 className="text-3xl md:text-5xl font-bold text-foreground mb-12 md:mb-16 tracking-tight text-center">
           {t('skills_title')}
         </h2>
       </ScrollReveal>
@@ -48,8 +48,8 @@ export const SkillsSection = () => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         {skillCategories.map((category, index) => (
           <ScrollReveal key={category.titleKey} delay={index * 0.2}>
-            <div className="glass p-8 rounded-2xl border border-border h-full hover:border-primary/50 transition-all duration-300 group">
-              <h3 className="text-xl font-bold text-foreground mb-8 group-hover:text-primary transition-colors">
+            <div className="glass p-6 md:p-8 rounded-2xl border border-border h-full hover:border-primary/50 transition-all duration-300 group">
+              <h3 className="text-xl font-bold text-foreground mb-6 md:mb-8 group-hover:text-primary transition-colors">
                 {t(category.titleKey)}
               </h3>
               <div className="flex flex-col gap-5">

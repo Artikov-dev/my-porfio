@@ -8,14 +8,14 @@ export const AboutSection = () => {
   const title = language === 'uz' ? 'Men Haqimda' : language === 'ru' ? 'Обо мне' : 'About Me';
 
   return (
-    <section id="about" className="py-32 px-6 relative max-w-6xl mx-auto">
+    <section id="about" className="py-20 md:py-32 px-4 md:px-6 relative max-w-6xl mx-auto">
       <ScrollReveal>
-        <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-16 tracking-tight">
+        <h2 className="text-3xl md:text-5xl font-bold text-foreground mb-12 md:mb-16 tracking-tight">
           {title}
         </h2>
       </ScrollReveal>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16 items-center">
         <ScrollReveal delay={0.2}>
           <div className="space-y-6 text-foreground/60 text-lg leading-relaxed">
             <p>{t('about_p1')}</p>

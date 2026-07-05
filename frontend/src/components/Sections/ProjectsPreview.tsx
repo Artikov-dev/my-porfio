@@ -21,9 +21,9 @@ export const ProjectsPreviewSection = () => {
   });
 
   return (
-    <section id="projects" className="py-32 px-6 relative max-w-6xl mx-auto text-center">
+    <section id="projects" className="py-20 md:py-32 px-4 md:px-6 relative max-w-6xl mx-auto text-center">
       <ScrollReveal>
-        <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-8 tracking-tight">
+        <h2 className="text-3xl md:text-5xl font-bold text-foreground mb-8 tracking-tight">
           {t('featured_eng')}
         </h2>
         <p className="text-foreground/60 max-w-2xl mx-auto mb-16 text-lg">
@@ -74,9 +74,9 @@ export const ProjectsPreviewSection = () => {
                     )}
                     
                     {/* Action Buttons */}
-                    <div className="flex items-center gap-3 pt-4 border-t border-border">
+                    <div className="flex flex-col sm:flex-row items-center gap-3 pt-4 border-t border-border">
                       {project.live_url && (
-                        <a href={project.live_url} target="_blank" rel="noopener noreferrer" className="flex-1" onClick={(e) => e.stopPropagation()}>
+                        <a href={project.live_url} target="_blank" rel="noopener noreferrer" className="flex-1 w-full" onClick={(e) => e.stopPropagation()}>
                           <Button variant="solid" className="w-full flex items-center justify-center gap-2">
                             <ExternalLink size={16} />
                             {t('view_online')}
@@ -84,7 +84,7 @@ export const ProjectsPreviewSection = () => {
                         </a>
                       )}
                       {project.github_url && (
-                        <a href={project.github_url} target="_blank" rel="noopener noreferrer" className="flex-1" onClick={(e) => e.stopPropagation()}>
+                        <a href={project.github_url} target="_blank" rel="noopener noreferrer" className="flex-1 w-full" onClick={(e) => e.stopPropagation()}>
                           <Button variant="outline" className="w-full flex items-center justify-center gap-2">
                             <Code2 size={16} />
                             {t('view_github')}
