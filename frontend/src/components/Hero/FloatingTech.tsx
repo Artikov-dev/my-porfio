@@ -2,10 +2,13 @@ import React, { useRef, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Float, Wireframe } from '@react-three/drei';
 import * as THREE from 'three';
+import { useTheme } from '@/contexts/ThemeContext';
 
 export const FloatingTech = () => {
   const meshRef = useRef<THREE.Mesh>(null);
   const [hovered, setHover] = useState(false);
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
 
   useFrame((state, delta) => {
     if (meshRef.current) {
@@ -33,9 +36,9 @@ export const FloatingTech = () => {
       >
         <icosahedronGeometry args={[1.5, 1]} />
         <meshStandardMaterial 
-          color={hovered ? "#2dd4bf" : "#14b8a6"} 
+          color={isDark ? (hovered ? "#2dd4bf" : "#14b8a6") : (hovered ? "#0e7490" : "#155e75")} 
           wireframe={true}
-          emissive="#14b8a6"
+          emissive={isDark ? "#14b8a6" : "#155e75"}
           emissiveIntensity={hovered ? 0.8 : 0.2}
           transparent
           opacity={0.8}
@@ -46,11 +49,11 @@ export const FloatingTech = () => {
       <mesh>
         <sphereGeometry args={[0.5, 32, 32]} />
         <meshStandardMaterial 
-          color="#0f766e"
-          emissive="#0f766e"
+          color={isDark ? "#0f766e" : "#164e63"}
+          emissive={isDark ? "#0f766e" : "#164e63"}
           emissiveIntensity={1}
           transparent
-          opacity={0.9}
+          opacity={isDark ? 0.9 : 0.7}
         />
       </mesh>
     </Float>

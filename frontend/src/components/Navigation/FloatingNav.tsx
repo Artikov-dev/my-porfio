@@ -44,7 +44,7 @@ export const FloatingNav = () => {
               onClick={() => document.getElementById(item.id)?.scrollIntoView({ behavior: 'smooth' })}
               className={cn(
                 "relative group p-2 transition-colors cursor-pointer",
-                isActive ? "text-primary" : "text-gray-500 hover:text-foreground dark:text-white"
+                isActive ? "text-primary" : "text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
               )}
             >
               <Icon className="w-4 h-4 md:w-5 md:h-5" />

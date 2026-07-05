@@ -35,7 +35,7 @@ export const Navbar = () => {
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 glass border-b border-border shadow-sm">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-background/90 backdrop-blur-xl border-b border-border shadow-sm">
       <div className="max-w-7xl mx-auto px-6 h-20 flex justify-between items-center">
         {/* Logo */}
         <Link 
@@ -94,16 +94,16 @@ export const Navbar = () => {
 
         {/* Mobile Toggle */}
         <button 
-          className="lg:hidden p-2 text-foreground"
+          className="lg:hidden p-2 text-slate-900 dark:text-white opacity-100 hover:text-primary transition-colors focus:outline-none"
           onClick={() => { playClick(); setIsOpen(!isOpen); }}
         >
-          {isOpen ? <X /> : <Menu />}
+          {isOpen ? <X className="w-8 h-8" /> : <Menu className="w-8 h-8" />}
         </button>
       </div>
 
       {/* Mobile Menu */}
       {isOpen && (
-        <div className="lg:hidden absolute top-20 left-0 w-full glass border-b border-border flex flex-col p-6 gap-6 shadow-xl animate-in fade-in slide-in-from-top-4">
+        <div className="lg:hidden absolute top-20 left-0 w-full bg-background/95 backdrop-blur-xl border-b border-border flex flex-col p-6 gap-6 shadow-xl animate-in fade-in slide-in-from-top-4 z-50">
           {navLinks.map((link) => (
             <a
               key={link.nameKey}
