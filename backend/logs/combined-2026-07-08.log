@@ -52,3 +52,43 @@
 [2026-07-08 19:00:20] info: 🔌 Socket connected: DK3NDHPeFjkjOCjSAAAo
 [2026-07-08 19:00:20] info: 🔌 Socket connected: dtHdBp0_qdiTN0cNAAAp
 [2026-07-08 19:00:23] info: ::1 - - [08/Jul/2026:14:00:23 +0000] "GET /api/projects HTTP/1.1" 304 - "http://localhost:5173/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36"
+[2026-07-08 19:11:54] info: 🔌 Socket disconnected: DK3NDHPeFjkjOCjSAAAo
+[2026-07-08 19:11:54] info: 🔌 Socket disconnected: dtHdBp0_qdiTN0cNAAAp
+[2026-07-08 19:26:27] info: 🔌 Socket connected: kBYCc9fNZ6lqMvvHAAAu
+[2026-07-08 19:26:27] info: 🔌 Socket connected: 8BbCoxMDn-LAOtCRAAAv
+[2026-07-08 19:27:24] info: 🔌 Socket connected: PvlsainbpJ9GIN2WAAA0
+[2026-07-08 19:27:24] info: 🔌 Socket connected: Rq3IEPkdHn5dvDEMAAA1
+[2026-07-08 19:27:27] info: ::1 - - [08/Jul/2026:14:27:27 +0000] "GET /api/blogs HTTP/1.1" 304 - "http://localhost:5173/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36"
+[2026-07-08 19:27:29] info: 🔌 Socket connected: 8zaU3cNJ8cnuCZ-JAAA6
+[2026-07-08 19:27:29] info: 🔌 Socket connected: LEBccMVnWC5hJZvjAAA7
+[2026-07-08 19:27:29] info: ::1 - - [08/Jul/2026:14:27:29 +0000] "GET /api/projects HTTP/1.1" 304 - "http://localhost:5173/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36"
+[2026-07-08 19:27:30] info: 🔌 Socket connected: 0SHm_wowxPRmYcxVAABA
+[2026-07-08 19:27:30] info: 🔌 Socket connected: _-_CAcdIwVTbDkHmAABB
+[2026-07-08 19:27:30] info: ::1 - - [08/Jul/2026:14:27:30 +0000] "GET /api/blogs HTTP/1.1" 304 - "http://localhost:5173/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36"
+[2026-07-08 19:27:31] info: 🔌 Socket connected: m1BEPxgiyu5UE0agAABG
+[2026-07-08 19:27:31] info: 🔌 Socket connected: NEGz18L2bBA3OkNLAABH
+[2026-07-08 19:27:31] info: ::1 - - [08/Jul/2026:14:27:31 +0000] "GET /api/projects HTTP/1.1" 304 - "http://localhost:5173/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36"
+[2026-07-08 19:27:35] info: 🔌 Socket disconnected: 8zaU3cNJ8cnuCZ-JAAA6
+[2026-07-08 19:27:35] info: 🔌 Socket disconnected: LEBccMVnWC5hJZvjAAA7
+[2026-07-08 19:27:35] info: 🔌 Socket disconnected: PvlsainbpJ9GIN2WAAA0
+[2026-07-08 19:27:35] info: 🔌 Socket disconnected: Rq3IEPkdHn5dvDEMAAA1
+[2026-07-08 19:27:35] info: 🔌 Socket disconnected: kBYCc9fNZ6lqMvvHAAAu
+[2026-07-08 19:27:35] info: 🔌 Socket disconnected: 8BbCoxMDn-LAOtCRAAAv
+[2026-07-08 19:28:15] info: 🔌 Socket disconnected: 0SHm_wowxPRmYcxVAABA
+[2026-07-08 19:28:15] info: 🔌 Socket disconnected: _-_CAcdIwVTbDkHmAABB
+[2026-07-08 19:30:18] info: 🔌 Socket connected: 2nExMjtaLDrnzcLmAABM
+[2026-07-08 19:30:18] info: 🔌 Socket connected: UhGDD4D0YTbdFsw5AABN
+[2026-07-08 19:30:20] info: ::1 - - [08/Jul/2026:14:30:20 +0000] "GET /api/projects HTTP/1.1" 304 - "http://localhost:5173/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36"
+[2026-07-08 19:30:46] info: 🔌 Socket disconnected: m1BEPxgiyu5UE0agAABG
+[2026-07-08 19:30:46] info: 🔌 Socket disconnected: NEGz18L2bBA3OkNLAABH
+[2026-07-08 19:40:07] info: ::1 - - [08/Jul/2026:14:40:07 +0000] "GET /api/projects HTTP/1.1" 304 - "http://localhost:5173/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36"
+[2026-07-08 19:40:13] info: 🔌 Socket connected: DNeFnUiFB02XfQfwAABS
+[2026-07-08 19:40:13] info: 🔌 Socket connected: _Z8Vb_DHZtztgbJPAABT
+[2026-07-08 19:40:13] info: ::1 - - [08/Jul/2026:14:40:13 +0000] "GET /api/projects HTTP/1.1" 304 - "http://localhost:5173/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36"
+[2026-07-08 19:40:14] info: 🔌 Socket connected: UZRWKIV8VPo5NNQBAABY
+[2026-07-08 19:40:14] info: 🔌 Socket connected: XHtdEFEk58YMcj3HAABZ
+[2026-07-08 19:40:14] info: ::1 - - [08/Jul/2026:14:40:14 +0000] "GET /api/projects HTTP/1.1" 304 - "http://localhost:5173/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36"
+[2026-07-08 19:40:26] info: 🔌 Socket disconnected: 2nExMjtaLDrnzcLmAABM
+[2026-07-08 19:40:26] info: 🔌 Socket disconnected: UhGDD4D0YTbdFsw5AABN
+[2026-07-08 19:40:56] info: 🔌 Socket disconnected: DNeFnUiFB02XfQfwAABS
+[2026-07-08 19:40:56] info: 🔌 Socket disconnected: _Z8Vb_DHZtztgbJPAABT
