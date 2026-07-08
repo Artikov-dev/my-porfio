@@ -23,6 +23,7 @@ import { AdminDashboard } from '@/pages/Admin/AdminDashboard';
 import { AdminMessages } from '@/pages/Admin/AdminMessages';
 import { AdminProjects } from '@/pages/Admin/AdminProjects';
 import { AdminBlogs } from '@/pages/Admin/AdminBlogs';
+import { AdminSEO } from '@/pages/Admin/AdminSEO';
 import { MatrixRain } from '@/components/Terminal/MatrixRain';
 
 function App() {
@@ -82,6 +83,7 @@ function App() {
                 <Route path="messages" element={<AdminMessages />} />
                 <Route path="projects" element={<AdminProjects />} />
                 <Route path="blogs" element={<AdminBlogs />} />
+                <Route path="seo" element={<AdminSEO />} />
               </Route>
             </Route>
           </Routes>

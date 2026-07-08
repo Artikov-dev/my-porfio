@@ -68,6 +68,8 @@ const TiltCard = ({ children, className }: { children: React.ReactNode, classNam
 };
 
 
+import { SEO } from '@/components/SEO/SEO';
+
 export const Projects = () => {
   const { t, language } = useI18n();
   const { data, isLoading } = useQuery({
@@ -81,10 +83,7 @@ export const Projects = () => {
   return (
     <PageWrapper>
       <div className="min-h-screen bg-background pt-24 md:pt-32 px-4 md:px-6">
-      <Helmet>
-        <title>Roma Artikov | {t('projects')}</title>
-        <meta name="description" content={`Explore my latest projects and case studies. | Roma Artikov`} />
-      </Helmet>
+      <SEO title={t('projects')} />
       <div className="max-w-6xl mx-auto">
         <h1 className="text-3xl md:text-4xl font-bold text-foreground dark:text-white mb-8 md:mb-10">{t('projects')}</h1>
         

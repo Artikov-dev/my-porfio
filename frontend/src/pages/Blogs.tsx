@@ -5,6 +5,7 @@ import { Skeleton } from '@/components/ui/Skeleton';
 import { useI18n } from '@/contexts/I18nContext';
 import { Helmet } from 'react-helmet-async';
 import { PageWrapper } from '@/components/Layout/PageWrapper';
+import { SEO } from '@/components/SEO/SEO';
 
 export const Blogs = () => {
   const { t, language } = useI18n();
@@ -19,10 +20,7 @@ export const Blogs = () => {
   return (
     <PageWrapper>
       <div className="min-h-screen bg-background pt-24 md:pt-32 px-4 md:px-6">
-      <Helmet>
-        <title>Roma Artikov | {t('blog')}</title>
-        <meta name="description" content={`Read technical articles and insights by Roma Artikov.`} />
-      </Helmet>
+      <SEO title={t('blog')} />
       <div className="max-w-6xl mx-auto text-center">
         <h1 className="text-3xl md:text-4xl font-bold text-foreground dark:text-white mb-8 md:mb-10">{t('blog')}</h1>
         

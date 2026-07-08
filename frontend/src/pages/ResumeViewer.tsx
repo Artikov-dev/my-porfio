@@ -5,6 +5,7 @@ import { Download, ArrowLeft, FileText, ExternalLink } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { PageWrapper } from '@/components/Layout/PageWrapper';
 import { motion } from 'framer-motion';
+import { SEO } from '@/components/SEO/SEO';
 
 export const ResumeViewer = () => {
   const { language, setLanguage, t } = useI18n();
@@ -33,7 +34,7 @@ export const ResumeViewer = () => {
   return (
     <PageWrapper>
       <div className="min-h-screen pt-24 md:pt-32 pb-16 px-4 md:px-6 max-w-6xl mx-auto flex flex-col items-center relative">
-        
+        <SEO title={t('resume')} />
         {/* Animated Background Orbs */}
         <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none -z-10">
           <div className="absolute top-[10%] left-[5%] w-[300px] md:w-[500px] h-[300px] md:h-[500px] bg-primary/20 rounded-full blur-[100px] md:blur-[120px] animate-pulse"></div>
