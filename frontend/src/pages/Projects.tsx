@@ -6,7 +6,67 @@ import { useI18n } from '@/contexts/I18nContext';
 import { Helmet } from 'react-helmet-async';
 import { Button } from '@/components/ui/Button';
 import { Code2, ExternalLink } from 'lucide-react';
+import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { PageWrapper } from '@/components/Layout/PageWrapper';
+
+const TiltCard = ({ children, className }: { children: React.ReactNode, className?: string }) => {
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+
+  const mouseXSpring = useSpring(x, { stiffness: 300, damping: 30 });
+  const mouseYSpring = useSpring(y, { stiffness: 300, damping: 30 });
+
+  const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["15deg", "-15deg"]);
+  const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-15deg", "15deg"]);
+  
+  // Custom glow background position
+  const background = useTransform(
+    [mouseXSpring, mouseYSpring],
+    ([mouseX, mouseY]) => {
+      const xp = (mouseX as number + 0.5) * 100;
+      const yp = (mouseY as number + 0.5) * 100;
+      return `radial-gradient(800px circle at ${xp}% ${yp}%, rgba(34,197,94,0.15), transparent 40%)`;
+    }
+  );
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const width = rect.width;
+    const height = rect.height;
+    
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
+    
+    const xPct = mouseX / width - 0.5;
+    const yPct = mouseY / height - 0.5;
+    
+    x.set(xPct);
+    y.set(yPct);
+  };
+  
+  const handleMouseLeave = () => {
+    x.set(0);
+    y.set(0);
+  };
+
+  return (
+    <motion.div
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      style={{ rotateY, rotateX, transformStyle: "preserve-3d" }}
+      className={`relative group perspective-[1000px] ${className}`}
+    >
+      <motion.div 
+        className="absolute inset-0 z-20 pointer-events-none rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+        style={{ background }}
+      />
+      <div className="h-full" style={{ transform: "translateZ(30px)" }}>
+        {children}
+      </div>
+    </motion.div>
+  );
+};
+
 
 export const Projects = () => {
   const { t, language } = useI18n();
@@ -56,12 +116,13 @@ export const Projects = () => {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
             {data?.map((project: any) => (
-              <div key={project.id} className="glass rounded-2xl flex flex-col overflow-hidden group border border-border hover:border-primary/50 transition-all duration-300 h-full">
-                {/* Image Container */}
+              <TiltCard key={project.id} className="h-full">
+                <div className="glass rounded-2xl flex flex-col overflow-hidden group/card border border-border hover:border-primary/50 transition-all duration-300 h-full bg-background/50 backdrop-blur-xl shadow-2xl">
+                  {/* Image Container */}
                 <div className="relative h-48 w-full overflow-hidden">
-                  <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors z-10" />
+                  <div className="absolute inset-0 bg-black/20 group-hover/card:bg-transparent transition-colors z-10" />
                   <div 
-                    className="absolute inset-0 bg-cover bg-center group-hover:scale-110 transition-transform duration-700" 
+                    className="absolute inset-0 bg-cover bg-center group-hover/card:scale-110 transition-transform duration-700" 
                     style={{ backgroundImage: `url(${project.image_url})` }}
                   />
                 </div>
@@ -107,7 +168,8 @@ export const Projects = () => {
                     )}
                   </div>
                 </div>
-              </div>
+                </div>
+              </TiltCard>
             ))}
           </div>
         )}

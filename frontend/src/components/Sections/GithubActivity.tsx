@@ -69,22 +69,30 @@ export const GithubActivity = () => {
             </div>
 
             {/* Calendar Section */}
-            <div className="p-4 md:p-8 w-full flex items-center justify-center overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:none] relative group">
+            <div className="p-4 md:p-12 w-full flex items-center justify-center overflow-hidden relative group perspective-[1200px]">
               {/* Tooltip hint for empty spaces */}
-              <div className="absolute inset-0 bg-gradient-to-r from-background via-transparent to-background pointer-events-none opacity-50 md:opacity-0 transition-opacity group-hover:opacity-0" />
+              <div className="absolute inset-0 bg-gradient-to-r from-background via-transparent to-background pointer-events-none opacity-50 md:opacity-0 transition-opacity group-hover:opacity-0 z-20" />
               
-              <div className="min-w-max transition-all duration-700 hover:scale-[1.02] cursor-crosshair">
-                <GitHubCalendar 
-                  username="Artikov-dev" 
-                  colorScheme={theme === 'dark' ? 'dark' : 'light'}
-                  blockSize={14}
-                  blockMargin={5}
-                  fontSize={14}
-                  theme={{
-                    light: ['#ebedf0', '#9be9a8', '#40c463', '#30a14e', '#216e39'],
-                    dark: ['#161b22', '#0e4429', '#006d32', '#26a641', '#39d353'],
-                  }}
-                />
+              <div 
+                className="min-w-max transition-all duration-1000 ease-out cursor-crosshair transform-gpu group-hover:rotate-0 group-hover:scale-[1.02]"
+                style={{
+                  transform: 'rotateX(55deg) rotateZ(-45deg) scale(0.9)',
+                  transformStyle: 'preserve-3d'
+                }}
+              >
+                <div className="bg-background/95 p-6 rounded-2xl border border-white/10 backdrop-blur-xl shadow-[-20px_20px_60px_rgba(0,0,0,0.6)] ring-1 ring-white/5 relative before:absolute before:inset-0 before:bg-gradient-to-br before:from-green-500/10 before:to-transparent before:-z-10 before:rounded-2xl">
+                  <GitHubCalendar 
+                    username="Artikov-dev" 
+                    colorScheme={theme === 'dark' ? 'dark' : 'light'}
+                    blockSize={16}
+                    blockMargin={6}
+                    fontSize={14}
+                    theme={{
+                      light: ['#ebedf0', '#9be9a8', '#40c463', '#30a14e', '#216e39'],
+                      dark: ['#161b22', '#0e4429', '#006d32', '#26a641', '#39d353'],
+                    }}
+                  />
+                </div>
               </div>
             </div>
 

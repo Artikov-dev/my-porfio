@@ -23,9 +23,30 @@ import { AdminDashboard } from '@/pages/Admin/AdminDashboard';
 import { AdminMessages } from '@/pages/Admin/AdminMessages';
 import { AdminProjects } from '@/pages/Admin/AdminProjects';
 import { AdminBlogs } from '@/pages/Admin/AdminBlogs';
+import { MatrixRain } from '@/components/Terminal/MatrixRain';
 
 function App() {
+  const [showMatrix, setShowMatrix] = React.useState(false);
   const location = useLocation();
+
+  React.useEffect(() => {
+    let typed = '';
+    const target = 'matrix';
+    
+    const handleKeyDown = (e: KeyboardEvent) => {
+      typed += e.key.toLowerCase();
+      if (typed.length > target.length) {
+        typed = typed.slice(typed.length - target.length);
+      }
+      if (typed === target) {
+        setShowMatrix(prev => !prev);
+        typed = '';
+      }
+    };
+    
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   const isResumePage = location.pathname === '/resume';
   const isAdminRoute = location.pathname.startsWith('/admin') || location.pathname === '/aadminsecret';
@@ -68,6 +89,12 @@ function App() {
       </div>
 
       {!hidePublicUI && <Footer />}
+      
+      {showMatrix && (
+        <div className="fixed inset-0 z-[99999] pointer-events-none mix-blend-screen opacity-75">
+          <MatrixRain />
+        </div>
+      )}
     </div>
   );
 }
