@@ -1,6 +1,6 @@
 import React, { Suspense } from 'react';
 import { Canvas } from '@react-three/fiber';
-import { Environment, OrbitControls } from '@react-three/drei';
+import { Environment, OrbitControls, Sparkles } from '@react-three/drei';
 import { FloatingTech } from './FloatingTech';
 
 export const Scene3D = () => {
@@ -18,6 +18,17 @@ export const Scene3D = () => {
 
           {/* Environment for nice reflections */}
           <Environment preset="city" />
+
+          {/* Sparkles / Particles for Wow-effect */}
+          <Sparkles 
+            count={200} 
+            scale={12} 
+            size={3} 
+            speed={0.4} 
+            opacity={0.4}
+            color="#2dd4bf"
+            noise={1}
+          />
 
           {/* The main 3D object */}
           <FloatingTech />
