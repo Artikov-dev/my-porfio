@@ -22,6 +22,7 @@ import { AdminLayout } from '@/components/Layout/AdminLayout';
 import { AdminDashboard } from '@/pages/Admin/AdminDashboard';
 import { AdminMessages } from '@/pages/Admin/AdminMessages';
 import { AdminProjects } from '@/pages/Admin/AdminProjects';
+import { AdminBlogs } from '@/pages/Admin/AdminBlogs';
 
 function App() {
   const location = useLocation();
@@ -59,7 +60,7 @@ function App() {
                 <Route path="dashboard" element={<AdminDashboard />} />
                 <Route path="messages" element={<AdminMessages />} />
                 <Route path="projects" element={<AdminProjects />} />
-                <Route path="blogs" element={<div className="text-foreground dark:text-white p-6">Blogs Management (Coming Soon)</div>} />
+                <Route path="blogs" element={<AdminBlogs />} />
               </Route>
             </Route>
           </Routes>

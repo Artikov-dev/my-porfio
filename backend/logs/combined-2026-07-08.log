@@ -1,0 +1,18 @@
+[2026-07-08 17:37:12] warn: ⚠️ Could not connect to Redis. Caching will be disabled.
+[2026-07-08 17:37:14] info: 🚀 Server running in production mode on port 5000
+[2026-07-08 17:37:20] info: 🔌 Socket connected: CtNIIErF50wGTx-xAAAE
+[2026-07-08 17:37:20] info: 🔌 Socket connected: PYMW1wGKEcC82bLMAAAF
+[2026-07-08 17:37:20] info: ::1 - - [08/Jul/2026:12:37:20 +0000] "GET /api/projects HTTP/1.1" 200 2844 "http://localhost:5173/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36"
+[2026-07-08 17:58:12] info: 🔌 Socket disconnected: CtNIIErF50wGTx-xAAAE
+[2026-07-08 17:58:12] info: 🔌 Socket disconnected: PYMW1wGKEcC82bLMAAAF
+[2026-07-08 18:11:55] info: 🔌 Socket connected: fG3q8cjCCX9XvWqHAAAK
+[2026-07-08 18:11:55] info: 🔌 Socket connected: HGzyCbD397NqKrN4AAAL
+[2026-07-08 18:12:01] info: 🔌 Socket disconnected: fG3q8cjCCX9XvWqHAAAK
+[2026-07-08 18:12:01] info: 🔌 Socket disconnected: HGzyCbD397NqKrN4AAAL
+[2026-07-08 18:12:01] info: 🔌 Socket connected: tbYg-QntliwhVctsAAAQ
+[2026-07-08 18:12:01] info: 🔌 Socket connected: -GhsaFiPTxKoFvPqAAAR
+[2026-07-08 18:12:04] info: ::1 - - [08/Jul/2026:13:12:04 +0000] "GET /api/projects HTTP/1.1" 304 - "http://localhost:5173/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36"
+[2026-07-08 18:25:09] info: 🔌 Socket disconnected: tbYg-QntliwhVctsAAAQ
+[2026-07-08 18:25:09] info: 🔌 Socket disconnected: -GhsaFiPTxKoFvPqAAAR
+[2026-07-08 18:28:44] warn: ⚠️ Could not connect to Redis. Caching will be disabled.
+[2026-07-08 18:28:45] info: 🚀 Server running in production mode on port 5000
