@@ -17,6 +17,12 @@ export const Blogs = () => {
     }
   });
 
+  const trackBlogView = (id: string) => {
+    if (sessionStorage.getItem(`viewed_blog_${id}`)) return;
+    sessionStorage.setItem(`viewed_blog_${id}`, 'true');
+    api.post(`/blogs/${id}/view`).catch(console.error);
+  };
+
   return (
     <PageWrapper>
       <div className="min-h-screen bg-background pt-24 md:pt-32 px-4 md:px-6">
@@ -42,7 +48,7 @@ export const Blogs = () => {
         ) : (
           <div className="space-y-6">
             {data?.map((blog: any) => (
-              <div key={blog.id} className="glass p-6 rounded-xl flex flex-col sm:flex-row gap-6 hover:border-primary/50 transition-colors cursor-pointer">
+              <div key={blog.id} onClick={() => trackBlogView(blog.id)} className="glass p-6 rounded-xl flex flex-col sm:flex-row gap-6 hover:border-primary/50 transition-colors cursor-pointer">
                 <div className="w-full h-48 sm:w-32 sm:h-24 bg-foreground/5 rounded-lg flex-shrink-0 bg-cover bg-center" style={{ backgroundImage: `url(${blog.image_url})`}} />
                 <div>
                   <h3 className="text-xl font-semibold text-foreground dark:text-white mb-2">{blog.title[language] || blog.title.en}</h3>

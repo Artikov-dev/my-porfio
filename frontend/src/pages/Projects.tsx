@@ -80,6 +80,13 @@ export const Projects = () => {
     }
   });
 
+  const trackProjectView = (id: string) => {
+    // Prevent duplicate counting in same session
+    if (sessionStorage.getItem(`viewed_proj_${id}`)) return;
+    sessionStorage.setItem(`viewed_proj_${id}`, 'true');
+    api.post(`/projects/${id}/view`).catch(console.error);
+  };
+
   return (
     <PageWrapper>
       <div className="min-h-screen bg-background pt-24 md:pt-32 px-4 md:px-6">
@@ -150,7 +157,7 @@ export const Projects = () => {
                   {/* Action Buttons */}
                   <div className="flex flex-col sm:flex-row items-center gap-3 pt-4 border-t border-border mt-auto">
                     {project.live_url && (
-                      <a href={project.live_url} target="_blank" rel="noopener noreferrer" className="flex-1 w-full">
+                      <a href={project.live_url} target="_blank" rel="noopener noreferrer" className="flex-1 w-full" onClick={() => trackProjectView(project.id)}>
                         <Button variant="solid" className="w-full flex items-center justify-center gap-2">
                           <ExternalLink size={16} />
                           {t('view_online')}
@@ -158,7 +165,7 @@ export const Projects = () => {
                       </a>
                     )}
                     {project.github_url && (
-                      <a href={project.github_url} target="_blank" rel="noopener noreferrer" className="flex-1 w-full">
+                      <a href={project.github_url} target="_blank" rel="noopener noreferrer" className="flex-1 w-full" onClick={() => trackProjectView(project.id)}>
                         <Button variant="outline" className="w-full flex items-center justify-center gap-2">
                           <Code2 size={16} />
                           {t('view_github')}
