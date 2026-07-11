@@ -5,15 +5,9 @@ export type TransitionMode = 'black-hole' | 'big-bang' | null;
 
 interface GodModeTransitionProps {
   mode: TransitionMode;
-  onAnimationHalfway: () => void;
-  onAnimationComplete: () => void;
 }
 
-export const GodModeTransition: React.FC<GodModeTransitionProps> = ({ 
-  mode, 
-  onAnimationHalfway, 
-  onAnimationComplete 
-}) => {
+export const GodModeTransition: React.FC<GodModeTransitionProps> = ({ mode }) => {
   const [stars, setStars] = useState<{ x: number, y: number, size: number, delay: number }[]>([]);
 
   useEffect(() => {
@@ -28,27 +22,6 @@ export const GodModeTransition: React.FC<GodModeTransitionProps> = ({
     }
   }, [mode]);
 
-  useEffect(() => {
-    if (mode) {
-      // At this point (1000ms), the screen is completely covered by the animation.
-      // We change the actual theme underneath.
-      const halfwayTimer = setTimeout(() => {
-        onAnimationHalfway();
-      }, 1000);
-
-      // The animation finishes after 2500ms
-      const completeTimer = setTimeout(() => {
-        onAnimationComplete();
-      }, 2500);
-
-      return () => {
-        clearTimeout(halfwayTimer);
-        clearTimeout(completeTimer);
-      };
-    }
-  }, [mode, onAnimationHalfway, onAnimationComplete]);
-
-  if (!mode) return null;
 
   return (
     <div className="fixed inset-0 z-[99999] pointer-events-none flex items-center justify-center overflow-hidden">

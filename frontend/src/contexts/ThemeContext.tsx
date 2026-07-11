@@ -41,23 +41,19 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
     
     // Trigger animation: 'big-bang' when turning Light, 'black-hole' when turning Dark
     setTransitionMode(isDark ? 'big-bang' : 'black-hole');
-  };
 
-  const handleAnimationHalfway = () => {
-    setTheme(prev => prev === 'dark' ? 'light' : 'dark');
-  };
+    setTimeout(() => {
+      setTheme(isDark ? 'light' : 'dark');
+    }, 1000);
 
-  const handleAnimationComplete = () => {
-    setTransitionMode(null);
+    setTimeout(() => {
+      setTransitionMode(null);
+    }, 2500);
   };
 
   return (
     <ThemeContext.Provider value={{ theme, toggleTheme }}>
-      <GodModeTransition 
-        mode={transitionMode}
-        onAnimationHalfway={handleAnimationHalfway}
-        onAnimationComplete={handleAnimationComplete}
-      />
+      <GodModeTransition mode={transitionMode} />
       {children}
     </ThemeContext.Provider>
   );
@@ -70,4 +66,5 @@ export const useTheme = () => {
   }
   return context;
 };
+
 
