@@ -47,5 +47,5 @@ exports.AuthService = {
             expiresIn: (process.env.REFRESH_TOKEN_EXPIRES_IN || '7d'),
         });
         return { accessToken, refreshToken };
-    }
+    },
 };

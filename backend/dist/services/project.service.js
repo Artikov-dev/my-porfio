@@ -38,7 +38,7 @@ exports.ProjectService = {
             data.image_url,
             data.github_url,
             data.live_url,
-            data.tech_stack
+            data.tech_stack,
         ];
         const result = await database_1.db.query(query, values);
         // Invalidate cache
@@ -60,7 +60,7 @@ exports.ProjectService = {
             data.github_url,
             data.live_url,
             data.tech_stack,
-            id
+            id,
         ];
         const result = await database_1.db.query(query, values);
         if (result.rows.length === 0) {
@@ -77,5 +77,5 @@ exports.ProjectService = {
         // Invalidate cache
         await redis_1.default.del('projects');
         return true;
-    }
+    },
 };

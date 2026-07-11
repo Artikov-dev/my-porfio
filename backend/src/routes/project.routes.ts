@@ -16,7 +16,7 @@ router.get('/:id', getProject);
 router.post('/:id/view', async (req, res) => {
   try {
     const { id } = req.params;
-    const { db } = await import('../config/database');
+    const { db } = await import('../config/database.js');
     await db.query(
       'UPDATE projects SET views = COALESCE(views, 0) + 1 WHERE id = $1',
       [id],

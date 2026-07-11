@@ -37,7 +37,7 @@ exports.BlogService = {
             data.content,
             data.image_url,
             data.tags,
-            reading_time
+            reading_time,
         ];
         const result = await database_1.db.query(query, values);
         await redis_1.default.del('blogs');
@@ -50,5 +50,5 @@ exports.BlogService = {
         }
         await redis_1.default.del('blogs');
         return true;
-    }
+    },
 };

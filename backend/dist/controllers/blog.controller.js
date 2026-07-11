@@ -35,7 +35,9 @@ exports.createBlog = createBlog;
 const deleteBlog = async (req, res, next) => {
     try {
         await blog_service_1.BlogService.deleteBlog(req.params.id);
-        res.status(200).json({ status: 'success', message: 'Blog deleted successfully' });
+        res
+            .status(200)
+            .json({ status: 'success', message: 'Blog deleted successfully' });
     }
     catch (error) {
         next(error);

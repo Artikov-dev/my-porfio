@@ -10,7 +10,7 @@ const path_1 = __importDefault(require("path"));
 dotenv_1.default.config({ path: path_1.default.resolve(__dirname, '../../.env') });
 const pool = new pg_1.Pool({
     connectionString: process.env.DATABASE_URL,
-    ssl: { rejectUnauthorized: false } // Required for Render connections
+    ssl: { rejectUnauthorized: false }, // Required for Render connections
 });
 const createTables = async () => {
     try {
@@ -67,6 +67,7 @@ const createTables = async () => {
         session_id TEXT NOT NULL,
         name TEXT NOT NULL,
         text TEXT NOT NULL,
+        is_admin BOOLEAN DEFAULT false,
         created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
       );
     `);

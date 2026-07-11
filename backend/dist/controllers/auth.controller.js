@@ -7,21 +7,26 @@ const login = async (req, res, next) => {
         const { email, password } = req.body;
         await auth_service_1.AuthService.validateCredentials(email, password);
         // Bypass 2FA for now as requested
-        const { accessToken, refreshToken } = auth_service_1.AuthService.generateTokens({ id: 'admin_id', role: 'admin' });
+        const { accessToken, refreshToken } = auth_service_1.AuthService.generateTokens({
+            id: 'admin_id',
+            role: 'admin',
+        });
         // Set HTTP-only cookies
         res.cookie('accessToken', accessToken, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
-            sameSite: 'strict',
-            maxAge: 60 * 60 * 1000 // 1 hour
+            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict',
+            maxAge: 60 * 60 * 1000, // 1 hour
         });
         res.cookie('refreshToken', refreshToken, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
-            sameSite: 'strict',
-            maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict',
+            maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
         });
-        res.status(200).json({ status: 'success', message: 'Logged in successfully' });
+        res
+            .status(200)
+            .json({ status: 'success', message: 'Logged in successfully' });
     }
     catch (error) {
         next(error);
@@ -33,21 +38,26 @@ const verify2FA = async (req, res, next) => {
         const { token } = req.body;
         // In real scenario, verify preAuthToken from headers first.
         auth_service_1.AuthService.verify2FA(token);
-        const { accessToken, refreshToken } = auth_service_1.AuthService.generateTokens({ id: 'admin_id', role: 'admin' });
+        const { accessToken, refreshToken } = auth_service_1.AuthService.generateTokens({
+            id: 'admin_id',
+            role: 'admin',
+        });
         // Set HTTP-only cookies
         res.cookie('accessToken', accessToken, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
-            sameSite: 'strict',
-            maxAge: 60 * 60 * 1000 // 1 hour
+            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict',
+            maxAge: 60 * 60 * 1000, // 1 hour
         });
         res.cookie('refreshToken', refreshToken, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
-            sameSite: 'strict',
-            maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict',
+            maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
         });
-        res.status(200).json({ status: 'success', message: 'Logged in successfully' });
+        res
+            .status(200)
+            .json({ status: 'success', message: 'Logged in successfully' });
     }
     catch (error) {
         next(error);

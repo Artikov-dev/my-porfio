@@ -7,10 +7,14 @@ exports.setupSocket = void 0;
 const socket_io_1 = require("socket.io");
 const logger_1 = require("./logger");
 const redis_1 = __importDefault(require("./redis"));
+const database_1 = require("./database");
 const setupSocket = (server) => {
+    const allowedOrigins = process.env.CLIENT_URL
+        ? process.env.CLIENT_URL.split(',')
+        : ['http://localhost:5173'];
     const io = new socket_io_1.Server(server, {
         cors: {
-            origin: process.env.CLIENT_URL || 'http://localhost:5173',
+            origin: allowedOrigins,
             methods: ['GET', 'POST'],
             credentials: true,
         },
@@ -25,7 +29,7 @@ const setupSocket = (server) => {
         try {
             if (redis_1.default.isConnected) {
                 await redis_1.default.incr('active_users');
-                activeUsers = parseInt(await redis_1.default.get('active_users') || '0', 10);
+                activeUsers = parseInt((await redis_1.default.get('active_users')) || '0', 10);
             }
         }
         catch (e) {
@@ -39,7 +43,7 @@ const setupSocket = (server) => {
             try {
                 if (redis_1.default.isConnected) {
                     await redis_1.default.decr('active_users');
-                    updatedActiveUsers = parseInt(await redis_1.default.get('active_users') || '0', 10);
+                    updatedActiveUsers = parseInt((await redis_1.default.get('active_users')) || '0', 10);
                 }
             }
             catch (e) {
@@ -53,8 +57,7 @@ const setupSocket = (server) => {
         socket.on('chat_message', async (data) => {
             logger_1.logger.info(`Chat message from ${data.name}: ${data.text}`);
             try {
-                const { db } = require('./database');
-                const result = await db.query('INSERT INTO chat_messages (name, text, session_id, is_admin) VALUES ($1, $2, $3, false) RETURNING *', [data.name, data.text, socket.id]);
+                const result = await database_1.db.query('INSERT INTO chat_messages (name, text, session_id, is_admin) VALUES ($1, $2, $3, false) RETURNING *', [data.name, data.text, socket.id]);
                 // Broadcast to admins that a new message arrived
                 io.emit('new_admin_message', result.rows[0]);
             }
@@ -65,8 +68,7 @@ const setupSocket = (server) => {
         socket.on('admin_reply', async (data) => {
             logger_1.logger.info(`Admin replying to ${data.session_id}: ${data.text}`);
             try {
-                const { db } = require('./database');
-                const result = await db.query('INSERT INTO chat_messages (name, text, session_id, is_admin) VALUES ($1, $2, $3, true) RETURNING *', ['Roma Artikov', data.text, data.session_id]);
+                const result = await database_1.db.query('INSERT INTO chat_messages (name, text, session_id, is_admin) VALUES ($1, $2, $3, true) RETURNING *', ['Roma Artikov', data.text, data.session_id]);
                 // Send the reply specifically to the user's socket
                 io.to(data.session_id).emit('chat_reply', result.rows[0]);
                 // Also broadcast so other admin tabs can see it

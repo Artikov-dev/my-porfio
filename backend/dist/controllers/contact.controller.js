@@ -16,9 +16,16 @@ const submitContact = async (req, res, next) => {
         // 3. Emit Socket Event (assuming io is set on app)
         const io = req.app.get('io');
         if (io) {
-            io.emit('new_contact_message', { name, email, subject, timestamp: new Date() });
+            io.emit('new_contact_message', {
+                name,
+                email,
+                subject,
+                timestamp: new Date(),
+            });
         }
-        res.status(200).json({ status: 'success', message: 'Message sent successfully' });
+        res
+            .status(200)
+            .json({ status: 'success', message: 'Message sent successfully' });
     }
     catch (error) {
         next(error);
@@ -33,8 +40,8 @@ const getMessages = async (req, res, next) => {
             status: 'success',
             data: {
                 contacts: contactRes.rows,
-                chats: chatRes.rows
-            }
+                chats: chatRes.rows,
+            },
         });
     }
     catch (error) {

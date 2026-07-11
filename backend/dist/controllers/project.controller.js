@@ -49,9 +49,11 @@ const autoTranslate = async (req, res, next) => {
         translate.engine = 'google';
         const { text, from } = req.body;
         if (!text || !from) {
-            return res.status(400).json({ status: 'error', message: 'Missing text or from language' });
+            return res
+                .status(400)
+                .json({ status: 'error', message: 'Missing text or from language' });
         }
-        const targetLangs = ['en', 'ru', 'uz'].filter(l => l !== from);
+        const targetLangs = ['en', 'ru', 'uz'].filter((l) => l !== from);
         const results = { [from]: text };
         for (const target of targetLangs) {
             // translate requires 'uz' or 'ru' or 'en'
@@ -69,7 +71,9 @@ exports.autoTranslate = autoTranslate;
 const deleteProject = async (req, res, next) => {
     try {
         await project_service_1.ProjectService.deleteProject(req.params.id);
-        res.status(200).json({ status: 'success', message: 'Project deleted successfully' });
+        res
+            .status(200)
+            .json({ status: 'success', message: 'Project deleted successfully' });
     }
     catch (error) {
         next(error);

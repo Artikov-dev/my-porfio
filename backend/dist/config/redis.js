@@ -30,7 +30,9 @@ redisClient.on('error', (err) => {
 });
 // Wrapper to safely execute commands without throwing if offline
 exports.default = {
-    get isConnected() { return isConnected; },
+    get isConnected() {
+        return isConnected;
+    },
     async get(key) {
         if (!isConnected)
             return null;
@@ -82,5 +84,5 @@ exports.default = {
         catch (e) {
             return 0;
         }
-    }
+    },
 };
