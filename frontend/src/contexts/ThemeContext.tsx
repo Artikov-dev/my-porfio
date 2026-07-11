@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { flushSync } from 'react-dom';
+import { GodModeTransition, TransitionMode } from '@/components/Theme/GodModeTransition';
 
 type Theme = 'light' | 'dark';
 
@@ -12,6 +12,7 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
   const [theme, setTheme] = useState<Theme>('dark');
+  const [transitionMode, setTransitionMode] = useState<TransitionMode>(null);
 
   useEffect(() => {
     // Check local storage or system preference
@@ -34,48 +35,29 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
   }, [theme]);
 
   const toggleTheme = (e?: React.MouseEvent) => {
-    if (!document.startViewTransition) {
-      setTheme(prev => prev === 'dark' ? 'light' : 'dark');
-      return;
-    }
-
-    // Tepadagi burchakdan (yoki bosilgan tugmadan) chiqishi uchun
-    const x = e?.clientX ?? window.innerWidth - 60;
-    const y = e?.clientY ?? 60;
-    const endRadius = Math.hypot(
-      Math.max(x, window.innerWidth - x),
-      Math.max(y, window.innerHeight - y)
-    );
+    if (transitionMode) return; // Prevent multiple clicks during animation
 
     const isDark = theme === 'dark';
     
-    const transition = document.startViewTransition(() => {
-      flushSync(() => {
-        setTheme(isDark ? 'light' : 'dark');
-      });
-    });
+    // Trigger animation: 'big-bang' when turning Light, 'black-hole' when turning Dark
+    setTransitionMode(isDark ? 'big-bang' : 'black-hole');
+  };
 
-    transition.ready.then(() => {
-      const clipPath = [
-        `circle(0px at ${x}px ${y}px)`,
-        `circle(${endRadius}px at ${x}px ${y}px)`,
-      ];
+  const handleAnimationHalfway = () => {
+    setTheme(prev => prev === 'dark' ? 'light' : 'dark');
+  };
 
-      document.documentElement.animate(
-        {
-          clipPath: clipPath,
-        },
-        {
-          duration: 800,
-          easing: 'cubic-bezier(0.25, 1, 0.5, 1)', // Silliq va tezroq "ease-out"
-          pseudoElement: '::view-transition-new(root)',
-        }
-      );
-    });
+  const handleAnimationComplete = () => {
+    setTransitionMode(null);
   };
 
   return (
     <ThemeContext.Provider value={{ theme, toggleTheme }}>
+      <GodModeTransition 
+        mode={transitionMode}
+        onAnimationHalfway={handleAnimationHalfway}
+        onAnimationComplete={handleAnimationComplete}
+      />
       {children}
     </ThemeContext.Provider>
   );
@@ -88,3 +70,4 @@ export const useTheme = () => {
   }
   return context;
 };
+

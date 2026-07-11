@@ -94,7 +94,7 @@ function App() {
       
       {showMatrix && (
         <div className="fixed inset-0 z-[99999] pointer-events-none mix-blend-screen opacity-75">
-          <MatrixRain />
+          <MatrixRain onComplete={() => setShowMatrix(false)} />
         </div>
       )}
     </div>
