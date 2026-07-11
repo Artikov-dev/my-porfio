@@ -31,28 +31,49 @@ redisClient.on('error', (err) => {
 
 // Wrapper to safely execute commands without throwing if offline
 export default {
-  get isConnected() { return isConnected; },
+  get isConnected() {
+    return isConnected;
+  },
   async get(key: string) {
     if (!isConnected) return null;
-    try { return await redisClient.get(key); } catch (e) { return null; }
+    try {
+      return await redisClient.get(key);
+    } catch (e) {
+      return null;
+    }
   },
   async set(key: string, value: string, mode?: any, duration?: any) {
     if (!isConnected) return null;
-    try { 
-      if (mode && duration) return await redisClient.set(key, value, mode, duration);
+    try {
+      if (mode && duration)
+        return await redisClient.set(key, value, mode, duration);
       return await redisClient.set(key, value);
-    } catch (e) { return null; }
+    } catch (e) {
+      return null;
+    }
   },
   async del(key: string) {
     if (!isConnected) return null;
-    try { return await redisClient.del(key); } catch (e) { return null; }
+    try {
+      return await redisClient.del(key);
+    } catch (e) {
+      return null;
+    }
   },
   async incr(key: string) {
     if (!isConnected) return 1;
-    try { return await redisClient.incr(key); } catch (e) { return 1; }
+    try {
+      return await redisClient.incr(key);
+    } catch (e) {
+      return 1;
+    }
   },
   async decr(key: string) {
     if (!isConnected) return 0;
-    try { return await redisClient.decr(key); } catch (e) { return 0; }
-  }
+    try {
+      return await redisClient.decr(key);
+    } catch (e) {
+      return 0;
+    }
+  },
 };

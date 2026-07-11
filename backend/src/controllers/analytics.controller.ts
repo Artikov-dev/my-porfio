@@ -7,6 +7,8 @@ export const getAnalytics = async (req: Request, res: Response) => {
     res.json({ success: true, data });
   } catch (error) {
     console.error('Analytics Error:', error);
-    res.status(500).json({ success: false, message: 'Server error fetching analytics' });
+    res
+      .status(500)
+      .json({ success: false, message: 'Server error fetching analytics' });
   }
 };

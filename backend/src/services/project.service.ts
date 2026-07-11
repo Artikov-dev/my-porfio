@@ -18,8 +18,10 @@ export const ProjectService = {
     const cached = await redisClient.get('projects');
     if (cached) return JSON.parse(cached);
 
-    const result = await db.query('SELECT * FROM projects ORDER BY created_at DESC');
-    
+    const result = await db.query(
+      'SELECT * FROM projects ORDER BY created_at DESC',
+    );
+
     // Set cache
     await redisClient.set('projects', JSON.stringify(result.rows), 'EX', 3600); // 1 hour cache
     return result.rows;
@@ -40,20 +42,20 @@ export const ProjectService = {
       RETURNING *;
     `;
     const values = [
-      data.title, 
+      data.title,
       data.description,
       data.content,
       data.image_url,
       data.github_url,
       data.live_url,
-      data.tech_stack
+      data.tech_stack,
     ];
-    
+
     const result = await db.query(query, values);
-    
+
     // Invalidate cache
     await redisClient.del('projects');
-    
+
     return result.rows[0];
   },
 
@@ -65,33 +67,36 @@ export const ProjectService = {
       RETURNING *;
     `;
     const values = [
-      data.title, 
+      data.title,
       data.description,
       data.content,
       data.image_url,
       data.github_url,
       data.live_url,
       data.tech_stack,
-      id
+      id,
     ];
-    
+
     const result = await db.query(query, values);
     if (result.rows.length === 0) {
       throw new CustomError('Project not found', 404);
     }
-    
+
     await redisClient.del('projects');
     return result.rows[0];
   },
 
   async deleteProject(id: string) {
-    const result = await db.query('DELETE FROM projects WHERE id = $1 RETURNING id', [id]);
+    const result = await db.query(
+      'DELETE FROM projects WHERE id = $1 RETURNING id',
+      [id],
+    );
     if (result.rows.length === 0) {
       throw new CustomError('Project not found', 404);
     }
-    
+
     // Invalidate cache
     await redisClient.del('projects');
     return true;
-  }
+  },
 };

@@ -1,5 +1,12 @@
 import { Router } from 'express';
-import { getAllProjects, getProject, createProject, updateProject, deleteProject, autoTranslate } from '../controllers/project.controller';
+import {
+  getAllProjects,
+  getProject,
+  createProject,
+  updateProject,
+  deleteProject,
+  autoTranslate,
+} from '../controllers/project.controller';
 import { requireAuth } from '../middlewares/auth.middleware';
 
 const router = Router();
@@ -10,9 +17,12 @@ router.post('/:id/view', async (req, res) => {
   try {
     const { id } = req.params;
     const { db } = await import('../config/database');
-    await db.query('UPDATE projects SET views = COALESCE(views, 0) + 1 WHERE id = $1', [id]);
+    await db.query(
+      'UPDATE projects SET views = COALESCE(views, 0) + 1 WHERE id = $1',
+      [id],
+    );
     res.json({ success: true });
-  } catch(e) {
+  } catch (e) {
     res.status(500).json({ success: false });
   }
 });

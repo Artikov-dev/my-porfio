@@ -26,17 +26,25 @@ const PORT = process.env.PORT || 5000;
 
 // Middlewares
 app.use(helmet());
-app.use(morgan('combined', { stream: { write: (message: string) => logger.info(message.trim()) } }));
+app.use(
+  morgan('combined', {
+    stream: { write: (message: string) => logger.info(message.trim()) },
+  }),
+);
 app.use(globalLimiter);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
-const allowedOrigins = process.env.CLIENT_URL ? process.env.CLIENT_URL.split(',') : ['http://localhost:5173'];
+const allowedOrigins = process.env.CLIENT_URL
+  ? process.env.CLIENT_URL.split(',')
+  : ['http://localhost:5173'];
 
-app.use(cors({
-  origin: allowedOrigins,
-  credentials: true,
-}));
+app.use(
+  cors({
+    origin: allowedOrigins,
+    credentials: true,
+  }),
+);
 
 // Routes
 app.use('/api/auth', authRoutes);
@@ -60,13 +68,15 @@ app.use(errorHandler);
 // Initialize server
 const startServer = async () => {
   await connectDB();
-  
+
   const httpServer = http.createServer(app);
   const io = setupSocket(httpServer);
   app.set('io', io);
-  
+
   httpServer.listen(PORT, () => {
-    logger.info(`🚀 Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
+    logger.info(
+      `🚀 Server running in ${process.env.NODE_ENV} mode on port ${PORT}`,
+    );
   });
 };
 

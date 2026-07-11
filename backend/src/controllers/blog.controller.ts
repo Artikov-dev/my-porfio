@@ -1,7 +1,11 @@
 import { Request, Response, NextFunction } from 'express';
 import { BlogService } from '../services/blog.service';
 
-export const getAllBlogs = async (req: Request, res: Response, next: NextFunction) => {
+export const getAllBlogs = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
     const blogs = await BlogService.getAllBlogs();
     res.status(200).json({ status: 'success', data: blogs });
@@ -10,7 +14,11 @@ export const getAllBlogs = async (req: Request, res: Response, next: NextFunctio
   }
 };
 
-export const getBlog = async (req: Request, res: Response, next: NextFunction) => {
+export const getBlog = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
     const blog = await BlogService.getBlogById(req.params.id as string);
     res.status(200).json({ status: 'success', data: blog });
@@ -19,7 +27,11 @@ export const getBlog = async (req: Request, res: Response, next: NextFunction) =
   }
 };
 
-export const createBlog = async (req: Request, res: Response, next: NextFunction) => {
+export const createBlog = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
     const blog = await BlogService.createBlog(req.body);
     res.status(201).json({ status: 'success', data: blog });
@@ -28,10 +40,16 @@ export const createBlog = async (req: Request, res: Response, next: NextFunction
   }
 };
 
-export const deleteBlog = async (req: Request, res: Response, next: NextFunction) => {
+export const deleteBlog = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
     await BlogService.deleteBlog(req.params.id as string);
-    res.status(200).json({ status: 'success', message: 'Blog deleted successfully' });
+    res
+      .status(200)
+      .json({ status: 'success', message: 'Blog deleted successfully' });
   } catch (error) {
     next(error);
   }

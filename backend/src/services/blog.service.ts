@@ -14,8 +14,10 @@ export const BlogService = {
     const cached = await redisClient.get('blogs');
     if (cached) return JSON.parse(cached);
 
-    const result = await db.query('SELECT * FROM blogs ORDER BY created_at DESC');
-    
+    const result = await db.query(
+      'SELECT * FROM blogs ORDER BY created_at DESC',
+    );
+
     await redisClient.set('blogs', JSON.stringify(result.rows), 'EX', 3600);
     return result.rows;
   },
@@ -25,15 +27,17 @@ export const BlogService = {
     if (result.rows.length === 0) {
       throw new CustomError('Blog not found', 404);
     }
-    
+
     // Increment view counter
     await db.query('UPDATE blogs SET views = views + 1 WHERE id = $1', [id]);
-    
+
     return result.rows[0];
   },
 
   async createBlog(data: BlogData) {
-    const reading_time = Math.ceil((data.content?.en?.split(' ').length || 200) / 200); // 200 words per min avg
+    const reading_time = Math.ceil(
+      (data.content?.en?.split(' ').length || 200) / 200,
+    ); // 200 words per min avg
 
     const query = `
       INSERT INTO blogs (title, content, image_url, tags, reading_time)
@@ -41,26 +45,29 @@ export const BlogService = {
       RETURNING *;
     `;
     const values = [
-      data.title, 
+      data.title,
       data.content,
       data.image_url,
       data.tags,
-      reading_time
+      reading_time,
     ];
-    
+
     const result = await db.query(query, values);
-    
+
     await redisClient.del('blogs');
     return result.rows[0];
   },
 
   async deleteBlog(id: string) {
-    const result = await db.query('DELETE FROM blogs WHERE id = $1 RETURNING id', [id]);
+    const result = await db.query(
+      'DELETE FROM blogs WHERE id = $1 RETURNING id',
+      [id],
+    );
     if (result.rows.length === 0) {
       throw new CustomError('Blog not found', 404);
     }
-    
+
     await redisClient.del('blogs');
     return true;
-  }
+  },
 };

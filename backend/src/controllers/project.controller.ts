@@ -1,7 +1,11 @@
 import { Request, Response, NextFunction } from 'express';
 import { ProjectService } from '../services/project.service';
 
-export const getAllProjects = async (req: Request, res: Response, next: NextFunction) => {
+export const getAllProjects = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
     const projects = await ProjectService.getAllProjects();
     res.status(200).json({ status: 'success', data: projects });
@@ -10,16 +14,26 @@ export const getAllProjects = async (req: Request, res: Response, next: NextFunc
   }
 };
 
-export const getProject = async (req: Request, res: Response, next: NextFunction) => {
+export const getProject = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
-    const project = await ProjectService.getProjectById(req.params.id as string);
+    const project = await ProjectService.getProjectById(
+      req.params.id as string,
+    );
     res.status(200).json({ status: 'success', data: project });
   } catch (error) {
     next(error);
   }
 };
 
-export const createProject = async (req: Request, res: Response, next: NextFunction) => {
+export const createProject = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
     const project = await ProjectService.createProject(req.body);
     res.status(201).json({ status: 'success', data: project });
@@ -28,16 +42,27 @@ export const createProject = async (req: Request, res: Response, next: NextFunct
   }
 };
 
-export const updateProject = async (req: Request, res: Response, next: NextFunction) => {
+export const updateProject = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
-    const project = await ProjectService.updateProject(req.params.id as string, req.body);
+    const project = await ProjectService.updateProject(
+      req.params.id as string,
+      req.body,
+    );
     res.status(200).json({ status: 'success', data: project });
   } catch (error) {
     next(error);
   }
 };
 
-export const autoTranslate = async (req: Request, res: Response, next: NextFunction) => {
+export const autoTranslate = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
     // Dynamic import for ESM package in CommonJS
     const { default: translate } = await import('translate');
@@ -45,10 +70,12 @@ export const autoTranslate = async (req: Request, res: Response, next: NextFunct
 
     const { text, from } = req.body;
     if (!text || !from) {
-      return res.status(400).json({ status: 'error', message: 'Missing text or from language' });
+      return res
+        .status(400)
+        .json({ status: 'error', message: 'Missing text or from language' });
     }
 
-    const targetLangs = ['en', 'ru', 'uz'].filter(l => l !== from);
+    const targetLangs = ['en', 'ru', 'uz'].filter((l) => l !== from);
     const results: Record<string, string> = { [from]: text };
 
     for (const target of targetLangs) {
@@ -64,10 +91,16 @@ export const autoTranslate = async (req: Request, res: Response, next: NextFunct
   }
 };
 
-export const deleteProject = async (req: Request, res: Response, next: NextFunction) => {
+export const deleteProject = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
     await ProjectService.deleteProject(req.params.id as string);
-    res.status(200).json({ status: 'success', message: 'Project deleted successfully' });
+    res
+      .status(200)
+      .json({ status: 'success', message: 'Project deleted successfully' });
   } catch (error) {
     next(error);
   }

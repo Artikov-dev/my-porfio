@@ -11,7 +11,8 @@ export const globalLimiter = rateLimit({
 export const authLimiter = rateLimit({
   windowMs: 60 * 60 * 1000, // 1 hour window
   max: 5, // start blocking after 5 requests
-  message: 'Too many login attempts from this IP, please try again after an hour',
+  message:
+    'Too many login attempts from this IP, please try again after an hour',
   standardHeaders: true,
   legacyHeaders: false,
 });

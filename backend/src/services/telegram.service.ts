@@ -16,8 +16,8 @@ bot.command('stats', async (ctx) => {
   try {
     // Note: We will implement actual queries when Project & Blog tables exist
     // For now, these are placeholder queries
-    const activeUsers = await redisClient.get('active_users') || 0;
-    
+    const activeUsers = (await redisClient.get('active_users')) || 0;
+
     const message = `
 📊 *Antigravity Dashboard Stats* 📊
 
@@ -39,7 +39,14 @@ if (process.env.NODE_ENV !== 'test' && process.env.TELEGRAM_BOT_TOKEN) {
 }
 
 export const TelegramService = {
-  async sendContactMessage(name: string, email: string, subject: string, body: string, ip: string, location: string) {
+  async sendContactMessage(
+    name: string,
+    email: string,
+    subject: string,
+    body: string,
+    ip: string,
+    location: string,
+  ) {
     const text = `
 📩 *New Contact Message* 📩
 
@@ -54,10 +61,12 @@ ${body}
     `;
 
     try {
-      await bot.telegram.sendMessage(ADMIN_CHAT_ID, text, { parse_mode: 'Markdown' });
+      await bot.telegram.sendMessage(ADMIN_CHAT_ID, text, {
+        parse_mode: 'Markdown',
+      });
       logger.info('Telegram notification sent successfully');
     } catch (error) {
       logger.error('Failed to send Telegram notification', error);
     }
-  }
+  },
 };

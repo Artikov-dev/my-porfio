@@ -48,16 +48,21 @@ export class AnalyticsService {
     return {
       overview: {
         total_projects: parseInt(projectsRes.rows[0].total_projects || '0'),
-        total_project_views: parseInt(projectsRes.rows[0].total_project_views || '0'),
+        total_project_views: parseInt(
+          projectsRes.rows[0].total_project_views || '0',
+        ),
         total_blogs: parseInt(blogsRes.rows[0].total_blogs || '0'),
         total_blog_views: parseInt(blogsRes.rows[0].total_blog_views || '0'),
       },
       top_projects: topProjectsRes.rows,
       top_blogs: topBlogsRes.rows,
-      chat_activity: chatActivityRes.rows.map(r => ({
-        date: new Date(r.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-        count: parseInt(r.count)
-      }))
+      chat_activity: chatActivityRes.rows.map((r) => ({
+        date: new Date(r.date).toLocaleDateString('en-US', {
+          month: 'short',
+          day: 'numeric',
+        }),
+        count: parseInt(r.count),
+      })),
     };
   }
 }

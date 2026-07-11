@@ -7,7 +7,7 @@ dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 const addViewsColumn = async () => {
   try {
     console.log('⏳ Adding views column to projects table...');
-    
+
     // Add views column if it doesn't exist
     await db.query(`
       ALTER TABLE projects 
@@ -19,7 +19,7 @@ const addViewsColumn = async () => {
       ALTER TABLE blogs 
       ADD COLUMN IF NOT EXISTS views INTEGER DEFAULT 0;
     `);
-    
+
     // Also, update existing projects to have views = random number between 10 and 50 just for cool demo
     await db.query(`
       UPDATE projects 
@@ -31,17 +31,26 @@ const addViewsColumn = async () => {
     const chats = await db.query('SELECT count(*) FROM chat_messages');
     if (parseInt(chats.rows[0].count) < 5) {
       console.log('Adding dummy chat messages...');
-      const pastDates = [1, 2, 3, 5, 7, 10, 15, 20].map(daysAgo => {
+      const pastDates = [1, 2, 3, 5, 7, 10, 15, 20].map((daysAgo) => {
         const d = new Date();
         d.setDate(d.getDate() - daysAgo);
         return d.toISOString();
       });
-      
+
       for (const date of pastDates) {
-        await db.query(`
+        await db.query(
+          `
           INSERT INTO chat_messages (session_id, name, text, is_admin, created_at)
           VALUES ($1, $2, $3, $4, $5)
-        `, ['dummy-session', 'Guest ' + Math.floor(Math.random()*100), 'Hello!', false, date]);
+        `,
+          [
+            'dummy-session',
+            'Guest ' + Math.floor(Math.random() * 100),
+            'Hello!',
+            false,
+            date,
+          ],
+        );
       }
     }
 

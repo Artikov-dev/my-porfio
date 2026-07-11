@@ -13,7 +13,7 @@ export const logger = winston.createLogger({
     timestamp({
       format: 'YYYY-MM-DD HH:mm:ss',
     }),
-    logFormat
+    logFormat,
   ),
   transports: [
     new DailyRotateFile({
@@ -34,6 +34,6 @@ if (process.env.NODE_ENV !== 'production') {
   logger.add(
     new winston.transports.Console({
       format: combine(colorize(), align(), logFormat),
-    })
+    }),
   );
 }

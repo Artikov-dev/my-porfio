@@ -1,0 +1,24 @@
+{
+  "name": "last-portfolio",
+  "version": "1.0.0",
+  "description": "Welcome to the repository of my personal portfolio and interactive digital resume. This project is engineered from the ground up to showcase my skills in building high-performance, secure, and visually stunning web applications.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Artikov-dev/my-porfio.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Artikov-dev/my-porfio/issues"
+  },
+  "homepage": "https://github.com/Artikov-dev/my-porfio#readme",
+  "devDependencies": {
+    "typescript": "^7.0.2"
+  }
+}

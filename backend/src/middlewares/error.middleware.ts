@@ -22,7 +22,7 @@ export const errorHandler = (
   err: Error | AppError,
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   let statusCode = 500;
   let message = 'Internal Server Error';
@@ -32,7 +32,9 @@ export const errorHandler = (
     message = err.message;
   }
 
-  logger.error(`[${req.method}] ${req.originalUrl} >> StatusCode:: ${statusCode}, Message:: ${err.message}`);
+  logger.error(
+    `[${req.method}] ${req.originalUrl} >> StatusCode:: ${statusCode}, Message:: ${err.message}`,
+  );
 
   res.status(statusCode).json({
     status: 'error',

@@ -1,5 +1,10 @@
 import { Router } from 'express';
-import { getAllBlogs, getBlog, createBlog, deleteBlog } from '../controllers/blog.controller.js';
+import {
+  getAllBlogs,
+  getBlog,
+  createBlog,
+  deleteBlog,
+} from '../controllers/blog.controller.js';
 import { requireAuth } from '../middlewares/auth.middleware.js';
 
 const router = Router();
@@ -10,9 +15,12 @@ router.post('/:id/view', async (req, res) => {
   try {
     const { id } = req.params;
     const { db } = await import('../config/database.js');
-    await db.query('UPDATE blogs SET views = COALESCE(views, 0) + 1 WHERE id = $1', [id]);
+    await db.query(
+      'UPDATE blogs SET views = COALESCE(views, 0) + 1 WHERE id = $1',
+      [id],
+    );
     res.json({ success: true });
-  } catch(e) {
+  } catch (e) {
     res.status(500).json({ success: false });
   }
 });
