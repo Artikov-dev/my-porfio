@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion } from 'framer-motion';
+import { motion, Variants } from 'framer-motion';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
@@ -13,7 +13,7 @@ export const TextReveal: React.FC<TextRevealProps> = ({ text, className, delay =
   // Split text into words, then words into characters for a fluid reveal
   const words = text.split(' ');
 
-  const container = {
+  const container: Variants = {
     hidden: { opacity: 0 },
     visible: (i = 1) => ({
       opacity: 1,
@@ -21,7 +21,7 @@ export const TextReveal: React.FC<TextRevealProps> = ({ text, className, delay =
     }),
   };
 
-  const child = {
+  const child: Variants = {
     visible: {
       opacity: 1,
       y: 0,
