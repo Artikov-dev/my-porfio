@@ -4,7 +4,7 @@ import { Stars, Sparkles } from '@react-three/drei';
 
 export const Starfield = () => {
   return (
-    <div className="absolute inset-0 z-0 pointer-events-none opacity-80 md:opacity-100">
+    <div className="absolute inset-0 z-0 pointer-events-none opacity-80 md:opacity-100 hidden dark:block">
       <Canvas
         camera={{ position: [0, 0, 1] }}
         gl={{ alpha: true, antialias: false }} // antialias false for performance since they are just stars

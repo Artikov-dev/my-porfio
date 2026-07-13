@@ -23,7 +23,7 @@ export const ParallaxHero = () => {
   const yOffset = (y - winHeight / 2) / 40;
 
   return (
-    <div className="relative min-h-screen flex items-center justify-center overflow-hidden bg-slate-900">
+    <div className="relative min-h-screen flex items-center justify-center overflow-hidden bg-slate-50 dark:bg-slate-900 transition-colors duration-300">
       {/* 3D WebGL Fluid Background Scene */}
       <FluidBackground />
       
@@ -43,7 +43,7 @@ export const ParallaxHero = () => {
         transition={{ type: 'spring', stiffness: 100, damping: 20 }}
       >
         <motion.div
-          className="absolute top-1/4 left-[10%] md:left-[20%] px-4 py-2 rounded-xl bg-white/5 border border-white/10 backdrop-blur-md text-cyan-400 font-mono text-sm md:text-base font-bold shadow-[0_0_20px_rgba(34,211,238,0.2)]"
+          className="absolute top-1/4 left-[10%] md:left-[20%] px-4 py-2 rounded-xl dark:bg-white/5 bg-slate-900/5 border dark:border-white/10 border-slate-900/10 backdrop-blur-md text-cyan-500 dark:text-cyan-400 font-mono text-sm md:text-base font-bold shadow-[0_0_20px_rgba(34,211,238,0.2)]"
           animate={{ y: [0, -15, 0], rotate: [0, -5, 0] }}
           transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
         >
@@ -51,7 +51,7 @@ export const ParallaxHero = () => {
         </motion.div>
         
         <motion.div
-          className="absolute top-1/3 right-[10%] md:right-[20%] px-4 py-2 rounded-xl bg-white/5 border border-white/10 backdrop-blur-md text-green-500 font-mono text-sm md:text-base font-bold shadow-[0_0_20px_rgba(34,197,94,0.2)]"
+          className="absolute top-1/3 right-[10%] md:right-[20%] px-4 py-2 rounded-xl dark:bg-white/5 bg-slate-900/5 border dark:border-white/10 border-slate-900/10 backdrop-blur-md text-green-600 dark:text-green-500 font-mono text-sm md:text-base font-bold shadow-[0_0_20px_rgba(34,197,94,0.2)]"
           animate={{ y: [0, 20, 0], rotate: [0, 5, 0] }}
           transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
         >
@@ -59,7 +59,7 @@ export const ParallaxHero = () => {
         </motion.div>
 
         <motion.div
-          className="absolute bottom-1/4 left-[15%] md:left-[25%] px-4 py-2 rounded-xl bg-white/5 border border-white/10 backdrop-blur-md text-blue-500 font-mono text-sm md:text-base font-bold shadow-[0_0_20px_rgba(59,130,246,0.2)]"
+          className="absolute bottom-1/4 left-[15%] md:left-[25%] px-4 py-2 rounded-xl dark:bg-white/5 bg-slate-900/5 border dark:border-white/10 border-slate-900/10 backdrop-blur-md text-blue-600 dark:text-blue-500 font-mono text-sm md:text-base font-bold shadow-[0_0_20px_rgba(59,130,246,0.2)]"
           animate={{ y: [0, -10, 0], rotate: [0, 3, 0] }}
           transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut', delay: 2 }}
         >
@@ -78,11 +78,11 @@ export const ParallaxHero = () => {
           transition={{ duration: 0.8 }}
           className="pointer-events-auto"
         >
-          <h1 className="text-4xl sm:text-5xl md:text-7xl font-bold text-white tracking-tight mb-4 md:mb-6 leading-tight flex flex-col items-center gap-2">
+          <h1 className="text-4xl sm:text-5xl md:text-7xl font-bold text-slate-900 dark:text-white tracking-tight mb-4 md:mb-6 leading-tight flex flex-col items-center gap-2">
             <TextReveal text={t('hero_title1')} />
             <TextReveal text={t('hero_title2')} className="text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-primary" delay={0.5} />
           </h1>
-          <div className="max-w-2xl mx-auto text-base md:text-xl text-slate-300 mb-8 md:mb-10 font-medium h-[60px] flex items-center justify-center">
+          <div className="max-w-2xl mx-auto text-base md:text-xl text-slate-600 dark:text-slate-300 mb-8 md:mb-10 font-medium h-[60px] flex items-center justify-center">
             <Typewriter 
               words={[
                 t('hero_subtitle'), 
@@ -112,7 +112,7 @@ export const ParallaxHero = () => {
             </Link>
             <Link to="/resume">
               <Magnetic>
-                <Button variant="outline" className="w-full sm:w-auto px-8 py-3 text-lg backdrop-blur-md border-white/20 text-white hover:bg-white/10 pointer-events-auto">
+                <Button variant="outline" className="w-full sm:w-auto px-8 py-3 text-lg backdrop-blur-md dark:border-white/20 border-slate-900/20 text-slate-900 dark:text-white dark:hover:bg-white/10 hover:bg-slate-900/10 pointer-events-auto">
                   {t('view_resume')}
                 </Button>
               </Magnetic>
