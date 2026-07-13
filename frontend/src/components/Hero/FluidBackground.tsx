@@ -1,8 +1,11 @@
 import React, { useEffect, useRef } from 'react';
 import webGLFluidEnhanced from 'webgl-fluid';
+import { useTheme } from '@/contexts/ThemeContext';
 
 export const FluidBackground: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
 
   useEffect(() => {
     if (canvasRef.current) {
@@ -23,8 +26,8 @@ export const FluidBackground: React.FC = () => {
         COLORFUL: true,
         COLOR_UPDATE_SPEED: 10,
         PAUSED: false,
-        BACK_COLOR: { r: 0, g: 0, b: 0 }, // Unused when transparent
-        TRANSPARENT: true,
+        BACK_COLOR: isDark ? { r: 15, g: 23, b: 42 } : { r: 0, g: 0, b: 0 },
+        TRANSPARENT: !isDark,
         BLOOM: true,
         BLOOM_ITERATIONS: 8,
         BLOOM_RESOLUTION: 256,
@@ -36,10 +39,11 @@ export const FluidBackground: React.FC = () => {
         SUNRAYS_WEIGHT: 1.0,
       });
     }
-  }, []);
+  }, [isDark]);
 
   return (
     <canvas
+      key={theme}
       ref={canvasRef}
       className="absolute inset-0 w-full h-full z-0 opacity-80 md:opacity-100"
       style={{ width: '100vw', height: '100vh', pointerEvents: 'auto' }}

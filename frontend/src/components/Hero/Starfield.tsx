@@ -8,6 +8,7 @@ export const Starfield = () => {
       <Canvas
         camera={{ position: [0, 0, 1] }}
         gl={{ alpha: true, antialias: false }} // antialias false for performance since they are just stars
+        style={{ pointerEvents: 'none' }}
       >
         <Suspense fallback={null}>
           {/* Base tiny stars */}
