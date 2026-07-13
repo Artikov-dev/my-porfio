@@ -5,7 +5,9 @@ import { useI18n } from '@/contexts/I18nContext';
 import { Button } from '@/components/ui/Button';
 import { Link } from 'react-router-dom';
 import { FluidBackground } from './FluidBackground';
+import { Starfield } from './Starfield';
 import { TextReveal } from '@/components/ui/TextReveal';
+import { Magnetic } from '@/components/ui/Magnetic';
 
 export const ParallaxHero = () => {
   const { x, y } = useMousePosition();
@@ -23,6 +25,9 @@ export const ParallaxHero = () => {
     <div className="relative min-h-screen flex items-center justify-center overflow-hidden bg-slate-900">
       {/* 3D WebGL Fluid Background Scene */}
       <FluidBackground />
+      
+      {/* Brilliant Stars Overlay */}
+      <Starfield />
 
       {/* Background Glow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/20 rounded-full blur-[120px] pointer-events-none" />
@@ -56,14 +61,18 @@ export const ParallaxHero = () => {
             transition={{ delay: 1.5, duration: 0.5 }}
           >
             <Link to="/projects">
-              <Button variant="solid" className="w-full sm:w-auto px-8 py-3 text-lg backdrop-blur-md bg-primary/80 hover:bg-primary">
-                {t('explore_projects')}
-              </Button>
+              <Magnetic>
+                <Button variant="solid" className="w-full sm:w-auto px-8 py-3 text-lg backdrop-blur-md bg-primary/80 hover:bg-primary pointer-events-auto">
+                  {t('explore_projects')}
+                </Button>
+              </Magnetic>
             </Link>
             <Link to="/resume">
-              <Button variant="outline" className="w-full sm:w-auto px-8 py-3 text-lg backdrop-blur-md border-white/20 text-white hover:bg-white/10">
-                {t('view_resume')}
-              </Button>
+              <Magnetic>
+                <Button variant="outline" className="w-full sm:w-auto px-8 py-3 text-lg backdrop-blur-md border-white/20 text-white hover:bg-white/10 pointer-events-auto">
+                  {t('view_resume')}
+                </Button>
+              </Magnetic>
             </Link>
           </motion.div>
         </motion.div>
