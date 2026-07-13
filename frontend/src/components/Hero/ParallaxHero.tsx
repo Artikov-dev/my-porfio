@@ -23,7 +23,7 @@ export const ParallaxHero = () => {
   const yOffset = (y - winHeight / 2) / 40;
 
   return (
-    <div className="relative min-h-screen flex items-center justify-center overflow-hidden bg-slate-50 dark:bg-slate-900 transition-colors duration-300">
+    <div className="relative min-h-screen flex items-center justify-center overflow-hidden bg-slate-50 dark:bg-black transition-colors duration-300">
       {/* 3D WebGL Fluid Background Scene */}
       <FluidBackground />
       
