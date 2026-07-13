@@ -8,6 +8,8 @@ import {
   autoTranslate,
 } from '../controllers/project.controller';
 import { requireAuth } from '../middlewares/auth.middleware';
+import { validate } from '../middlewares/validate.middleware';
+import { projectSchema } from '../schemas/project.schema';
 
 const router = Router();
 
@@ -29,8 +31,8 @@ router.post('/:id/view', async (req, res) => {
 
 // Protected Admin Routes
 router.post('/translate', requireAuth, autoTranslate);
-router.post('/', requireAuth, createProject);
-router.put('/:id', requireAuth, updateProject);
+router.post('/', requireAuth, validate(projectSchema), createProject);
+router.put('/:id', requireAuth, validate(projectSchema), updateProject);
 router.delete('/:id', requireAuth, deleteProject);
 
 export default router;

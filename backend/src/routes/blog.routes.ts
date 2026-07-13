@@ -6,6 +6,8 @@ import {
   deleteBlog,
 } from '../controllers/blog.controller.js';
 import { requireAuth } from '../middlewares/auth.middleware.js';
+import { validate } from '../middlewares/validate.middleware.js';
+import { blogSchema } from '../schemas/blog.schema.js';
 
 const router = Router();
 
@@ -26,7 +28,7 @@ router.post('/:id/view', async (req, res) => {
 });
 
 // Protected Admin Routes
-router.post('/', requireAuth, createBlog);
+router.post('/', requireAuth, validate(blogSchema), createBlog);
 router.delete('/:id', requireAuth, deleteBlog);
 
 export default router;
