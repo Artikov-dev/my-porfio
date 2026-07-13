@@ -8,6 +8,7 @@ import { FluidBackground } from './FluidBackground';
 import { Starfield } from './Starfield';
 import { TextReveal } from '@/components/ui/TextReveal';
 import { Magnetic } from '@/components/ui/Magnetic';
+import { Typewriter } from '@/components/ui/Typewriter';
 
 export const ParallaxHero = () => {
   const { x, y } = useMousePosition();
@@ -35,6 +36,37 @@ export const ParallaxHero = () => {
       {/* Grid pattern (optional, for aesthetics) */}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none"></div>
 
+      {/* Test: Floating Tech Badges (can be removed if requested) */}
+      <motion.div 
+        className="absolute inset-0 pointer-events-none z-0 overflow-hidden"
+        animate={{ x: -xOffset * 0.8, y: -yOffset * 0.8 }}
+        transition={{ type: 'spring', stiffness: 100, damping: 20 }}
+      >
+        <motion.div
+          className="absolute top-1/4 left-[10%] md:left-[20%] px-4 py-2 rounded-xl bg-white/5 border border-white/10 backdrop-blur-md text-cyan-400 font-mono text-sm md:text-base font-bold shadow-[0_0_20px_rgba(34,211,238,0.2)]"
+          animate={{ y: [0, -15, 0], rotate: [0, -5, 0] }}
+          transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+        >
+          [ React ]
+        </motion.div>
+        
+        <motion.div
+          className="absolute top-1/3 right-[10%] md:right-[20%] px-4 py-2 rounded-xl bg-white/5 border border-white/10 backdrop-blur-md text-green-500 font-mono text-sm md:text-base font-bold shadow-[0_0_20px_rgba(34,197,94,0.2)]"
+          animate={{ y: [0, 20, 0], rotate: [0, 5, 0] }}
+          transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
+        >
+          [ Node.js ]
+        </motion.div>
+
+        <motion.div
+          className="absolute bottom-1/4 left-[15%] md:left-[25%] px-4 py-2 rounded-xl bg-white/5 border border-white/10 backdrop-blur-md text-blue-500 font-mono text-sm md:text-base font-bold shadow-[0_0_20px_rgba(59,130,246,0.2)]"
+          animate={{ y: [0, -10, 0], rotate: [0, 3, 0] }}
+          transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut', delay: 2 }}
+        >
+          [ TypeScript ]
+        </motion.div>
+      </motion.div>
+
       <motion.div 
         className="relative z-10 text-center px-4 pointer-events-none"
         animate={{ x: -xOffset * 0.5, y: -yOffset * 0.5 }}
@@ -50,8 +82,19 @@ export const ParallaxHero = () => {
             <TextReveal text={t('hero_title1')} />
             <TextReveal text={t('hero_title2')} className="text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-primary" delay={0.5} />
           </h1>
-          <div className="max-w-2xl mx-auto text-base md:text-xl text-slate-300 mb-8 md:mb-10 font-medium">
-            <TextReveal text={t('hero_subtitle')} delay={1} />
+          <div className="max-w-2xl mx-auto text-base md:text-xl text-slate-300 mb-8 md:mb-10 font-medium h-[60px] flex items-center justify-center">
+            <Typewriter 
+              words={[
+                t('hero_subtitle'), 
+                'I build high-performance Web Systems',
+                'I specialize in React & Node.js',
+                'Let\'s build something amazing'
+              ]} 
+              typingSpeed={80}
+              deletingSpeed={40}
+              delayBetweenWords={2500}
+              className="text-primary font-bold"
+            />
           </div>
 
           <motion.div 
