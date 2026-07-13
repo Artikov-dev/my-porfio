@@ -32,6 +32,9 @@ export const ProjectService = {
     if (result.rows.length === 0) {
       throw new CustomError('Project not found', 404);
     }
+    // Increment views
+    await db.query('UPDATE projects SET views = COALESCE(views, 0) + 1 WHERE id = $1', [id]);
+    
     return result.rows[0];
   },
 

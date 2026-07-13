@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { useI18n } from '@/contexts/I18nContext';
 import { useTheme } from '@/contexts/ThemeContext';
 import { Sun, Moon, Menu, X, Globe } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { useSound } from '@/hooks/useSound';
 
@@ -102,45 +103,68 @@ export const Navbar = () => {
       </div>
 
       {/* Mobile Menu */}
-      {isOpen && (
-        <div className="lg:hidden absolute top-20 left-0 w-full bg-background/95 backdrop-blur-xl border-b border-border flex flex-col p-6 gap-6 shadow-xl animate-in fade-in slide-in-from-top-4 z-50">
-          {navLinks.map((link) => (
-            <a
-              key={link.nameKey}
-              href={link.href}
-              onClick={(e) => handleScrollTo(e, link.href, link.isRoute)}
-              className="text-lg font-medium text-foreground/80 hover:text-primary"
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div 
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.2, ease: "easeOut" }}
+            className="lg:hidden absolute top-20 left-0 w-full bg-background/98 backdrop-blur-3xl border-b border-border flex flex-col p-6 gap-6 shadow-2xl z-50 origin-top"
+          >
+            {navLinks.map((link, i) => (
+              <motion.a
+                key={link.nameKey}
+                href={link.href}
+                onClick={(e) => handleScrollTo(e, link.href, link.isRoute)}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.1 + i * 0.05 }}
+                className="text-lg font-medium text-foreground/80 hover:text-primary active:scale-95 transition-transform"
+              >
+                {t(link.nameKey)}
+              </motion.a>
+            ))}
+            
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.2 + navLinks.length * 0.05 }}
+              className="h-[1px] w-full bg-border"
+            ></motion.div>
+            
+            <motion.div 
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 + navLinks.length * 0.05 }}
+              className="flex items-center justify-between"
             >
-              {t(link.nameKey)}
-            </a>
-          ))}
-          <div className="h-[1px] w-full bg-border"></div>
-          <div className="flex items-center justify-between">
-            <div className="flex gap-2">
-              {['en', 'uz', 'ru'].map((lang) => (
-                <button
-                  key={lang}
-                  onClick={() => { playClick(); setLanguage(lang as any); setIsOpen(false); }}
-                  className={cn(
-                    "px-4 py-2 text-sm font-semibold rounded-lg uppercase",
-                    language === lang 
-                      ? "bg-primary text-white" 
-                      : "bg-foreground/5 text-foreground"
-                  )}
-                >
-                  {lang}
-                </button>
-              ))}
-            </div>
-            <button 
-              onClick={(e) => { playClick(); toggleTheme(e); setIsOpen(false); }}
-              className="p-3 rounded-lg bg-foreground/5 text-foreground flex items-center gap-2 font-medium"
-            >
-              {theme === 'dark' ? <><Sun className="w-5 h-5"/> Light</> : <><Moon className="w-5 h-5"/> Dark</>}
-            </button>
-          </div>
-        </div>
-      )}
+              <div className="flex gap-2">
+                {['en', 'uz', 'ru'].map((lang) => (
+                  <button
+                    key={lang}
+                    onClick={() => { playClick(); setLanguage(lang as any); setIsOpen(false); }}
+                    className={cn(
+                      "px-4 py-2 text-sm font-semibold rounded-lg uppercase transition-all active:scale-95",
+                      language === lang 
+                        ? "bg-primary text-white shadow-md" 
+                        : "bg-foreground/5 text-foreground hover:bg-foreground/10"
+                    )}
+                  >
+                    {lang}
+                  </button>
+                ))}
+              </div>
+              <button 
+                onClick={(e) => { playClick(); toggleTheme(e); setIsOpen(false); }}
+                className="p-3 rounded-lg bg-foreground/5 text-foreground flex items-center gap-2 font-medium hover:bg-foreground/10 transition-colors active:scale-95"
+              >
+                {theme === 'dark' ? <><Sun className="w-5 h-5"/> Light</> : <><Moon className="w-5 h-5"/> Dark</>}
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </header>
   );
 };

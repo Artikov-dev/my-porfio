@@ -32,17 +32,19 @@ export const ProjectsPreviewSection = () => {
       </ScrollReveal>
 
       {isLoading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16 text-left">
+        <div className="flex overflow-x-auto snap-x snap-mandatory md:grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16 text-left pb-6 px-4 -mx-4 md:px-0 md:mx-0 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {[1, 2, 3].map((i) => (
-            <Skeleton key={i} className="h-[300px] w-full rounded-2xl" />
+            <div key={i} className="w-[85vw] shrink-0 snap-center md:w-auto">
+              <Skeleton className="h-[300px] w-full rounded-2xl" />
+            </div>
           ))}
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16 text-left">
+        <div className="flex overflow-x-auto snap-x snap-mandatory md:grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16 text-left pb-6 px-4 -mx-4 md:px-0 md:mx-0 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {projects?.slice(0, 3).map((project: any, index: number) => (
-            <ScrollReveal key={project.id} delay={0.2 + (index * 0.1)} className="h-full">
+            <ScrollReveal key={project.id} delay={0.2 + (index * 0.1)} className="w-[85vw] shrink-0 snap-center md:w-auto h-full">
               <TiltCard className="h-full">
-                <div className="glass rounded-2xl flex flex-col overflow-hidden group cursor-pointer border border-border hover:border-primary/50 transition-all duration-300 h-full">
+                <div className="glass rounded-2xl flex flex-col overflow-hidden group cursor-pointer border border-border hover:border-primary/50 transition-all duration-300 h-full active:scale-[0.98]">
                   {/* Image Container */}
                   <div className="relative h-48 w-full overflow-hidden">
                     <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors z-10" />

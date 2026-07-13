@@ -15,6 +15,7 @@ import { Footer } from '@/components/Navigation/Footer';
 import { TerminalOverlay } from '@/components/Terminal/TerminalOverlay';
 import { Spotlight } from '@/components/ui/Spotlight';
 import { MusicPlayer } from '@/components/ui/MusicPlayer';
+import { MobileFAB } from '@/components/ui/MobileFAB';
 
 // Admin imports
 import { AdminLogin } from '@/pages/Admin/AdminLogin';
@@ -26,8 +27,10 @@ import { AdminProjects } from '@/pages/Admin/AdminProjects';
 import { AdminBlogs } from '@/pages/Admin/AdminBlogs';
 import { AdminSEO } from '@/pages/Admin/AdminSEO';
 import { MatrixRain } from '@/components/Terminal/MatrixRain';
+import { useAnalytics } from '@/hooks/useAnalytics';
 
 function App() {
+  useAnalytics();
   const [showMatrix, setShowMatrix] = React.useState(false);
   const location = useLocation();
 
@@ -63,6 +66,7 @@ function App() {
       {!isAdminRoute && <TerminalOverlay />}
       {!hidePublicUI && <Spotlight />}
       {!hidePublicUI && <MusicPlayer />}
+      {!hidePublicUI && <MobileFAB />}
       
       {!hidePublicUI && <Navbar />}
 
