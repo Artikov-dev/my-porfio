@@ -63,8 +63,68 @@ export const TerminalOverlay = () => {
             <div><span className="text-foreground dark:text-white font-bold w-20 inline-block">whoami</span> - Display my short bio</div>
             <div><span className="text-foreground dark:text-white font-bold w-20 inline-block">skills</span> - List my technical skills</div>
             <div><span className="text-foreground dark:text-white font-bold w-20 inline-block">projects</span> - Go to projects page</div>
+            <div><span className="text-foreground dark:text-white font-bold w-20 inline-block">resume</span> - View my interactive resume</div>
             <div><span className="text-foreground dark:text-white font-bold w-20 inline-block">clear</span> - Clear the terminal</div>
             <div><span className="text-foreground dark:text-white font-bold w-20 inline-block">exit</span> - Close the terminal</div>
+          </div>
+        );
+        break;
+      case 'resume':
+        response = (
+          <div className="flex flex-col gap-4 mt-2 text-sm max-w-2xl bg-black/40 p-4 rounded-lg border border-green-500/20 shadow-[0_0_15px_rgba(34,197,94,0.1)]">
+            <div className="border-b border-green-500/30 pb-3 flex items-center justify-between">
+              <div>
+                <h1 className="text-2xl font-bold text-white tracking-wider">Roma Artikov</h1>
+                <p className="text-green-400 font-mono mt-1">&gt; Full-Stack Engineer & Software Architect</p>
+              </div>
+              <div className="hidden sm:block text-right text-xs text-green-500/50">
+                <p>STATUS: ACTIVE</p>
+                <p>LOCATION: UZBEKISTAN</p>
+              </div>
+            </div>
+            
+            <div className="mt-2">
+              <h2 className="text-white font-bold mb-2 flex items-center gap-2">
+                <span className="text-green-500">#</span> EXPERIENCE
+              </h2>
+              <div className="pl-4 border-l-2 border-green-500/20 flex flex-col gap-3">
+                <div>
+                  <p className="text-white font-bold">Full Stack Developer</p>
+                  <p className="text-green-500/70 text-xs mb-1">2023 - Present</p>
+                  <ul className="list-disc pl-4 text-green-400/90 text-xs space-y-1">
+                    <li>Developing highly interactive web applications using React and Node.js.</li>
+                    <li>Designing robust architectures for complex user interfaces.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+      
+            <div className="mt-2">
+              <h2 className="text-white font-bold mb-2 flex items-center gap-2">
+                <span className="text-green-500">#</span> SKILLS
+              </h2>
+              <div className="pl-4 text-green-400/90 text-xs grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <p><span className="text-white font-bold">Languages:</span> TypeScript, JavaScript</p>
+                <p><span className="text-white font-bold">Frontend:</span> React, Next.js, TailwindCSS</p>
+                <p><span className="text-white font-bold">Backend:</span> Node.js, Express, NestJS</p>
+                <p><span className="text-white font-bold">Tools/DB:</span> Git, PostgreSQL, MongoDB, Redis</p>
+              </div>
+            </div>
+      
+            <div className="mt-2 pt-3 border-t border-green-500/20">
+              <h2 className="text-white font-bold mb-2 flex items-center gap-2">
+                <span className="text-green-500">#</span> CONTACT
+              </h2>
+              <p className="pl-4 text-green-400/90 text-xs flex flex-col gap-1">
+                <span><span className="text-white">GitHub:</span> <a href="https://github.com/Artikov-dev" target="_blank" rel="noreferrer" className="hover:text-green-300 underline underline-offset-2">github.com/Artikov-dev</a></span>
+              </p>
+            </div>
+            
+            <div className="text-center mt-2">
+              <a href="/resume.pdf" download className="inline-block mt-2 px-4 py-1.5 bg-green-500/10 text-green-400 border border-green-500/30 rounded hover:bg-green-500 hover:text-white transition-colors text-xs font-bold uppercase tracking-wider shadow-lg hover:shadow-green-500/20">
+                [ Download PDF version ]
+              </a>
+            </div>
           </div>
         );
         break;
