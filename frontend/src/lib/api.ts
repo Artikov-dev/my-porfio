@@ -16,7 +16,7 @@ api.interceptors.response.use(
         return api(originalRequest);
       } catch (err) {
         // Handle logout or redirect
-        window.location.href = '/admin/login';
+        window.location.href = '/aadminsecret';
         return Promise.reject(err);
       }
     }
