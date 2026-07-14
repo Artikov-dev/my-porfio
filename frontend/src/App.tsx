@@ -23,6 +23,7 @@ const Home = React.lazy(() => import('@/pages/Home').then(m => ({ default: m.Hom
 const Projects = React.lazy(() => import('@/pages/Projects').then(m => ({ default: m.Projects })));
 const Blogs = React.lazy(() => import('@/pages/Blogs').then(m => ({ default: m.Blogs })));
 const ResumeViewer = React.lazy(() => import('@/pages/ResumeViewer').then(m => ({ default: m.ResumeViewer })));
+const NotFound = React.lazy(() => import('@/pages/NotFound').then(m => ({ default: m.NotFound })));
 
 // Lazy loaded Admin Routes
 const AdminLogin = React.lazy(() => import('@/pages/Admin/AdminLogin').then(m => ({ default: m.AdminLogin })));
@@ -89,6 +90,9 @@ function App() {
               <Route path="/resume" element={<ResumeViewer />} />
               <Route path="/projects" element={<Projects />} />
               <Route path="/blogs" element={<Blogs />} />
+              
+              {/* Catch-all 404 Route */}
+              <Route path="*" element={<NotFound />} />
               
               {/* Secret Admin Route */}
               <Route path="/aadminsecret" element={<AdminLogin />} />
