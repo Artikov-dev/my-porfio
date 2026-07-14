@@ -45,8 +45,8 @@ export const FluidBackground: React.FC = () => {
     <canvas
       key={theme}
       ref={canvasRef}
-      className="absolute inset-0 w-full h-full z-0 opacity-80 md:opacity-100"
-      style={{ width: '100vw', height: '100vh', pointerEvents: 'auto' }}
+      className="absolute inset-0 w-full h-full z-0 opacity-80 md:opacity-100 pointer-events-none md:pointer-events-auto"
+      style={{ width: '100vw', height: '100vh' }}
     />
   );
 };
