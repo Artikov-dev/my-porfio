@@ -51,7 +51,7 @@ export const ParallaxHero = () => {
         </motion.div>
         
         <motion.div
-          className="absolute top-1/3 right-[10%] md:right-[20%] px-4 py-2 rounded-xl dark:bg-white/5 bg-slate-900/5 border dark:border-white/10 border-slate-900/10 backdrop-blur-md text-green-600 dark:text-green-500 font-mono text-sm md:text-base font-bold shadow-[0_0_20px_rgba(34,197,94,0.2)]"
+          className="absolute top-[12%] right-[5%] md:top-[30%] md:right-[20%] px-4 py-2 rounded-xl dark:bg-white/5 bg-slate-900/5 border dark:border-white/10 border-slate-900/10 backdrop-blur-md text-green-600 dark:text-green-500 font-mono text-sm md:text-base font-bold shadow-[0_0_20px_rgba(34,197,94,0.2)]"
           animate={{ y: [0, 20, 0], rotate: [0, 5, 0] }}
           transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
         >
