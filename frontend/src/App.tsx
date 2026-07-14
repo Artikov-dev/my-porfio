@@ -12,6 +12,7 @@ import { TerminalOverlay } from '@/components/Terminal/TerminalOverlay';
 import { Spotlight } from '@/components/ui/Spotlight';
 import { MusicPlayer } from '@/components/ui/MusicPlayer';
 import { MobileFAB } from '@/components/ui/MobileFAB';
+import { ScrollToTop } from '@/components/ui/ScrollToTop';
 
 // Layout & Core
 import { ProtectedRoute } from '@/components/Auth/ProtectedRoute';
@@ -71,6 +72,7 @@ function App() {
 
   return (
     <div className="min-h-screen bg-background relative selection:bg-primary selection:text-white flex flex-col overflow-x-hidden w-full">
+      <ScrollToTop />
       {!hidePublicUI && <FloatingNav />}
       {!hidePublicUI && <LiveStatus />}
       {!hidePublicUI && <LiveChat />}
