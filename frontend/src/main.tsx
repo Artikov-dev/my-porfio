@@ -7,6 +7,7 @@ import { ThemeProvider } from '@/contexts/ThemeContext'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { BrowserRouter } from 'react-router-dom'
 import { HelmetProvider } from 'react-helmet-async'
+import { ErrorBoundary } from '@/components/ErrorBoundary'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -39,7 +40,9 @@ createRoot(document.getElementById('root')!).render(
         <BrowserRouter>
           <ThemeProvider>
             <I18nProvider>
-              <App />
+              <ErrorBoundary>
+                <App />
+              </ErrorBoundary>
             </I18nProvider>
           </ThemeProvider>
         </BrowserRouter>
