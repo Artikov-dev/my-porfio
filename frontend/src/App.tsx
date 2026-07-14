@@ -1,12 +1,8 @@
 // Trigger frontend deployment
-import React from 'react';
+import React, { Suspense } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import { CommandPalette } from '@/components/CommandPalette';
-import { Home } from '@/pages/Home';
-import { Projects } from '@/pages/Projects';
-import { Blogs } from '@/pages/Blogs';
-import { ResumeViewer } from '@/pages/ResumeViewer';
 import { FloatingNav } from '@/components/Navigation/FloatingNav';
 import { LiveStatus } from '@/components/ui/LiveStatus';
 import { LiveChat } from '@/components/ui/LiveChat';
@@ -17,17 +13,32 @@ import { Spotlight } from '@/components/ui/Spotlight';
 import { MusicPlayer } from '@/components/ui/MusicPlayer';
 import { MobileFAB } from '@/components/ui/MobileFAB';
 
-// Admin imports
-import { AdminLogin } from '@/pages/Admin/AdminLogin';
+// Layout & Core
 import { ProtectedRoute } from '@/components/Auth/ProtectedRoute';
-import { AdminLayout } from '@/components/Layout/AdminLayout';
-import { AdminDashboard } from '@/pages/Admin/AdminDashboard';
-import { AdminMessages } from '@/pages/Admin/AdminMessages';
-import { AdminProjects } from '@/pages/Admin/AdminProjects';
-import { AdminBlogs } from '@/pages/Admin/AdminBlogs';
-import { AdminSEO } from '@/pages/Admin/AdminSEO';
 import { MatrixRain } from '@/components/Terminal/MatrixRain';
 import { useAnalytics } from '@/hooks/useAnalytics';
+
+// Lazy loaded Pages
+const Home = React.lazy(() => import('@/pages/Home').then(m => ({ default: m.Home })));
+const Projects = React.lazy(() => import('@/pages/Projects').then(m => ({ default: m.Projects })));
+const Blogs = React.lazy(() => import('@/pages/Blogs').then(m => ({ default: m.Blogs })));
+const ResumeViewer = React.lazy(() => import('@/pages/ResumeViewer').then(m => ({ default: m.ResumeViewer })));
+
+// Lazy loaded Admin Routes
+const AdminLogin = React.lazy(() => import('@/pages/Admin/AdminLogin').then(m => ({ default: m.AdminLogin })));
+const AdminLayout = React.lazy(() => import('@/components/Layout/AdminLayout').then(m => ({ default: m.AdminLayout })));
+const AdminDashboard = React.lazy(() => import('@/pages/Admin/AdminDashboard').then(m => ({ default: m.AdminDashboard })));
+const AdminMessages = React.lazy(() => import('@/pages/Admin/AdminMessages').then(m => ({ default: m.AdminMessages })));
+const AdminProjects = React.lazy(() => import('@/pages/Admin/AdminProjects').then(m => ({ default: m.AdminProjects })));
+const AdminBlogs = React.lazy(() => import('@/pages/Admin/AdminBlogs').then(m => ({ default: m.AdminBlogs })));
+const AdminSEO = React.lazy(() => import('@/pages/Admin/AdminSEO').then(m => ({ default: m.AdminSEO })));
+
+// Loading Fallback
+const PageLoader = () => (
+  <div className="min-h-[70vh] flex items-center justify-center w-full">
+    <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+  </div>
+);
 
 function App() {
   useAnalytics();
@@ -72,26 +83,28 @@ function App() {
 
       <div className="flex-1">
         <AnimatePresence mode="wait">
-          <Routes location={location} key={location.pathname}>
-            <Route path="/" element={<Home />} />
-            <Route path="/resume" element={<ResumeViewer />} />
-            <Route path="/projects" element={<Projects />} />
-            <Route path="/blogs" element={<Blogs />} />
-            
-            {/* Secret Admin Route */}
-            <Route path="/aadminsecret" element={<AdminLogin />} />
+          <Suspense fallback={<PageLoader />}>
+            <Routes location={location} key={location.pathname}>
+              <Route path="/" element={<Home />} />
+              <Route path="/resume" element={<ResumeViewer />} />
+              <Route path="/projects" element={<Projects />} />
+              <Route path="/blogs" element={<Blogs />} />
+              
+              {/* Secret Admin Route */}
+              <Route path="/aadminsecret" element={<AdminLogin />} />
 
-            {/* Protected Admin Routes */}
-            <Route path="/admin" element={<ProtectedRoute />}>
-              <Route element={<AdminLayout />}>
-                <Route path="dashboard" element={<AdminDashboard />} />
-                <Route path="messages" element={<AdminMessages />} />
-                <Route path="projects" element={<AdminProjects />} />
-                <Route path="blogs" element={<AdminBlogs />} />
-                <Route path="seo" element={<AdminSEO />} />
+              {/* Protected Admin Routes */}
+              <Route path="/admin" element={<ProtectedRoute />}>
+                <Route element={<AdminLayout />}>
+                  <Route path="dashboard" element={<AdminDashboard />} />
+                  <Route path="messages" element={<AdminMessages />} />
+                  <Route path="projects" element={<AdminProjects />} />
+                  <Route path="blogs" element={<AdminBlogs />} />
+                  <Route path="seo" element={<AdminSEO />} />
+                </Route>
               </Route>
-            </Route>
-          </Routes>
+            </Routes>
+          </Suspense>
         </AnimatePresence>
       </div>
 
