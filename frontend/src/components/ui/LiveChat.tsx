@@ -84,7 +84,7 @@ export const LiveChat = () => {
   return (
     <div className="fixed bottom-24 right-4 md:bottom-8 md:right-8 z-[60] flex flex-col items-end">
       {isOpen && (
-        <div className="mb-4 w-[350px] h-[450px] glass border border-border rounded-2xl flex flex-col overflow-hidden shadow-2xl origin-bottom-right animate-in zoom-in duration-300">
+        <div className="mb-4 w-[calc(100vw-2rem)] sm:w-[350px] h-[450px] glass border border-border rounded-2xl flex flex-col overflow-hidden shadow-2xl origin-bottom-right animate-in zoom-in duration-300">
           {/* Header */}
           <div className="bg-primary/20 backdrop-blur-xl border-b border-white/5 p-4 flex justify-between items-center">
             <div>

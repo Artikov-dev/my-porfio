@@ -38,6 +38,11 @@
     -ms-overflow-style: none;  /* IE and Edge */
     scrollbar-width: none;  /* Firefox */
   }
+
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 5rem; /* 80px for the h-20 navbar */
+  }
 }
 
 @layer components {

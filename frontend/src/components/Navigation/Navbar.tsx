@@ -27,11 +27,13 @@ export const Navbar = () => {
   ];
 
   const handleScrollTo = (e: React.MouseEvent<HTMLAnchorElement>, href: string, isRoute?: boolean) => {
+    // Always close mobile menu on link click
+    setIsOpen(false);
+    
     if (!isRoute && isHome) {
       e.preventDefault();
       const id = href.split('#')[1];
       document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
-      setIsOpen(false);
     }
   };
 
