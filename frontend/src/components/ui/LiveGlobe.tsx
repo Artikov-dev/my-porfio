@@ -66,9 +66,9 @@ export const LiveGlobe = () => {
       diffuse: 1.2,
       mapSamples: 16000,
       mapBrightness: 6,
-      baseColor: isDark ? [0.1, 0.1, 0.1] : [1, 1, 1],
+      baseColor: [1, 1, 1],
       markerColor: [0.133, 0.772, 0.368], // Tailwind green-500 approx
-      glowColor: isDark ? [0.05, 0.05, 0.05] : [0.9, 0.9, 0.9],
+      glowColor: [1, 1, 1],
       markers: locations.map(l => ({ location: [l.lat, l.lng], size: 0.06 })),
       // @ts-expect-error cobe types are missing onRender but it is supported by the library
       onRender: (state: Record<string, any>) => {
@@ -76,7 +76,7 @@ export const LiveGlobe = () => {
         state.phi = phi;
         phi += 0.005;
       },
-    });
+    }); 
 
     // Make canvas visible
     setTimeout(() => {

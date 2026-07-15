@@ -5,6 +5,8 @@ import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { useQuery } from '@tanstack/react-query';
 import { api } from '@/lib/api';
 import { Skeleton } from '@/components/ui/Skeleton';
+import { LiveGlobe } from '@/components/ui/LiveGlobe';
+import { Globe as GlobeIcon } from 'lucide-react';
 
 export const AdminDashboard = () => {
   const { activeUsers } = useSocket();
@@ -55,6 +57,31 @@ export const AdminDashboard = () => {
             </div>
           </div>
         ))}
+      </div>
+
+      {/* Live Globe Section */}
+      <div className="glass p-6 rounded-2xl border border-white/5 shadow-xl flex flex-col md:flex-row items-center gap-8">
+        <div className="flex-1 w-full flex flex-col justify-center">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-green-500/10 text-green-500 font-medium text-sm mb-4 w-fit">
+            <GlobeIcon size={16} className="animate-[spin_4s_linear_infinite]" />
+            <span>Live Network</span>
+          </div>
+          <h3 className="text-2xl font-bold text-foreground dark:text-white mb-2">Global Visitor Reach</h3>
+          <p className="text-foreground/60 mb-6">Real-time visualization of active visitors connected via WebSockets.</p>
+          <div className="space-y-4">
+            <div className="flex items-center gap-3">
+               <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+               <span className="text-sm text-foreground/80">WebSocket Connected</span>
+            </div>
+            <div className="flex items-center gap-3">
+               <div className="w-2 h-2 rounded-full bg-blue-500" />
+               <span className="text-sm text-foreground/80">{activeUsers} Active Viewers</span>
+            </div>
+          </div>
+        </div>
+        <div className="w-full md:w-[400px] aspect-square flex-shrink-0">
+          <LiveGlobe />
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
