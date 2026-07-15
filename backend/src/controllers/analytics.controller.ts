@@ -12,6 +12,15 @@ export const getAnalytics = async (req: Request, res: Response) => {
     res
       .status(500)
       .json({ success: false, message: 'Server error fetching analytics' });
+};
+
+export const getLocations = async (req: Request, res: Response) => {
+  try {
+    const data = await AnalyticsService.getVisitorLocations();
+    res.json({ success: true, data });
+  } catch (error) {
+    console.error('Get Locations Error:', error);
+    res.status(500).json({ success: false, message: 'Server error fetching locations' });
   }
 };
 
@@ -44,6 +53,17 @@ export const getAnalytics = async (req: Request, res: Response) => {
       device,
       path: path || '/',
     });
+
+    // Emit live location update to sockets
+    if (typeof ip === 'string') {
+      const geo = geoip.lookup(ip.split(',')[0].trim());
+      if (geo && geo.ll) {
+        const io = req.app.get('io');
+        if (io) {
+          io.emit('new_visitor_location', { lat: geo.ll[0], lng: geo.ll[1], country: geo.country });
+        }
+      }
+    }
 
     res.status(200).json({ success: true });
   } catch (error) {

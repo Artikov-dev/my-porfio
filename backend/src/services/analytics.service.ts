@@ -1,4 +1,5 @@
 import { db } from '../config/database';
+import geoip from 'geoip-lite';
 
 export class AnalyticsService {
   static async recordVisit(data: {
@@ -122,5 +123,24 @@ export class AnalyticsService {
         value: parseInt(r.value)
       })),
     };
+  }
+
+  static async getVisitorLocations() {
+    const res = await db.query(`
+      SELECT DISTINCT ON (ip_address) ip_address, country
+      FROM site_visits
+      ORDER BY ip_address, created_at DESC
+      LIMIT 100
+    `);
+
+    const locations = res.rows.map((row) => {
+      const geo = geoip.lookup(row.ip_address);
+      if (geo && geo.ll) {
+        return { lat: geo.ll[0], lng: geo.ll[1], country: geo.country };
+      }
+      return null;
+    }).filter(Boolean);
+
+    return locations;
   }
 }
