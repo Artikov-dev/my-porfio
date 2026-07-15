@@ -1,7 +1,8 @@
-import React, { useEffect, useRef, useState } from 'react';
-import createGlobe from 'cobe';
+import React, { useEffect, useRef, useState, useMemo } from 'react';
+import { Canvas, useFrame } from '@react-three/fiber';
+import { OrbitControls, Sphere, useTexture } from '@react-three/drei';
+import * as THREE from 'three';
 import { api } from '@/lib/api';
-import { useTheme } from '@/contexts/ThemeContext';
 import { useSocket } from '@/hooks/useSocket';
 
 interface Location {
@@ -10,10 +11,78 @@ interface Location {
   country: string;
 }
 
+// Convert lat/lng to 3D Cartesian coordinates
+const latLongToVector3 = (lat: number, lng: number, radius: number) => {
+  const phi = (90 - lat) * (Math.PI / 180);
+  const theta = (lng + 180) * (Math.PI / 180);
+
+  const x = -(radius * Math.sin(phi) * Math.cos(theta));
+  const z = radius * Math.sin(phi) * Math.sin(theta);
+  const y = radius * Math.cos(phi);
+
+  return new THREE.Vector3(x, y, z);
+};
+
+const Earth = ({ locations }: { locations: Location[] }) => {
+  const earthRef = useRef<THREE.Group>(null);
+  
+  // Load high quality textures for a realistic look
+  const [colorMap, bumpMap, specularMap, cloudsMap] = useTexture([
+    'https://unpkg.com/three-globe/example/img/earth-blue-marble.jpg',
+    'https://unpkg.com/three-globe/example/img/earth-topology.png',
+    'https://unpkg.com/three-globe/example/img/earth-water.png',
+    'https://unpkg.com/three-globe/example/img/earth-clouds1024.png'
+  ]);
+
+  // Auto-rotate
+  useFrame(() => {
+    if (earthRef.current) {
+      earthRef.current.rotation.y += 0.001;
+    }
+  });
+
+  return (
+    <group ref={earthRef}>
+      {/* Earth Sphere */}
+      <Sphere args={[2, 64, 64]}>
+        <meshPhongMaterial
+          map={colorMap}
+          bumpMap={bumpMap}
+          bumpScale={0.02}
+          specularMap={specularMap}
+          specular={new THREE.Color('grey')}
+        />
+      </Sphere>
+
+      {/* Clouds Sphere (slightly larger) */}
+      <Sphere args={[2.02, 64, 64]}>
+        <meshPhongMaterial
+          map={cloudsMap}
+          transparent={true}
+          opacity={0.4}
+          blending={THREE.AdditiveBlending}
+          depthWrite={false}
+          side={THREE.DoubleSide}
+        />
+      </Sphere>
+
+      {/* Markers for locations */}
+      {locations.map((loc, i) => {
+        const pos = latLongToVector3(loc.lat, loc.lng, 2.05); // slightly above clouds
+        return (
+          <mesh key={i} position={pos}>
+            <sphereGeometry args={[0.04, 16, 16]} />
+            <meshBasicMaterial color="#22c55e" /> {/* Tailwind green-500 */}
+            <pointLight color="#22c55e" intensity={2} distance={0.5} />
+          </mesh>
+        );
+      })}
+    </group>
+  );
+};
+
 export const LiveGlobe = () => {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
   const [locations, setLocations] = useState<Location[]>([]);
-  const { theme } = useTheme();
   const { socket } = useSocket();
 
   // Fetch initial locations
@@ -37,8 +106,7 @@ export const LiveGlobe = () => {
     
     const handleNewLocation = (loc: Location) => {
       setLocations((prev) => {
-        // Prevent exact duplicates
-        if (prev.some(p => p.lat === loc.lat && p.lng === loc.lng)) return prev;
+        if (prev.some((p) => p.lat === loc.lat && p.lng === loc.lng)) return prev;
         return [loc, ...prev].slice(0, 100);
       });
     };
@@ -49,60 +117,33 @@ export const LiveGlobe = () => {
     };
   }, [socket]);
 
-  useEffect(() => {
-    let phi = 0;
-    
-    if (!canvasRef.current) return;
-    
-    const isDark = theme === 'dark';
-    
-    const globe = createGlobe(canvasRef.current, {
-      devicePixelRatio: 2,
-      width: 800,
-      height: 800,
-      phi: 0,
-      theta: 0,
-      dark: isDark ? 1 : 0,
-      diffuse: 1.2,
-      mapSamples: 16000,
-      mapBrightness: 6,
-      baseColor: [1, 1, 1],
-      markerColor: [0.133, 0.772, 0.368], // Tailwind green-500 approx
-      glowColor: [1, 1, 1],
-      markers: locations.map(l => ({ location: [l.lat, l.lng], size: 0.06 })),
-      // @ts-expect-error cobe types are missing onRender but it is supported by the library
-      onRender: (state: Record<string, any>) => {
-        // Auto-rotate
-        state.phi = phi;
-        phi += 0.005;
-      },
-    }); 
-
-    // Make canvas visible
-    setTimeout(() => {
-      if (canvasRef.current) {
-        canvasRef.current.style.opacity = '1';
-      }
-    }, 100);
-
-    return () => {
-      globe.destroy();
-    };
-  }, [locations, theme]);
+  // Use a fallback location for demo purposes if list is empty
+  const displayLocations = locations.length > 0 ? locations : [
+    { lat: 41.2995, lng: 69.2401, country: 'Uzbekistan' }, // Tashkent
+    { lat: 40.7128, lng: -74.0060, country: 'United States' }, // NY
+    { lat: 51.5074, lng: -0.1278, country: 'UK' }, // London
+    { lat: 35.6762, lng: 139.6503, country: 'Japan' }, // Tokyo
+  ];
 
   return (
-    <div className="w-full max-w-[400px] md:max-w-[500px] aspect-square mx-auto relative flex items-center justify-center">
-      <div className="absolute inset-0 bg-gradient-to-tr from-green-500/10 to-transparent blur-2xl rounded-full mix-blend-screen pointer-events-none" />
-      <canvas
-        ref={canvasRef}
-        style={{
-          width: '100%',
-          height: '100%',
-          contain: 'layout paint size',
-          opacity: 0,
-          transition: 'opacity 1s ease',
-        }}
-      />
+    <div className="w-full max-w-[400px] md:max-w-[500px] aspect-square mx-auto relative flex items-center justify-center cursor-grab active:cursor-grabbing rounded-full overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-to-tr from-green-500/10 to-transparent blur-3xl mix-blend-screen pointer-events-none" />
+      <Canvas camera={{ position: [0, 0, 5], fov: 45 }}>
+        <ambientLight intensity={0.4} />
+        <directionalLight position={[5, 3, 5]} intensity={1.5} />
+        
+        <React.Suspense fallback={null}>
+          <Earth locations={displayLocations} />
+        </React.Suspense>
+        
+        <OrbitControls 
+          enableZoom={true} 
+          enablePan={false} 
+          minDistance={3} 
+          maxDistance={7}
+          autoRotate={false} 
+        />
+      </Canvas>
     </div>
   );
 };
