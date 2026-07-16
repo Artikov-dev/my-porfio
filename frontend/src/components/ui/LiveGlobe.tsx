@@ -27,11 +27,11 @@ const Earth = ({ locations }: { locations: Location[] }) => {
   const earthRef = useRef<THREE.Group>(null);
   
   // Load high quality textures for a realistic look
-  const [colorMap, bumpMap, specularMap, cloudsMap] = useTexture([
-    'https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-blue-marble.jpg',
-    'https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-topology.png',
-    'https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-water.png',
-    'https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-clouds1024.png'
+  const [colorMap, normalMap, specularMap, cloudsMap] = useTexture([
+    'https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/earth_atmos_2048.jpg',
+    'https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/earth_normal_2048.jpg',
+    'https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/earth_specular_2048.jpg',
+    'https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/earth_clouds_1024.png'
   ]);
 
   // Auto-rotate
@@ -47,8 +47,8 @@ const Earth = ({ locations }: { locations: Location[] }) => {
       <Sphere args={[2, 64, 64]}>
         <meshPhongMaterial
           map={colorMap}
-          bumpMap={bumpMap}
-          bumpScale={0.02}
+          normalMap={normalMap}
+          normalScale={new THREE.Vector2(0.5, 0.5)}
           specularMap={specularMap}
           specular={new THREE.Color('grey')}
         />
