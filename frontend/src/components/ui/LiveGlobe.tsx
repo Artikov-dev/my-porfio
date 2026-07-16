@@ -28,10 +28,10 @@ const Earth = ({ locations }: { locations: Location[] }) => {
   
   // Load high quality textures for a realistic look
   const [colorMap, bumpMap, specularMap, cloudsMap] = useTexture([
-    'https://unpkg.com/three-globe/example/img/earth-blue-marble.jpg',
-    'https://unpkg.com/three-globe/example/img/earth-topology.png',
-    'https://unpkg.com/three-globe/example/img/earth-water.png',
-    'https://unpkg.com/three-globe/example/img/earth-clouds1024.png'
+    'https://raw.githubusercontent.com/vasturiano/three-globe/master/example/img/earth-blue-marble.jpg',
+    'https://raw.githubusercontent.com/vasturiano/three-globe/master/example/img/earth-topology.png',
+    'https://raw.githubusercontent.com/vasturiano/three-globe/master/example/img/earth-water.png',
+    'https://raw.githubusercontent.com/vasturiano/three-globe/master/example/img/earth-clouds1024.png'
   ]);
 
   // Auto-rotate

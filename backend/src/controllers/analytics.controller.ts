@@ -12,6 +12,7 @@ export const getAnalytics = async (req: Request, res: Response) => {
     res
       .status(500)
       .json({ success: false, message: 'Server error fetching analytics' });
+  }
 };
 
 export const getLocations = async (req: Request, res: Response) => {
