@@ -1,6 +1,6 @@
 import React from 'react';
 import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
-import { LayoutDashboard, MessageSquare, FolderGit2, BookOpen, LogOut, Search } from 'lucide-react';
+import { LayoutDashboard, MessageSquare, FolderGit2, BookOpen, LogOut, Search, Activity } from 'lucide-react';
 
 export const AdminLayout = () => {
   const navigate = useNavigate();
@@ -17,6 +17,7 @@ export const AdminLayout = () => {
     { name: 'Projects', path: '/admin/projects', icon: <FolderGit2 className="w-5 h-5" /> },
     { name: 'Blogs', path: '/admin/blogs', icon: <BookOpen className="w-5 h-5" /> },
     { name: 'SEO Settings', path: '/admin/seo', icon: <Search className="w-5 h-5" /> },
+    { name: 'System Health', path: '/admin/system', icon: <Activity className="w-5 h-5" /> },
   ];
 
   return (

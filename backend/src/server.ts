@@ -19,6 +19,7 @@ import blogRoutes from './routes/blog.routes';
 import contactRoutes from './routes/contact.routes';
 import seoRoutes from './routes/seo.routes';
 import analyticsRoutes from './routes/analytics.routes';
+import systemRoutes from './routes/system.routes';
 
 dotenv.config();
 
@@ -54,6 +55,7 @@ app.use('/api/blogs', blogRoutes);
 app.use('/api/contact', contactRoutes);
 app.use('/api/seo', seoRoutes);
 app.use('/api/analytics', analyticsRoutes);
+app.use('/api/system', systemRoutes);
 
 // API Documentation
 setupSwagger(app);

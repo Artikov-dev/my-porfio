@@ -34,6 +34,7 @@ const AdminMessages = React.lazy(() => import('@/pages/Admin/AdminMessages').the
 const AdminProjects = React.lazy(() => import('@/pages/Admin/AdminProjects').then(m => ({ default: m.AdminProjects })));
 const AdminBlogs = React.lazy(() => import('@/pages/Admin/AdminBlogs').then(m => ({ default: m.AdminBlogs })));
 const AdminSEO = React.lazy(() => import('@/pages/Admin/AdminSEO').then(m => ({ default: m.AdminSEO })));
+const AdminSystem = React.lazy(() => import('@/pages/Admin/AdminSystem').then(m => ({ default: m.AdminSystem })));
 
 // Loading Fallback
 const PageLoader = () => (
@@ -107,6 +108,7 @@ function App() {
                   <Route path="projects" element={<AdminProjects />} />
                   <Route path="blogs" element={<AdminBlogs />} />
                   <Route path="seo" element={<AdminSEO />} />
+                  <Route path="system" element={<AdminSystem />} />
                 </Route>
               </Route>
             </Routes>
