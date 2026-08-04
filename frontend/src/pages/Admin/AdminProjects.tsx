@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { api } from '@/lib/api';
+import { DEFAULT_PROJECTS } from '@/lib/mockProjects';
 import { Plus, Edit2, Trash2, Globe, Link as LinkIcon, Save, X, RefreshCw } from 'lucide-react';
 
 const GithubIcon = ({ className }: { className?: string }) => (
@@ -42,8 +43,6 @@ export const AdminProjects = () => {
   const [liveUrl, setLiveUrl] = useState('');
   const [techStack, setTechStack] = useState('');
   const [isTranslating, setIsTranslating] = useState(false);
-
-import { DEFAULT_PROJECTS } from '@/lib/mockProjects';
 
   const fetchProjects = async () => {
     try {

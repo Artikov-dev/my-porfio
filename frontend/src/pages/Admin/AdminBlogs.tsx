@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { api } from '@/lib/api';
+import { DEFAULT_BLOGS } from '@/lib/mockBlogs';
 import { Plus, Trash2, Save, X, RefreshCw, FileText } from 'lucide-react';
 
 interface LocalizedString {
@@ -32,8 +33,6 @@ export const AdminBlogs = () => {
   const [imageUrl, setImageUrl] = useState('');
   const [tags, setTags] = useState('');
   const [isTranslating, setIsTranslating] = useState(false);
-
-import { DEFAULT_BLOGS } from '@/lib/mockBlogs';
 
   const fetchBlogs = async () => {
     try {
