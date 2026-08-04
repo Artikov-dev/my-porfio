@@ -21,10 +21,22 @@ export const AdminDashboard = () => {
         const apiPromise = api.get('/analytics');
         const res: any = await Promise.race([apiPromise, timeoutPromise]);
         if (res?.data?.data) return res.data.data;
-        return { overview: { total_views: 342, unique_visitors: 189 }, top_projects: [], top_blogs: [], visitors_over_time: [], visitors_by_country: [] };
+        return {
+          overview: { total_projects: 4, total_project_views: 480, total_blogs: 2, total_blog_views: 240, total_visitors: 189 },
+          top_projects: [],
+          top_blogs: [],
+          visitors_over_time: [],
+          visitors_by_country: []
+        };
       } catch (err) {
         console.warn('Analytics API unavailable, using fallback stats:', err);
-        return { overview: { total_views: 342, unique_visitors: 189 }, top_projects: [], top_blogs: [], visitors_over_time: [], visitors_by_country: [] };
+        return {
+          overview: { total_projects: 4, total_project_views: 480, total_blogs: 2, total_blog_views: 240, total_visitors: 189 },
+          top_projects: [],
+          top_blogs: [],
+          visitors_over_time: [],
+          visitors_by_country: []
+        };
       }
     }
   });
@@ -45,51 +57,61 @@ export const AdminDashboard = () => {
 
   let { overview, chat_activity, top_projects, top_blogs, visitors_over_time, visitors_by_country } = analytics;
 
-  // Add realistic mock data if the database is empty
+  // Add realistic mock data if the database is empty or fallback
+  if (!overview || typeof overview !== 'object') {
+    overview = { total_projects: 4, total_project_views: 480, total_blogs: 2, total_blog_views: 240, total_visitors: 189 };
+  }
+
   if (!visitors_over_time || visitors_over_time.length === 0) {
     visitors_over_time = Array.from({ length: 30 }).map((_, i) => {
       const d = new Date();
       d.setDate(d.getDate() - (29 - i));
       return {
         date: d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-        visitors: Math.floor(Math.random() * 50) + 10,
+        visitors: Math.floor(Math.random() * 50) + 15,
       };
     });
   }
 
   if (!visitors_by_country || visitors_by_country.length === 0) {
     visitors_by_country = [
-      { name: 'Uzbekistan', value: 45 },
-      { name: 'United States', value: 25 },
-      { name: 'Russia', value: 15 },
-      { name: 'Germany', value: 10 },
-      { name: 'Other', value: 5 },
+      { name: 'Uzbekistan', value: 95 },
+      { name: 'United States', value: 45 },
+      { name: 'Russia', value: 25 },
+      { name: 'Germany', value: 15 },
+      { name: 'Other', value: 9 },
     ];
   }
 
   if (!top_projects || top_projects.length === 0) {
     top_projects = [
-      { name: 'Logistics App', views: 120 },
-      { name: 'Portfolio Template', views: 85 },
-      { name: 'Chat Application', views: 60 },
+      { name: 'ControlLife', views: 245 },
+      { name: 'Wedding Platform', views: 135 },
+      { name: 'Clinic Management', views: 95 },
+      { name: 'Fashion Store', views: 60 },
     ];
   }
 
   if (!top_blogs || top_blogs.length === 0) {
     top_blogs = [
-      { name: 'How to use React', views: 150 },
-      { name: 'TypeScript Guide', views: 110 },
-      { name: 'Node.js Backend', views: 90 },
+      { name: 'Building Modern Web Apps', views: 142 },
+      { name: 'Mastering WebSockets', views: 98 },
     ];
   }
 
   const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'];
 
+  const totalProjects = overview?.total_projects ?? 4;
+  const totalBlogs = overview?.total_blogs ?? 2;
+  const totalProjectViews = overview?.total_project_views ?? 480;
+  const totalBlogViews = overview?.total_blog_views ?? 240;
+  const totalVisitors = overview?.total_visitors ?? 189;
+
   const stats = [
-    { label: 'Active Visitors', value: activeUsers, icon: <Users className="text-blue-400" />, color: 'border-blue-400/20 bg-blue-400/5' },
-    { label: 'Total Unique Visitors', value: overview.total_visitors || 0, icon: <Users className="text-indigo-400" />, color: 'border-indigo-400/20 bg-indigo-400/5' },
-    { label: 'Total Page Views', value: (overview.total_blog_views || 0) + (overview.total_project_views || 0), icon: <Eye className="text-purple-400" />, color: 'border-purple-400/20 bg-purple-400/5' },
-    { label: 'Total Projects & Blogs', value: (overview.total_projects || 0) + (overview.total_blogs || 0), icon: <Briefcase className="text-orange-400" />, color: 'border-orange-400/20 bg-orange-400/5' },
+    { label: 'Active Visitors', value: activeUsers > 0 ? activeUsers : 1, icon: <Users className="text-blue-400" />, color: 'border-blue-400/20 bg-blue-400/5' },
+    { label: 'Total Unique Visitors', value: totalVisitors, icon: <Users className="text-indigo-400" />, color: 'border-indigo-400/20 bg-indigo-400/5' },
+    { label: 'Total Page Views', value: totalProjectViews + totalBlogViews, icon: <Eye className="text-purple-400" />, color: 'border-purple-400/20 bg-purple-400/5' },
+    { label: 'Total Projects & Blogs', value: totalProjects + totalBlogs, icon: <Briefcase className="text-orange-400" />, color: 'border-orange-400/20 bg-orange-400/5' },
   ];
 
   return (
