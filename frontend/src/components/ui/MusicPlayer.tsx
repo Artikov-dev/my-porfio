@@ -65,7 +65,9 @@ export const MusicPlayer = () => {
               autoplay: 0,
               controls: 0,
               loop: 1,
-              playlist: videoId // Required for looping single video
+              playlist: videoId,
+              enablejsapi: 1,
+              origin: typeof window !== 'undefined' ? window.location.origin : 'https://artikov.dev'
             }
           }}
           onReady={onReady}
