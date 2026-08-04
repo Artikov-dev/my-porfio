@@ -53,6 +53,7 @@ function App() {
     const target = 'matrix';
     
     const handleKeyDown = (e: KeyboardEvent) => {
+      if (!e.key) return;
       typed += e.key.toLowerCase();
       if (typed.length > target.length) {
         typed = typed.slice(typed.length - target.length);

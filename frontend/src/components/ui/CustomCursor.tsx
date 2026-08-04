@@ -11,8 +11,13 @@ export const CustomCursor = () => {
     document.body.style.cursor = 'none';
 
     const handleMouseOver = (e: MouseEvent) => {
-      const target = e.target as HTMLElement;
-      if (target.tagName.toLowerCase() === 'button' || target.closest('button') || target.tagName.toLowerCase() === 'a' || target.closest('a')) {
+      const target = e.target as HTMLElement | null;
+      if (!target || !target.tagName) {
+        setIsHovering(false);
+        return;
+      }
+      const tag = target.tagName.toLowerCase();
+      if (tag === 'button' || tag === 'a' || target.closest?.('button') || target.closest?.('a')) {
         setIsHovering(true);
       } else {
         setIsHovering(false);
