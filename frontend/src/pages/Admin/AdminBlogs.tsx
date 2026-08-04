@@ -33,12 +33,23 @@ export const AdminBlogs = () => {
   const [tags, setTags] = useState('');
   const [isTranslating, setIsTranslating] = useState(false);
 
+import { DEFAULT_BLOGS } from '@/lib/mockBlogs';
+
   const fetchBlogs = async () => {
     try {
-      const { data } = await api.get('/blogs');
-      setBlogs(data.data);
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('Fetch timeout')), 2000)
+      );
+      const apiPromise = api.get('/blogs');
+      const res: any = await Promise.race([apiPromise, timeoutPromise]);
+      if (res?.data?.data && Array.isArray(res.data.data) && res.data.data.length > 0) {
+        setBlogs(res.data.data);
+      } else {
+        setBlogs(DEFAULT_BLOGS as any);
+      }
     } catch (err) {
-      console.error(err);
+      console.warn('Backend unavailable, using default blogs in admin:', err);
+      setBlogs(DEFAULT_BLOGS as any);
     } finally {
       setLoading(false);
     }

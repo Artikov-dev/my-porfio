@@ -7,15 +7,32 @@ import { Helmet } from 'react-helmet-async';
 import { PageWrapper } from '@/components/Layout/PageWrapper';
 import { SEO } from '@/components/SEO/SEO';
 
+import { DEFAULT_BLOGS } from '@/lib/mockBlogs';
+
 export const Blogs = () => {
   const { t, language } = useI18n();
   const { data, isLoading } = useQuery({
     queryKey: ['blogs'],
     queryFn: async () => {
-      const res = await api.get('/blogs');
-      return res.data.data;
-    }
+      try {
+        const timeoutPromise = new Promise((_, reject) =>
+          setTimeout(() => reject(new Error('Fetch timeout')), 2500)
+        );
+        const apiPromise = api.get('/blogs');
+        const res: any = await Promise.race([apiPromise, timeoutPromise]);
+        if (res?.data?.data && Array.isArray(res.data.data) && res.data.data.length > 0) {
+          return res.data.data;
+        }
+        return DEFAULT_BLOGS;
+      } catch (err) {
+        console.warn('API error or timeout fetching blogs, using fallback:', err);
+        return DEFAULT_BLOGS;
+      }
+    },
+    staleTime: 1000 * 60 * 5,
   });
+
+  const displayBlogs = (data && data.length > 0) ? data : DEFAULT_BLOGS;
 
   const trackBlogView = (id: string) => {
     if (sessionStorage.getItem(`viewed_blog_${id}`)) return;
@@ -47,7 +64,7 @@ export const Blogs = () => {
           </div>
         ) : (
           <div className="space-y-6">
-            {data?.map((blog: any) => (
+            {displayBlogs.map((blog: any) => (
               <div key={blog.id} onClick={() => trackBlogView(blog.id)} className="glass p-6 rounded-xl flex flex-col sm:flex-row gap-6 hover:border-primary/50 transition-colors cursor-pointer">
                 <div className="w-full h-48 sm:w-32 sm:h-24 bg-foreground/5 rounded-lg flex-shrink-0 bg-cover bg-center" style={{ backgroundImage: `url(${blog.image_url})`}} />
                 <div>

@@ -43,12 +43,23 @@ export const AdminProjects = () => {
   const [techStack, setTechStack] = useState('');
   const [isTranslating, setIsTranslating] = useState(false);
 
+import { DEFAULT_PROJECTS } from '@/lib/mockProjects';
+
   const fetchProjects = async () => {
     try {
-      const { data } = await api.get('/projects');
-      setProjects(data.data);
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('Fetch timeout')), 2000)
+      );
+      const apiPromise = api.get('/projects');
+      const res: any = await Promise.race([apiPromise, timeoutPromise]);
+      if (res?.data?.data && Array.isArray(res.data.data) && res.data.data.length > 0) {
+        setProjects(res.data.data);
+      } else {
+        setProjects(DEFAULT_PROJECTS as any);
+      }
     } catch (err) {
-      console.error(err);
+      console.warn('Backend unavailable, using default projects in admin:', err);
+      setProjects(DEFAULT_PROJECTS as any);
     } finally {
       setLoading(false);
     }

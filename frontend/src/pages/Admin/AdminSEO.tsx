@@ -24,8 +24,18 @@ export const AdminSEO = () => {
   const { data, isLoading } = useQuery({
     queryKey: ['admin-seo'],
     queryFn: async () => {
-      const res = await api.get('/seo');
-      return res.data.data;
+      try {
+        const timeoutPromise = new Promise((_, reject) =>
+          setTimeout(() => reject(new Error('Fetch timeout')), 2000)
+        );
+        const apiPromise = api.get('/seo');
+        const res: any = await Promise.race([apiPromise, timeoutPromise]);
+        if (res?.data?.data) return res.data.data;
+        return [];
+      } catch (err) {
+        console.warn('SEO API unavailable, using fallback:', err);
+        return [];
+      }
     }
   });
 
