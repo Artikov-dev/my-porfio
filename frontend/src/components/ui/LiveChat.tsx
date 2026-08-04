@@ -18,6 +18,15 @@ export const LiveChat = () => {
   const { socket } = useSocket();
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
+  const getVisitorId = () => {
+    let id = localStorage.getItem('visitor_id');
+    if (!id) {
+      id = 'v_' + Math.random().toString(36).substring(2, 10);
+      localStorage.setItem('visitor_id', id);
+    }
+    return id;
+  };
+
   // Auto-scroll to bottom of chat
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -29,6 +38,9 @@ export const LiveChat = () => {
 
   useEffect(() => {
     if (!socket) return;
+
+    const visitorId = getVisitorId();
+    socket.emit('join_room', visitorId);
 
     const handleReply = (data: { text: string }) => {
       setMessages(prev => [...prev, {
@@ -72,10 +84,11 @@ export const LiveChat = () => {
 
     setMessages(prev => [...prev, newMsg]);
     
-    // Emit to backend
+    // Emit to backend with persistent visitor_id
     socket.emit('chat_message', {
       name,
-      text: input
+      text: input,
+      visitor_id: getVisitorId()
     });
 
     setInput('');

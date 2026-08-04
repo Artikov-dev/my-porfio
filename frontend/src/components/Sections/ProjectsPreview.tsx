@@ -8,6 +8,7 @@ import { useI18n } from '@/contexts/I18nContext';
 import { useQuery } from '@tanstack/react-query';
 import { api } from '@/lib/api';
 import { Skeleton } from '@/components/ui/Skeleton';
+import { DEFAULT_PROJECTS } from '@/lib/mockProjects';
 
 export const ProjectsPreviewSection = () => {
   const { t, language } = useI18n();
@@ -15,10 +16,20 @@ export const ProjectsPreviewSection = () => {
   const { data: projects, isLoading } = useQuery({
     queryKey: ['projects'],
     queryFn: async () => {
-      const res = await api.get('/projects');
-      return res.data.data;
+      try {
+        const res = await api.get('/projects');
+        if (res.data?.data && Array.isArray(res.data.data) && res.data.data.length > 0) {
+          return res.data.data;
+        }
+        return DEFAULT_PROJECTS;
+      } catch (err) {
+        console.warn('API error fetching projects, using fallback:', err);
+        return DEFAULT_PROJECTS;
+      }
     }
   });
+
+  const displayProjects = (projects && projects.length > 0) ? projects : DEFAULT_PROJECTS;
 
   return (
     <section id="projects" className="py-20 md:py-32 px-4 md:px-6 relative max-w-6xl mx-auto text-center">
@@ -41,7 +52,7 @@ export const ProjectsPreviewSection = () => {
         </div>
       ) : (
         <div className="flex overflow-x-auto snap-x snap-mandatory md:grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16 text-left pb-6 px-4 -mx-4 md:px-0 md:mx-0 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-          {projects?.slice(0, 3).map((project: any, index: number) => (
+          {displayProjects.slice(0, 3).map((project: any, index: number) => (
             <ScrollReveal key={project.id} delay={0.2 + (index * 0.1)} className="w-[85vw] shrink-0 snap-center md:w-auto h-full">
               <TiltCard className="h-full">
                 <div className="glass rounded-2xl flex flex-col overflow-hidden group cursor-pointer border border-border hover:border-primary/50 transition-all duration-300 h-full active:scale-[0.98]">

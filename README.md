@@ -14,7 +14,7 @@ This portfolio goes beyond a static HTML page. It includes enterprise-grade feat
 - 👨‍💻 **Hidden Hacker Terminal:** Press `` ` `` or `~` anywhere on the site to drop down a custom-built Linux-style terminal. Execute commands like `whoami`, `projects`, and `skills` directly in the browser!
 - 💬 **Two-Way Real-Time Live Chat:** A fully functional, session-based customer support chat widget using **Socket.io**. Visitors can chat with me in real-time, and I can reply instantly from a secured Admin Dashboard.
 - 🌍 **Deep i18n Localization:** The entire UI is strictly localized in English, Uzbek, and Russian. Zero hardcoded strings. State managed seamlessly via Context API.
-- 🔐 **Secure Admin Dashboard:** A hidden, protected admin panel (`/aadminsecrect`) with full CRUD operations for managing projects, reading contact messages, and replying to live chats.
+- 🔐 **Secure Admin Dashboard:** A hidden, protected admin panel (`/aadminsecret`) with full CRUD operations for managing projects, reading contact messages, and replying to live chats.
 - 🚀 **Dynamic SEO & Open Graph:** Fully optimized for social sharing with dynamic meta tags via `react-helmet-async` and custom Open Graph banners.
 
 ## 🛠️ Tech Stack

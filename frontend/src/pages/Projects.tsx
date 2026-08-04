@@ -70,15 +70,27 @@ const TiltCard = ({ children, className }: { children: React.ReactNode, classNam
 
 import { SEO } from '@/components/SEO/SEO';
 
+import { DEFAULT_PROJECTS } from '@/lib/mockProjects';
+
 export const Projects = () => {
   const { t, language } = useI18n();
   const { data, isLoading } = useQuery({
     queryKey: ['projects'],
     queryFn: async () => {
-      const res = await api.get('/projects');
-      return res.data.data;
+      try {
+        const res = await api.get('/projects');
+        if (res.data?.data && Array.isArray(res.data.data) && res.data.data.length > 0) {
+          return res.data.data;
+        }
+        return DEFAULT_PROJECTS;
+      } catch (err) {
+        console.warn('API error fetching projects, using fallback:', err);
+        return DEFAULT_PROJECTS;
+      }
     }
   });
+
+  const displayProjects = (data && data.length > 0) ? data : DEFAULT_PROJECTS;
 
   const trackProjectView = (id: string) => {
     // Prevent duplicate counting in same session
@@ -121,7 +133,7 @@ export const Projects = () => {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-            {data?.map((project: any) => (
+            {displayProjects.map((project: any) => (
               <TiltCard key={project.id} className="h-full">
                 <div className="glass rounded-2xl flex flex-col overflow-hidden group/card border border-border hover:border-primary/50 transition-all duration-300 h-full bg-background/50 backdrop-blur-xl shadow-2xl">
                   {/* Image Container */}

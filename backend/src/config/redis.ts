@@ -9,11 +9,8 @@ let isConnected = false;
 
 const redisClient = new Redis(REDIS_URL, {
   retryStrategy(times) {
-    if (times > 3) {
-      logger.warn('⚠️ Could not connect to Redis. Caching will be disabled.');
-      return null; // Stop retrying after 3 attempts
-    }
-    return Math.min(times * 100, 3000);
+    // Exponential backoff capped at 5 seconds to ensure reconnection works
+    return Math.min(times * 200, 5000);
   },
   maxRetriesPerRequest: null,
 });

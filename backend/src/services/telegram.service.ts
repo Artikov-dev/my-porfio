@@ -14,16 +14,24 @@ bot.command('stats', async (ctx) => {
   if (ctx.chat.id.toString() !== ADMIN_CHAT_ID) return;
 
   try {
-    // Note: We will implement actual queries when Project & Blog tables exist
-    // For now, these are placeholder queries
     const activeUsers = (await redisClient.get('active_users')) || 0;
 
+    let projectCount = 4;
+    let contactCount = 0;
+    try {
+      const projRes = await db.query('SELECT COUNT(*) FROM projects');
+      if (projRes.rows[0]?.count) projectCount = parseInt(projRes.rows[0].count, 10);
+
+      const contactRes = await db.query('SELECT COUNT(*) FROM contacts');
+      if (contactRes.rows[0]?.count) contactCount = parseInt(contactRes.rows[0].count, 10);
+    } catch (e) {}
+
     const message = `
-📊 *Antigravity Dashboard Stats* 📊
+📊 *Roma Artikov Portfolio Stats* 📊
 
 *Active Users Online:* ${activeUsers}
-*Total Projects:* 0
-*Total Blog Posts:* 0
+*Total Projects:* ${projectCount}
+*Total Contact Messages:* ${contactCount}
     `;
 
     ctx.replyWithMarkdown(message);

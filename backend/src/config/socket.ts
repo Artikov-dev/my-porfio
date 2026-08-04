@@ -6,7 +6,7 @@ import { db } from './database';
 
 export const setupSocket = (server: HttpServer) => {
   const allowedOrigins = process.env.CLIENT_URL
-    ? process.env.CLIENT_URL.split(',')
+    ? process.env.CLIENT_URL.split(',').map((url) => url.trim())
     : ['http://localhost:5173'];
 
   const io = new Server(server, {
@@ -62,17 +62,26 @@ export const setupSocket = (server: HttpServer) => {
       io.emit('active_users_update', Math.max(0, updatedActiveUsers));
     });
 
+    socket.on('join_room', (roomId: string) => {
+      if (roomId) {
+        socket.join(roomId);
+        logger.info(`🔌 Socket ${socket.id} joined room ${roomId}`);
+      }
+    });
+
     socket.on('page_view', (page: string) => {
       logger.info(`Page view recorded: ${page} by ${socket.id}`);
     });
 
-    socket.on('chat_message', async (data: { name: string; text: string }) => {
+    socket.on('chat_message', async (data: { name: string; text: string; visitor_id?: string }) => {
       logger.info(`Chat message from ${data.name}: ${data.text}`);
+      const sessionId = data.visitor_id || socket.id;
+      socket.join(sessionId);
 
       try {
         const result = await db.query(
           'INSERT INTO chat_messages (name, text, session_id, is_admin) VALUES ($1, $2, $3, false) RETURNING *',
-          [data.name, data.text, socket.id],
+          [data.name, data.text, sessionId],
         );
         // Broadcast to admins that a new message arrived
         io.emit('new_admin_message', result.rows[0]);
@@ -92,7 +101,7 @@ export const setupSocket = (server: HttpServer) => {
             ['Roma Artikov', data.text, data.session_id],
           );
 
-          // Send the reply specifically to the user's socket
+          // Send the reply specifically to the user's socket room
           io.to(data.session_id).emit('chat_reply', result.rows[0]);
           // Also broadcast so other admin tabs can see it
           io.emit('new_admin_message', result.rows[0]);

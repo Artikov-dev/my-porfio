@@ -19,6 +19,23 @@ const seedProjects = async () => {
     const projects = [
       {
         title: {
+          en: 'ControlLife - Task & Life Management System',
+          uz: 'ControlLife - Topshiriqlar va Hayotni Boshqarish Tizimi',
+          ru: 'ControlLife - Система Управления Задачами и Жизнью',
+        },
+        description: {
+          en: 'An all-in-one productivity and personal management dashboard designed to track tasks, goals, habits, and daily workflow efficiently.',
+          uz: "Vazifalar, maqsadlar, odatlar va kunlik ish jarayonini samarali kuzatish uchun mo'ljallangan barchasi birda unumdorlik platformasi.",
+          ru: 'Многофункциональная платформа продуктивности для эффективного отслеживания задач, целей, привычек и ежедневного рабочего процесса.',
+        },
+        image_url:
+          'https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b?q=80&w=2072&auto=format&fit=crop',
+        github_url: 'https://github.com/Artikov-dev',
+        live_url: 'https://controllife.artikov.dev/auth/login',
+        tech_stack: ['React', 'TypeScript', 'Tailwind CSS', 'Node.js', 'PostgreSQL'],
+      },
+      {
+        title: {
           en: 'Wedding Platform',
           uz: "To'y Platformasi",
           ru: 'Свадебная Платформа',

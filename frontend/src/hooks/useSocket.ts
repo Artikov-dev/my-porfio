@@ -24,8 +24,7 @@ export const useSocket = () => {
     });
 
     socketInstance.on('new_contact_message', (data: any) => {
-      console.log('New message received!', data);
-      alert(`New message from ${data.name}!`);
+      console.log('New contact message received:', data);
     });
 
     setSocket(socketInstance);
