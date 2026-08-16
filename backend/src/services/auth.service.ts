@@ -47,6 +47,14 @@ export const AuthService = {
     return true;
   },
 
+  verifyRefreshToken(token: string) {
+    try {
+      return jwt.verify(token, process.env.REFRESH_TOKEN_SECRET as string);
+    } catch (err) {
+      throw new CustomError('Invalid or expired refresh token', 401);
+    }
+  },
+
   generateTokens(payload: object) {
     const accessToken = jwt.sign(payload, process.env.JWT_SECRET as string, {
       expiresIn: (process.env.JWT_EXPIRES_IN || '1h') as any,

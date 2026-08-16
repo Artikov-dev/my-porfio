@@ -91,3 +91,73 @@ export const setup2FA = async (
     next(error);
   }
 };
+
+export const getMe = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const user = (req as any).user;
+    res.status(200).json({
+      status: 'success',
+      data: {
+        id: user.id || 'admin_id',
+        role: user.role || 'admin',
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const refreshToken = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const refreshTokenCookie = req.cookies?.refreshToken;
+    if (!refreshTokenCookie) {
+      return res.status(401).json({ status: 'fail', message: 'No refresh token provided' });
+    }
+
+    const decoded = AuthService.verifyRefreshToken(refreshTokenCookie) as any;
+    const { accessToken, refreshToken: newRefreshToken } = AuthService.generateTokens({
+      id: decoded.id || 'admin_id',
+      role: decoded.role || 'admin',
+    });
+
+    res.cookie('accessToken', accessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict',
+      maxAge: 60 * 60 * 1000,
+    });
+
+    res.cookie('refreshToken', newRefreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict',
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
+    res.status(200).json({ status: 'success', message: 'Token refreshed successfully' });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const logout = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    res.clearCookie('accessToken');
+    res.clearCookie('refreshToken');
+    res.status(200).json({ status: 'success', message: 'Logged out successfully' });
+  } catch (error) {
+    next(error);
+  }
+};

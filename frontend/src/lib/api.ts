@@ -10,14 +10,20 @@ api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    const isAuthRoute = originalRequest?.url?.includes('/auth/login') ||
+                        originalRequest?.url?.includes('/auth/refresh') ||
+                        originalRequest?.url?.includes('/auth/logout');
+
+    if (error.response?.status === 401 && !originalRequest._retry && !isAuthRoute) {
       originalRequest._retry = true;
       try {
         await api.post('/auth/refresh'); // Silent token refresh
         return api(originalRequest);
       } catch (err) {
-        // Handle logout or redirect
-        window.location.href = '/aadminsecret';
+        localStorage.removeItem('isAdmin');
+        if (window.location.pathname.startsWith('/admin')) {
+          window.location.href = '/aadminsecret';
+        }
         return Promise.reject(err);
       }
     }

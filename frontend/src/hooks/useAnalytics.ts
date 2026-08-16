@@ -1,27 +1,23 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
+import { api } from '@/lib/api';
 
 export const useAnalytics = () => {
   const location = useLocation();
 
   useEffect(() => {
     // Exclude admin pages from analytics tracking
-    if (location.pathname.startsWith('/admin')) return;
+    if (location.pathname.startsWith('/admin') || location.pathname === '/aadminsecret') return;
 
     const recordVisit = async () => {
       try {
-        await fetch(`${import.meta.env.VITE_API_URL}/api/analytics/visit`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ path: location.pathname }),
-        });
+        await api.post('/analytics/visit', { path: location.pathname });
       } catch (error) {
-        console.error('Failed to record visit', error);
+        // Silently fail if backend is offline or analytics unavailable
       }
     };
 
     recordVisit();
   }, [location.pathname]);
 };
+

@@ -9,6 +9,8 @@ import { BrowserRouter } from 'react-router-dom'
 import { HelmetProvider } from 'react-helmet-async'
 import { ErrorBoundary } from '@/components/ErrorBoundary'
 
+import { SocketProvider } from '@/contexts/SocketContext'
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -40,9 +42,11 @@ createRoot(document.getElementById('root')!).render(
         <BrowserRouter>
           <ThemeProvider>
             <I18nProvider>
-              <ErrorBoundary>
-                <App />
-              </ErrorBoundary>
+              <SocketProvider>
+                <ErrorBoundary>
+                  <App />
+                </ErrorBoundary>
+              </SocketProvider>
             </I18nProvider>
           </ThemeProvider>
         </BrowserRouter>

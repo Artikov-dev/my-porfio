@@ -16,6 +16,10 @@ const redisClient = new Redis(REDIS_URL, {
 });
 
 redisClient.on('connect', () => {
+  logger.info('📦 Connecting to Redis database...');
+});
+
+redisClient.on('ready', () => {
   isConnected = true;
   logger.info('📦 Successfully connected to Redis database');
 });
@@ -24,6 +28,15 @@ redisClient.on('error', (err) => {
   if (isConnected) {
     logger.error('❌ Redis Connection Error:', err);
   }
+  isConnected = false;
+});
+
+redisClient.on('close', () => {
+  isConnected = false;
+});
+
+redisClient.on('end', () => {
+  isConnected = false;
 });
 
 // Wrapper to safely execute commands without throwing if offline

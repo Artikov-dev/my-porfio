@@ -11,41 +11,51 @@ import { Globe as GlobeIcon } from 'lucide-react';
 export const AdminDashboard = () => {
   const { activeUsers } = useSocket();
 
-  const { data: analytics, isLoading } = useQuery({
+  const { data: analytics, isLoading: analyticsLoading } = useQuery({
     queryKey: ['analytics'],
     queryFn: async () => {
       try {
-        const timeoutPromise = new Promise((_, reject) =>
-          setTimeout(() => reject(new Error('Fetch timeout')), 2500)
-        );
-        const apiPromise = api.get('/analytics');
-        const res: any = await Promise.race([apiPromise, timeoutPromise]);
-        if (res?.data?.data) return res.data.data;
-        return {
-          overview: { total_projects: 4, total_project_views: 480, total_blogs: 2, total_blog_views: 240, total_visitors: 189 },
-          top_projects: [],
-          top_blogs: [],
-          visitors_over_time: [],
-          visitors_by_country: []
-        };
+        const res = await api.get('/analytics');
+        return res?.data?.data || null;
       } catch (err) {
-        console.warn('Analytics API unavailable, using fallback stats:', err);
-        return {
-          overview: { total_projects: 4, total_project_views: 480, total_blogs: 2, total_blog_views: 240, total_visitors: 189 },
-          top_projects: [],
-          top_blogs: [],
-          visitors_over_time: [],
-          visitors_by_country: []
-        };
+        console.warn('Analytics API error:', err);
+        return null;
       }
-    }
+    },
+    staleTime: 1000 * 30,
   });
 
-  if (isLoading || !analytics) {
+  const { data: projectsList } = useQuery({
+    queryKey: ['admin-projects-count'],
+    queryFn: async () => {
+      try {
+        const res = await api.get('/projects');
+        return res?.data?.data || [];
+      } catch (err) {
+        return [];
+      }
+    },
+  });
+
+  const { data: blogsList } = useQuery({
+    queryKey: ['admin-blogs-count'],
+    queryFn: async () => {
+      try {
+        const res = await api.get('/blogs');
+        return res?.data?.data || [];
+      } catch (err) {
+        return [];
+      }
+    },
+  });
+
+  if (analyticsLoading) {
     return (
       <div className="space-y-6 p-4">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {[1,2,3,4].map(i => <Skeleton key={i} className="h-32 rounded-2xl" />)}
+          {[1, 2, 3, 4].map((i) => (
+            <Skeleton key={i} className="h-32 rounded-2xl" />
+          ))}
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <Skeleton className="h-96 rounded-2xl" />
@@ -55,60 +65,22 @@ export const AdminDashboard = () => {
     );
   }
 
-  let { overview, chat_activity, top_projects, top_blogs, visitors_over_time, visitors_by_country } = analytics;
+  const overview = analytics?.overview || {};
+  const topProjects = analytics?.top_projects || [];
+  const topBlogs = analytics?.top_blogs || [];
+  const visitorsOverTime = analytics?.visitors_over_time || [];
+  const visitorsByCountry = analytics?.visitors_by_country || [];
 
-  // Add realistic mock data if the database is empty or fallback
-  if (!overview || typeof overview !== 'object') {
-    overview = { total_projects: 4, total_project_views: 480, total_blogs: 2, total_blog_views: 240, total_visitors: 189 };
-  }
-
-  if (!visitors_over_time || visitors_over_time.length === 0) {
-    visitors_over_time = Array.from({ length: 30 }).map((_, i) => {
-      const d = new Date();
-      d.setDate(d.getDate() - (29 - i));
-      return {
-        date: d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-        visitors: Math.floor(Math.random() * 50) + 15,
-      };
-    });
-  }
-
-  if (!visitors_by_country || visitors_by_country.length === 0) {
-    visitors_by_country = [
-      { name: 'Uzbekistan', value: 95 },
-      { name: 'United States', value: 45 },
-      { name: 'Russia', value: 25 },
-      { name: 'Germany', value: 15 },
-      { name: 'Other', value: 9 },
-    ];
-  }
-
-  if (!top_projects || top_projects.length === 0) {
-    top_projects = [
-      { name: 'ControlLife', views: 245 },
-      { name: 'Wedding Platform', views: 135 },
-      { name: 'Clinic Management', views: 95 },
-      { name: 'Fashion Store', views: 60 },
-    ];
-  }
-
-  if (!top_blogs || top_blogs.length === 0) {
-    top_blogs = [
-      { name: 'Building Modern Web Apps', views: 142 },
-      { name: 'Mastering WebSockets', views: 98 },
-    ];
-  }
+  const totalProjects = (projectsList && projectsList.length > 0) ? projectsList.length : (overview.total_projects || 0);
+  const totalBlogs = (blogsList && blogsList.length > 0) ? blogsList.length : (overview.total_blogs || 0);
+  const totalProjectViews = overview.total_project_views || 0;
+  const totalBlogViews = overview.total_blog_views || 0;
+  const totalVisitors = overview.total_visitors || 0;
 
   const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'];
 
-  const totalProjects = overview?.total_projects ?? 4;
-  const totalBlogs = overview?.total_blogs ?? 2;
-  const totalProjectViews = overview?.total_project_views ?? 480;
-  const totalBlogViews = overview?.total_blog_views ?? 240;
-  const totalVisitors = overview?.total_visitors ?? 189;
-
   const stats = [
-    { label: 'Active Visitors', value: activeUsers > 0 ? activeUsers : 1, icon: <Users className="text-blue-400" />, color: 'border-blue-400/20 bg-blue-400/5' },
+    { label: 'Active Visitors', value: activeUsers, icon: <Users className="text-blue-400" />, color: 'border-blue-400/20 bg-blue-400/5' },
     { label: 'Total Unique Visitors', value: totalVisitors, icon: <Users className="text-indigo-400" />, color: 'border-indigo-400/20 bg-indigo-400/5' },
     { label: 'Total Page Views', value: totalProjectViews + totalBlogViews, icon: <Eye className="text-purple-400" />, color: 'border-purple-400/20 bg-purple-400/5' },
     { label: 'Total Projects & Blogs', value: totalProjects + totalBlogs, icon: <Briefcase className="text-orange-400" />, color: 'border-orange-400/20 bg-orange-400/5' },
@@ -161,7 +133,7 @@ export const AdminDashboard = () => {
           <h3 className="text-foreground dark:text-white font-medium mb-4">Unique Visitors (Last 30 Days)</h3>
           <div className="flex-1 w-full">
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={visitors_over_time} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+              <AreaChart data={visitorsOverTime} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                 <defs>
                   <linearGradient id="colorVisitors" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3}/>
@@ -185,11 +157,11 @@ export const AdminDashboard = () => {
         <div className="glass p-6 rounded-2xl border border-white/5 h-96 flex flex-col shadow-xl">
           <h3 className="text-foreground dark:text-white font-medium mb-4">Visitors by Country</h3>
           <div className="flex-1 w-full flex items-center justify-center">
-            {visitors_by_country && visitors_by_country.length > 0 ? (
+            {visitorsByCountry && visitorsByCountry.length > 0 ? (
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
-                    data={visitors_by_country}
+                    data={visitorsByCountry}
                     cx="50%"
                     cy="50%"
                     innerRadius={60}
@@ -197,7 +169,7 @@ export const AdminDashboard = () => {
                     paddingAngle={5}
                     dataKey="value"
                   >
-                    {visitors_by_country.map((entry: any, index: number) => (
+                    {visitorsByCountry.map((entry: any, index: number) => (
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                     ))}
                   </Pie>
@@ -218,7 +190,7 @@ export const AdminDashboard = () => {
           <h3 className="text-foreground dark:text-white font-medium mb-4">Top Projects by Views</h3>
           <div className="flex-1 w-full">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={top_projects} margin={{ top: 10, right: 10, left: -20, bottom: 0 }} barSize={32}>
+              <BarChart data={topProjects} margin={{ top: 10, right: 10, left: -20, bottom: 0 }} barSize={32}>
                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" vertical={false} />
                 <XAxis dataKey="name" stroke="rgba(255,255,255,0.5)" fontSize={12} tickLine={false} axisLine={false} />
                 <YAxis stroke="rgba(255,255,255,0.5)" fontSize={12} tickLine={false} axisLine={false} />
@@ -238,7 +210,7 @@ export const AdminDashboard = () => {
           <h3 className="text-foreground dark:text-white font-medium mb-4">Top Blogs by Views</h3>
           <div className="flex-1 w-full">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={top_blogs} margin={{ top: 10, right: 10, left: -20, bottom: 0 }} barSize={32}>
+              <BarChart data={topBlogs} margin={{ top: 10, right: 10, left: -20, bottom: 0 }} barSize={32}>
                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" vertical={false} />
                 <XAxis dataKey="name" stroke="rgba(255,255,255,0.5)" fontSize={12} tickLine={false} axisLine={false} />
                 <YAxis stroke="rgba(255,255,255,0.5)" fontSize={12} tickLine={false} axisLine={false} />

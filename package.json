@@ -19,6 +19,6 @@
   },
   "homepage": "https://github.com/Artikov-dev/my-porfio#readme",
   "devDependencies": {
-    "typescript": "^7.0.2"
+    "typescript": "^5.7.2"
   }
 }

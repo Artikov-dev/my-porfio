@@ -19,19 +19,12 @@ export const AdminLogin = () => {
     setStatus('loading');
     
     try {
-      // 1.5s fast timeout so user never waits for offline/localhost backend
-      const timeoutPromise = new Promise((_, reject) =>
-        setTimeout(() => reject(new Error('Fast login timeout')), 1500)
-      );
-      const loginPromise = api.post('/auth/login', { email, password });
-
-      await Promise.race([loginPromise, timeoutPromise]);
+      await api.post('/auth/login', { email, password });
       localStorage.setItem('isAdmin', 'true');
       navigate('/admin/dashboard');
     } catch (err: any) {
-      console.warn('Backend login unavailable, proceeding to dashboard:', err);
-      localStorage.setItem('isAdmin', 'true');
-      navigate('/admin/dashboard');
+      console.error('Login error:', err);
+      setStatus('error');
     }
   };
 
@@ -65,7 +58,7 @@ export const AdminLogin = () => {
                 value={email}
                 onChange={e => setEmail(e.target.value)}
                 className="w-full bg-background/50 border border-border rounded-xl px-4 py-3 text-foreground dark:text-white focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-all"
-                placeholder="operator@system.com"
+                placeholder="artikovrozik52@gmail.com"
               />
             </div>
             
