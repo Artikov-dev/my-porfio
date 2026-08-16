@@ -25,6 +25,7 @@ export const connectDB = async () => {
     client.release();
   } catch (error) {
     console.error('❌ Failed to connect to PostgreSQL database:', error);
-    process.exit(1);
+    console.warn('⚠️ Server will continue without database connection. Some features may not work.');
+    console.warn('⚠️ Check if your Render PostgreSQL database is still active (free tier expires after 90 days).');
   }
 };

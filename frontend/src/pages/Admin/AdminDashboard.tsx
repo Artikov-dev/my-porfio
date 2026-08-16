@@ -11,7 +11,7 @@ import { Globe as GlobeIcon } from 'lucide-react';
 export const AdminDashboard = () => {
   const { activeUsers } = useSocket();
 
-  const { data: analytics, isLoading: analyticsLoading } = useQuery({
+  const { data: analytics, isLoading: analyticsLoading, isError: analyticsError, error: analyticsErrorDetails } = useQuery({
     queryKey: ['analytics'],
     queryFn: async () => {
       try {
@@ -19,10 +19,12 @@ export const AdminDashboard = () => {
         return res?.data?.data || null;
       } catch (err) {
         console.warn('Analytics API error:', err);
-        return null;
+        throw err; // Let react-query handle retries
       }
     },
     staleTime: 1000 * 30,
+    retry: 3,
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 15000),
   });
 
   const { data: projectsList } = useQuery({
@@ -60,6 +62,31 @@ export const AdminDashboard = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <Skeleton className="h-96 rounded-2xl" />
           <Skeleton className="h-96 rounded-2xl" />
+        </div>
+      </div>
+    );
+  }
+
+  if (analyticsError) {
+    return (
+      <div className="space-y-6 p-4">
+        <div className="p-6 rounded-2xl border border-red-400/30 bg-red-400/5 text-center">
+          <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-red-400/10 flex items-center justify-center">
+            <Eye className="w-8 h-8 text-red-400" />
+          </div>
+          <h3 className="text-xl font-bold text-foreground dark:text-white mb-2">Server Ulanish Xatosi</h3>
+          <p className="text-foreground/60 mb-4">
+            Backend serverga ulanib bo'lmadi. Server ishlamayotgan yoki bazaga ulanish muvaffaqiyatsiz bo'lgan bo'lishi mumkin.
+          </p>
+          <p className="text-sm text-red-400/80 mb-4">
+            {(analyticsErrorDetails as any)?.message || 'Connection timeout'}
+          </p>
+          <button 
+            onClick={() => window.location.reload()} 
+            className="px-6 py-2 bg-primary text-white rounded-xl hover:bg-teal-500 transition-colors"
+          >
+            Qayta urinish
+          </button>
         </div>
       </div>
     );
