@@ -19,12 +19,14 @@ export const Navbar = () => {
   const navLinks = [
     { nameKey: 'home', href: '/#home' },
     { nameKey: 'about', href: '/#about' },
+    { nameKey: 'workspace_nav', href: '/#workspace' },
     { nameKey: 'skills', href: '/#skills' },
     { nameKey: 'experience', href: '/#experience' },
     { nameKey: 'contact', href: '/#contact' },
     { nameKey: 'projects', href: '/projects', isRoute: true },
     { nameKey: 'blog', href: '/blogs', isRoute: true },
   ];
+
 
   const handleScrollTo = (e: React.MouseEvent<HTMLAnchorElement>, href: string, isRoute?: boolean) => {
     // Always close mobile menu on link click

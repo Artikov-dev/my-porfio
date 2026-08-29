@@ -83,7 +83,13 @@ const translations = {
     // Github Activity
     github_title: 'Open Source Contributions',
     github_days: 'Days I Code',
-    github_desc: 'Consistent efforts build great products. Here is a snapshot of my daily coding activity on GitHub.'
+    github_desc: 'Consistent efforts build great products. Here is a snapshot of my daily coding activity on GitHub.',
+    
+    // 3D Workspace Room
+    workspace_badge: 'Interactive 3D Experience',
+    workspace_title: 'Virtual Developer Workspace',
+    workspace_desc: 'Explore my virtual high-performance coding setup in 3D. Click objects to interact, switch RGB lighting, and change room moods.',
+    workspace_nav: '3D Room'
   },
   uz: {
     home: 'Asosiy',
@@ -154,9 +160,15 @@ const translations = {
     cv_title2: 'CV yim',
     
     // Github Activity
-    github_title: 'Open Source Hissalarim',
-    github_days: 'Kod Yozish Kunlarim',
-    github_desc: 'Muntazam harakatlar ajoyib mahsulotlarni yaratadi. Quyida GitHub\'dagi kunlik faolligimning qisqacha ko\'rinishi.'
+    github_title: 'Ochiq Kodga Hissa (Open Source)',
+    github_days: 'Dasturlash Kunlarim',
+    github_desc: 'Doimiy intilish buyuk mahsulotlarni yaratadi. Bu yerda GitHub dagi kunlik dasturlash faolligim aks etgan.',
+    
+    // 3D Workspace Room
+    workspace_badge: 'Interaktiv 3D Tajriba',
+    workspace_title: 'Virtual Dasturchi Xonasi',
+    workspace_desc: 'Mening 3D virtual ish joyimni kashf eting. Obyektlarni bosib interaktiv boshqaring, RGB chiroqlarni va xona muhitini o\'zgartiring.',
+    workspace_nav: '3D Xona'
   },
   ru: {
     home: 'Главная',
@@ -229,7 +241,13 @@ const translations = {
     // Github Activity
     github_title: 'Вклад в Open Source',
     github_days: 'Дни Программирования',
-    github_desc: 'Постоянные усилия создают отличные продукты. Вот снимок моей ежедневной активности на GitHub.'
+    github_desc: 'Постоянные усилия создают отличные продукты. Вот снимок моей ежедневной активности на GitHub.',
+    
+    // 3D Workspace Room
+    workspace_badge: 'Интерактивный 3D Опыт',
+    workspace_title: 'Виртуальное Рабочее Пространство',
+    workspace_desc: 'Исследуйте мое рабочее место в 3D. Нажимайте на объекты, меняйте RGB-подсветку и переключайте атмосферу комнаты.',
+    workspace_nav: '3D Комната'
   }
 };
 
