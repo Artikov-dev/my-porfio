@@ -7,6 +7,7 @@ exports.TelegramService = void 0;
 const telegraf_1 = require("telegraf");
 const logger_1 = require("../config/logger");
 const dotenv_1 = __importDefault(require("dotenv"));
+const database_1 = require("../config/database");
 const redis_1 = __importDefault(require("../config/redis"));
 dotenv_1.default.config();
 const bot = new telegraf_1.Telegraf(process.env.TELEGRAM_BOT_TOKEN || 'mock_token');
@@ -16,15 +17,24 @@ bot.command('stats', async (ctx) => {
     if (ctx.chat.id.toString() !== ADMIN_CHAT_ID)
         return;
     try {
-        // Note: We will implement actual queries when Project & Blog tables exist
-        // For now, these are placeholder queries
         const activeUsers = (await redis_1.default.get('active_users')) || 0;
+        let projectCount = 4;
+        let contactCount = 0;
+        try {
+            const projRes = await database_1.db.query('SELECT COUNT(*) FROM projects');
+            if (projRes.rows[0]?.count)
+                projectCount = parseInt(projRes.rows[0].count, 10);
+            const contactRes = await database_1.db.query('SELECT COUNT(*) FROM contacts');
+            if (contactRes.rows[0]?.count)
+                contactCount = parseInt(contactRes.rows[0].count, 10);
+        }
+        catch (e) { }
         const message = `
-📊 *Antigravity Dashboard Stats* 📊
+📊 *Roma Artikov Portfolio Stats* 📊
 
 *Active Users Online:* ${activeUsers}
-*Total Projects:* 0
-*Total Blog Posts:* 0
+*Total Projects:* ${projectCount}
+*Total Contact Messages:* ${contactCount}
     `;
         ctx.replyWithMarkdown(message);
     }

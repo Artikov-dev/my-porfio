@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.setup2FA = exports.verify2FA = exports.login = void 0;
+exports.logout = exports.refreshToken = exports.getMe = exports.setup2FA = exports.verify2FA = exports.login = void 0;
 const auth_service_1 = require("../services/auth.service");
 const login = async (req, res, next) => {
     try {
@@ -75,3 +75,60 @@ const setup2FA = async (req, res, next) => {
     }
 };
 exports.setup2FA = setup2FA;
+const getMe = async (req, res, next) => {
+    try {
+        const user = req.user;
+        res.status(200).json({
+            status: 'success',
+            data: {
+                id: user.id || 'admin_id',
+                role: user.role || 'admin',
+            },
+        });
+    }
+    catch (error) {
+        next(error);
+    }
+};
+exports.getMe = getMe;
+const refreshToken = async (req, res, next) => {
+    try {
+        const refreshTokenCookie = req.cookies?.refreshToken;
+        if (!refreshTokenCookie) {
+            return res.status(401).json({ status: 'fail', message: 'No refresh token provided' });
+        }
+        const decoded = auth_service_1.AuthService.verifyRefreshToken(refreshTokenCookie);
+        const { accessToken, refreshToken: newRefreshToken } = auth_service_1.AuthService.generateTokens({
+            id: decoded.id || 'admin_id',
+            role: decoded.role || 'admin',
+        });
+        res.cookie('accessToken', accessToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict',
+            maxAge: 60 * 60 * 1000,
+        });
+        res.cookie('refreshToken', newRefreshToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict',
+            maxAge: 7 * 24 * 60 * 60 * 1000,
+        });
+        res.status(200).json({ status: 'success', message: 'Token refreshed successfully' });
+    }
+    catch (error) {
+        next(error);
+    }
+};
+exports.refreshToken = refreshToken;
+const logout = async (req, res, next) => {
+    try {
+        res.clearCookie('accessToken');
+        res.clearCookie('refreshToken');
+        res.status(200).json({ status: 'success', message: 'Logged out successfully' });
+    }
+    catch (error) {
+        next(error);
+    }
+};
+exports.logout = logout;

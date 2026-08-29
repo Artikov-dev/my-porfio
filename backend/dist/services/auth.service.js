@@ -39,6 +39,14 @@ exports.AuthService = {
         }
         return true;
     },
+    verifyRefreshToken(token) {
+        try {
+            return jsonwebtoken_1.default.verify(token, process.env.REFRESH_TOKEN_SECRET);
+        }
+        catch (err) {
+            throw new error_middleware_1.CustomError('Invalid or expired refresh token', 401);
+        }
+    },
     generateTokens(payload) {
         const accessToken = jsonwebtoken_1.default.sign(payload, process.env.JWT_SECRET, {
             expiresIn: (process.env.JWT_EXPIRES_IN || '1h'),

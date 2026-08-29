@@ -11,15 +11,15 @@ const REDIS_URL = process.env.REDIS_URL || 'redis://localhost:6379';
 let isConnected = false;
 const redisClient = new ioredis_1.default(REDIS_URL, {
     retryStrategy(times) {
-        if (times > 3) {
-            logger_1.logger.warn('⚠️ Could not connect to Redis. Caching will be disabled.');
-            return null; // Stop retrying after 3 attempts
-        }
-        return Math.min(times * 100, 3000);
+        // Exponential backoff capped at 5 seconds to ensure reconnection works
+        return Math.min(times * 200, 5000);
     },
     maxRetriesPerRequest: null,
 });
 redisClient.on('connect', () => {
+    logger_1.logger.info('📦 Connecting to Redis database...');
+});
+redisClient.on('ready', () => {
     isConnected = true;
     logger_1.logger.info('📦 Successfully connected to Redis database');
 });
@@ -27,6 +27,13 @@ redisClient.on('error', (err) => {
     if (isConnected) {
         logger_1.logger.error('❌ Redis Connection Error:', err);
     }
+    isConnected = false;
+});
+redisClient.on('close', () => {
+    isConnected = false;
+});
+redisClient.on('end', () => {
+    isConnected = false;
 });
 // Wrapper to safely execute commands without throwing if offline
 exports.default = {

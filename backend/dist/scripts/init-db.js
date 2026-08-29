@@ -28,10 +28,16 @@ const createTables = async () => {
         github_url TEXT,
         live_url TEXT,
         tech_stack TEXT[] NOT NULL DEFAULT '{}',
+        views INTEGER DEFAULT 0,
         created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
       );
     `);
         console.log('✅ Projects table ensured.');
+        // Ensure views column exists if projects table was created previously without it
+        await client.query(`
+      ALTER TABLE projects 
+      ADD COLUMN IF NOT EXISTS views INTEGER DEFAULT 0;
+    `);
         // Blogs Table
         await client.query(`
       CREATE TABLE IF NOT EXISTS blogs (
@@ -72,6 +78,20 @@ const createTables = async () => {
       );
     `);
         console.log('✅ Chat Messages table ensured.');
+        // Site Visits Table
+        await client.query(`
+      CREATE TABLE IF NOT EXISTS site_visits (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        ip_address TEXT,
+        country TEXT,
+        browser TEXT,
+        os TEXT,
+        device TEXT,
+        path TEXT,
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+        console.log('✅ Site Visits table ensured.');
         client.release();
         console.log('🎉 Database initialization complete!');
         process.exit(0);

@@ -69,17 +69,17 @@ export const GithubActivity = () => {
             </div>
 
             {/* Calendar Section */}
-            <div className="p-4 md:p-8 w-full flex items-center justify-center overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:none] relative group">
-              {/* Tooltip hint for empty spaces */}
-              <div className="absolute inset-0 bg-gradient-to-r from-background via-transparent to-background pointer-events-none opacity-50 md:opacity-0 transition-opacity group-hover:opacity-0" />
+            <div className="p-4 md:p-8 w-full flex items-center justify-start md:justify-center overflow-x-auto touch-pan-x [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:none] relative group">
+              {/* Subtle edge fade indicator on mobile to hint scrollability */}
+              <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-background/90 to-transparent pointer-events-none md:hidden" />
               
-              <div className="min-w-max transition-all duration-700 hover:scale-[1.02] cursor-crosshair">
+              <div className="min-w-max transition-all duration-700 hover:scale-[1.01] cursor-crosshair px-2">
                 <GitHubCalendar 
                   username="Artikov-dev" 
                   colorScheme={theme === 'dark' ? 'dark' : 'light'}
-                  blockSize={14}
-                  blockMargin={5}
-                  fontSize={14}
+                  blockSize={13}
+                  blockMargin={4}
+                  fontSize={13}
                   theme={{
                     light: ['#ebedf0', '#9be9a8', '#40c463', '#30a14e', '#216e39'],
                     dark: ['#161b22', '#0e4429', '#006d32', '#26a641', '#39d353'],
@@ -87,6 +87,7 @@ export const GithubActivity = () => {
                 />
               </div>
             </div>
+
 
           </div>
         </div>

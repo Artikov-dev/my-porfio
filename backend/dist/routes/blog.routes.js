@@ -3,6 +3,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const blog_controller_js_1 = require("../controllers/blog.controller.js");
 const auth_middleware_js_1 = require("../middlewares/auth.middleware.js");
+const validate_middleware_js_1 = require("../middlewares/validate.middleware.js");
+const blog_schema_js_1 = require("../schemas/blog.schema.js");
 const router = (0, express_1.Router)();
 router.get('/', blog_controller_js_1.getAllBlogs);
 router.get('/:id', blog_controller_js_1.getBlog);
@@ -18,6 +20,6 @@ router.post('/:id/view', async (req, res) => {
     }
 });
 // Protected Admin Routes
-router.post('/', auth_middleware_js_1.requireAuth, blog_controller_js_1.createBlog);
+router.post('/', auth_middleware_js_1.requireAuth, (0, validate_middleware_js_1.validate)(blog_schema_js_1.blogSchema), blog_controller_js_1.createBlog);
 router.delete('/:id', auth_middleware_js_1.requireAuth, blog_controller_js_1.deleteBlog);
 exports.default = router;

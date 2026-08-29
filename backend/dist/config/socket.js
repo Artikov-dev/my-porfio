@@ -10,7 +10,7 @@ const redis_1 = __importDefault(require("./redis"));
 const database_1 = require("./database");
 const setupSocket = (server) => {
     const allowedOrigins = process.env.CLIENT_URL
-        ? process.env.CLIENT_URL.split(',')
+        ? process.env.CLIENT_URL.split(',').map((url) => url.trim())
         : ['http://localhost:5173'];
     const io = new socket_io_1.Server(server, {
         cors: {
@@ -18,6 +18,9 @@ const setupSocket = (server) => {
             methods: ['GET', 'POST'],
             credentials: true,
         },
+        transports: ['websocket', 'polling'],
+        pingTimeout: 60000,
+        pingInterval: 25000,
     });
     // In-memory fallback if Redis is down
     let memoryActiveUsers = 0;
@@ -51,13 +54,21 @@ const setupSocket = (server) => {
             }
             io.emit('active_users_update', Math.max(0, updatedActiveUsers));
         });
+        socket.on('join_room', (roomId) => {
+            if (roomId) {
+                socket.join(roomId);
+                logger_1.logger.info(`🔌 Socket ${socket.id} joined room ${roomId}`);
+            }
+        });
         socket.on('page_view', (page) => {
             logger_1.logger.info(`Page view recorded: ${page} by ${socket.id}`);
         });
         socket.on('chat_message', async (data) => {
             logger_1.logger.info(`Chat message from ${data.name}: ${data.text}`);
+            const sessionId = data.visitor_id || socket.id;
+            socket.join(sessionId);
             try {
-                const result = await database_1.db.query('INSERT INTO chat_messages (name, text, session_id, is_admin) VALUES ($1, $2, $3, false) RETURNING *', [data.name, data.text, socket.id]);
+                const result = await database_1.db.query('INSERT INTO chat_messages (name, text, session_id, is_admin) VALUES ($1, $2, $3, false) RETURNING *', [data.name, data.text, sessionId]);
                 // Broadcast to admins that a new message arrived
                 io.emit('new_admin_message', result.rows[0]);
             }
@@ -69,7 +80,7 @@ const setupSocket = (server) => {
             logger_1.logger.info(`Admin replying to ${data.session_id}: ${data.text}`);
             try {
                 const result = await database_1.db.query('INSERT INTO chat_messages (name, text, session_id, is_admin) VALUES ($1, $2, $3, true) RETURNING *', ['Roma Artikov', data.text, data.session_id]);
-                // Send the reply specifically to the user's socket
+                // Send the reply specifically to the user's socket room
                 io.to(data.session_id).emit('chat_reply', result.rows[0]);
                 // Also broadcast so other admin tabs can see it
                 io.emit('new_admin_message', result.rows[0]);

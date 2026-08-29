@@ -12,8 +12,7 @@ const pool = new pg_1.Pool({
     ssl: { rejectUnauthorized: false }, // Render requires SSL even in dev from local
 });
 pool.on('error', (err) => {
-    console.error('Unexpected error on idle client', err);
-    process.exit(-1);
+    console.error('Unexpected error on idle client:', err.message);
 });
 exports.db = {
     query: (text, params) => pool.query(text, params),
@@ -28,7 +27,8 @@ const connectDB = async () => {
     }
     catch (error) {
         console.error('❌ Failed to connect to PostgreSQL database:', error);
-        process.exit(1);
+        console.warn('⚠️ Server will continue without database connection. Some features may not work.');
+        console.warn('⚠️ Check if your Render PostgreSQL database is still active (free tier expires after 90 days).');
     }
 };
 exports.connectDB = connectDB;

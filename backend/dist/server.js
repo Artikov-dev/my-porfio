@@ -3,6 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+// Trigger deployment
 const express_1 = __importDefault(require("express"));
 const http_1 = __importDefault(require("http"));
 const cors_1 = __importDefault(require("cors"));
@@ -23,11 +24,29 @@ const blog_routes_1 = __importDefault(require("./routes/blog.routes"));
 const contact_routes_1 = __importDefault(require("./routes/contact.routes"));
 const seo_routes_1 = __importDefault(require("./routes/seo.routes"));
 const analytics_routes_1 = __importDefault(require("./routes/analytics.routes"));
+const system_routes_1 = __importDefault(require("./routes/system.routes"));
 dotenv_1.default.config();
 const app = (0, express_1.default)();
 const PORT = process.env.PORT || 5000;
-// Middlewares
-app.use((0, helmet_1.default)());
+// Trust proxy (Render uses reverse proxy)
+app.set('trust proxy', 1);
+// CORS - MUST be first middleware to handle preflight requests
+const allowedOrigins = process.env.CLIENT_URL
+    ? process.env.CLIENT_URL.split(',').map((url) => url.trim())
+    : ['http://localhost:5173'];
+const corsOptions = {
+    origin: allowedOrigins,
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
+};
+app.use((0, cors_1.default)(corsOptions));
+// Handle preflight requests explicitly before any other middleware
+app.options('*', (0, cors_1.default)(corsOptions));
+// Security & Logging
+app.use((0, helmet_1.default)({
+    crossOriginResourcePolicy: { policy: 'cross-origin' },
+}));
 app.use((0, morgan_1.default)('combined', {
     stream: { write: (message) => logger_1.logger.info(message.trim()) },
 }));
@@ -35,13 +54,6 @@ app.use(rateLimiter_1.globalLimiter);
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: true }));
 app.use((0, cookie_parser_1.default)());
-const allowedOrigins = process.env.CLIENT_URL
-    ? process.env.CLIENT_URL.split(',')
-    : ['http://localhost:5173'];
-app.use((0, cors_1.default)({
-    origin: allowedOrigins,
-    credentials: true,
-}));
 // Routes
 app.use('/api/auth', auth_routes_1.default);
 app.use('/api/projects', project_routes_1.default);
@@ -49,6 +61,7 @@ app.use('/api/blogs', blog_routes_1.default);
 app.use('/api/contact', contact_routes_1.default);
 app.use('/api/seo', seo_routes_1.default);
 app.use('/api/analytics', analytics_routes_1.default);
+app.use('/api/system', system_routes_1.default);
 // API Documentation
 (0, swagger_1.setupSwagger)(app);
 // Health check endpoint
