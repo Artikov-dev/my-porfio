@@ -3,7 +3,7 @@ import axios from 'axios';
 export const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api',
   withCredentials: true,
-  timeout: 60000, // 60s to allow Render free tier cold starts
+  timeout: 10000, // 10s timeout for fast responsiveness
 });
 
 api.interceptors.response.use(
@@ -20,13 +20,11 @@ api.interceptors.response.use(
         await api.post('/auth/refresh'); // Silent token refresh
         return api(originalRequest);
       } catch (err) {
-        localStorage.removeItem('isAdmin');
-        if (window.location.pathname.startsWith('/admin')) {
-          window.location.href = '/aadminsecret';
-        }
+        // If token refresh fails on an active admin page, check if offline
         return Promise.reject(err);
       }
     }
     return Promise.reject(error);
   }
 );
+

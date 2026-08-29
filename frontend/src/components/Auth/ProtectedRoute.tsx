@@ -11,16 +11,31 @@ export const ProtectedRoute = () => {
   useEffect(() => {
     let isMounted = true;
     const checkAuth = async () => {
+      const hasLocalAdmin = localStorage.getItem('isAdmin') === 'true';
+
       try {
-        await api.get('/auth/me');
+        const timeoutPromise = new Promise((_, reject) =>
+          setTimeout(() => reject(new Error('Auth check timeout')), 3000)
+        );
+        const authPromise = api.get('/auth/me');
+        await Promise.race([authPromise, timeoutPromise]);
+        
         if (isMounted) {
           setIsAuthenticated(true);
           localStorage.setItem('isAdmin', 'true');
         }
-      } catch (err) {
-        if (isMounted) {
-          setIsAuthenticated(false);
-          localStorage.removeItem('isAdmin');
+      } catch (err: any) {
+        // If server returns explicit 403 Forbidden, revoke access
+        if (err?.response?.status === 403) {
+          if (isMounted) {
+            setIsAuthenticated(false);
+            localStorage.removeItem('isAdmin');
+          }
+        } else {
+          // If network error / timeout, maintain session if already authenticated
+          if (isMounted && hasLocalAdmin) {
+            setIsAuthenticated(true);
+          }
         }
       } finally {
         if (isMounted) {
@@ -49,3 +64,4 @@ export const ProtectedRoute = () => {
 
   return <Outlet />;
 };
+

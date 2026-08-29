@@ -10,6 +10,8 @@ dotenv_1.default.config();
 const pool = new pg_1.Pool({
     connectionString: process.env.DATABASE_URL,
     ssl: { rejectUnauthorized: false }, // Render requires SSL even in dev from local
+    connectionTimeoutMillis: 5000, // 5s connection timeout to avoid hanging requests
+    idleTimeoutMillis: 10000,
 });
 pool.on('error', (err) => {
     console.error('Unexpected error on idle client:', err.message);

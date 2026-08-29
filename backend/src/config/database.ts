@@ -6,6 +6,8 @@ dotenv.config();
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: { rejectUnauthorized: false }, // Render requires SSL even in dev from local
+  connectionTimeoutMillis: 5000, // 5s connection timeout to avoid hanging requests
+  idleTimeoutMillis: 10000,
 });
 
 pool.on('error', (err: Error) => {
