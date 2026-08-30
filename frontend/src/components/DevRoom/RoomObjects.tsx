@@ -43,6 +43,16 @@ export const RoomObjects: React.FC<RoomObjectsProps> = ({
   const fanRef1 = useRef<THREE.Group>(null);
   const fanRef2 = useRef<THREE.Group>(null);
   const fanRef3 = useRef<THREE.Group>(null);
+  const fanTop1Ref = useRef<THREE.Group>(null);
+  const fanTop2Ref = useRef<THREE.Group>(null);
+  const fanTop3Ref = useRef<THREE.Group>(null);
+  const fanBot1Ref = useRef<THREE.Group>(null);
+  const fanBot2Ref = useRef<THREE.Group>(null);
+  const fanBot3Ref = useRef<THREE.Group>(null);
+  const fanRearRef = useRef<THREE.Group>(null);
+  const flowWheelRef = useRef<THREE.Group>(null);
+  const skycar1Ref = useRef<THREE.Group>(null);
+  const skycar2Ref = useRef<THREE.Group>(null);
   const speakerPulseRef1 = useRef<THREE.Mesh>(null);
   const speakerPulseRef2 = useRef<THREE.Mesh>(null);
   const steamRef = useRef<THREE.Points>(null);
@@ -58,7 +68,6 @@ export const RoomObjects: React.FC<RoomObjectsProps> = ({
   const catBodyRef = useRef<THREE.Group>(null);
   const catTailRef = useRef<THREE.Mesh>(null);
   const catZzzRef = useRef<THREE.Points>(null);
-
 
   const [neonActive, setNeonActive] = useState<boolean>(true);
   const [chairTargetRot, setChairTargetRot] = useState<number>(-0.25);
@@ -96,14 +105,37 @@ export const RoomObjects: React.FC<RoomObjectsProps> = ({
     cPhone.height = 512;
     const ctxPhone = cPhone.getContext('2d')!;
 
+    // 6. CPU Liquid Cooler Round LCD Canvas
+    const cCooler = document.createElement('canvas');
+    cCooler.width = 256;
+    cCooler.height = 256;
+    const ctxCooler = cCooler.getContext('2d')!;
+
+    // 7. Elgato Stream Deck 15-Key Canvas
+    const cStreamDeck = document.createElement('canvas');
+    cStreamDeck.width = 320;
+    cStreamDeck.height = 192;
+    const ctxStreamDeck = cStreamDeck.getContext('2d')!;
+
     const tex1 = new THREE.CanvasTexture(c1);
     const tex2 = new THREE.CanvasTexture(c2);
     const tex3 = new THREE.CanvasTexture(c3);
     const tex4 = new THREE.CanvasTexture(c4);
     const texPhone = new THREE.CanvasTexture(cPhone);
+    const texCooler = new THREE.CanvasTexture(cCooler);
+    const texStreamDeck = new THREE.CanvasTexture(cStreamDeck);
 
-    return { c1, ctx1, tex1, c2, ctx2, tex2, c3, ctx3, tex3, c4, ctx4, tex4, cPhone, ctxPhone, texPhone };
+    return { 
+      c1, ctx1, tex1, 
+      c2, ctx2, tex2, 
+      c3, ctx3, tex3, 
+      c4, ctx4, tex4, 
+      cPhone, ctxPhone, texPhone,
+      cCooler, ctxCooler, texCooler,
+      cStreamDeck, ctxStreamDeck, texStreamDeck
+    };
   }, []);
+
 
   // Matrix column drops
   const matrixColumns = useMemo(() => {
@@ -174,10 +206,26 @@ export const RoomObjects: React.FC<RoomObjectsProps> = ({
   useFrame((state, delta) => {
     const time = state.clock.elapsedTime;
 
-    // 1. Fans rotation
-    if (fanRef1.current) fanRef1.current.rotation.z += delta * 15;
-    if (fanRef2.current) fanRef2.current.rotation.z += delta * 15;
-    if (fanRef3.current) fanRef3.current.rotation.z += delta * 15;
+    // 1. Fans rotation (10x Fans Setup)
+    if (fanRef1.current) fanRef1.current.rotation.z += delta * 16;
+    if (fanRef2.current) fanRef2.current.rotation.z += delta * 16;
+    if (fanRef3.current) fanRef3.current.rotation.z += delta * 16;
+    if (fanTop1Ref.current) fanTop1Ref.current.rotation.z += delta * 16;
+    if (fanTop2Ref.current) fanTop2Ref.current.rotation.z += delta * 16;
+    if (fanTop3Ref.current) fanTop3Ref.current.rotation.z += delta * 16;
+    if (fanBot1Ref.current) fanBot1Ref.current.rotation.z += delta * 16;
+    if (fanBot2Ref.current) fanBot2Ref.current.rotation.z += delta * 16;
+    if (fanBot3Ref.current) fanBot3Ref.current.rotation.z += delta * 16;
+    if (fanRearRef.current) fanRearRef.current.rotation.x += delta * 16;
+    if (flowWheelRef.current) flowWheelRef.current.rotation.z += delta * 24;
+
+    // Skycars moving through the city skyline
+    if (skycar1Ref.current) {
+      skycar1Ref.current.position.z = ((time * 3.2) % 18) - 9;
+    }
+    if (skycar2Ref.current) {
+      skycar2Ref.current.position.z = 9 - ((time * 2.5) % 18);
+    }
 
     // 2. Speaker bass pulsing
     const pulse = 1 + Math.sin(time * 8) * 0.06;
@@ -244,8 +292,7 @@ export const RoomObjects: React.FC<RoomObjectsProps> = ({
       catZzzRef.current.geometry.attributes.position.needsUpdate = true;
     }
 
-
-    // 8. Steaming coffee particles
+    // 9. Steaming coffee particles
     if (steamRef.current) {
       const positions = steamRef.current.geometry.attributes.position.array as Float32Array;
       for (let i = 0; i < positions.length / 3; i++) {
@@ -259,8 +306,70 @@ export const RoomObjects: React.FC<RoomObjectsProps> = ({
       steamRef.current.geometry.attributes.position.needsUpdate = true;
     }
 
-    // 9. Dynamic Canvas Rendering
-    const { ctx1, c1, tex1, ctx2, c2, tex2, ctx3, c3, tex3, ctx4, c4, tex4, ctxPhone, cPhone, texPhone } = canvasRefs;
+    // 10. Dynamic Canvas Rendering
+    const { 
+      ctx1, c1, tex1, 
+      ctx2, c2, tex2, 
+      ctx3, c3, tex3, 
+      ctx4, c4, tex4, 
+      ctxPhone, cPhone, texPhone,
+      ctxCooler, cCooler, texCooler,
+      ctxStreamDeck, cStreamDeck, texStreamDeck
+    } = canvasRefs;
+
+    // CPU Cooler Digital Round LCD Screen
+    ctxCooler.fillStyle = '#020617';
+    ctxCooler.fillRect(0, 0, cCooler.width, cCooler.height);
+    ctxCooler.strokeStyle = rgbColor;
+    ctxCooler.lineWidth = 8;
+    ctxCooler.beginPath();
+    ctxCooler.arc(128, 128, 110, 0, Math.PI * 2);
+    ctxCooler.stroke();
+
+    ctxCooler.strokeStyle = '#38bdf8';
+    ctxCooler.lineWidth = 10;
+    ctxCooler.beginPath();
+    ctxCooler.arc(128, 128, 110, -Math.PI / 2, -Math.PI / 2 + (Math.PI * 1.4) + Math.sin(time * 2) * 0.2);
+    ctxCooler.stroke();
+
+    ctxCooler.fillStyle = '#ffffff';
+    ctxCooler.font = 'bold 44px monospace';
+    ctxCooler.textAlign = 'center';
+    ctxCooler.fillText(`${(38 + Math.sin(time) * 3).toFixed(0)}°C`, 128, 120);
+
+    ctxCooler.fillStyle = rgbColor;
+    ctxCooler.font = 'bold 16px sans-serif';
+    ctxCooler.fillText('LIQUID LOOP', 128, 152);
+
+    ctxCooler.fillStyle = '#64748b';
+    ctxCooler.font = '13px monospace';
+    ctxCooler.fillText('2850 RPM • PUMP OK', 128, 178);
+    texCooler.needsUpdate = true;
+
+    // Elgato Stream Deck 15-Key Canvas
+    ctxStreamDeck.fillStyle = '#090d16';
+    ctxStreamDeck.fillRect(0, 0, cStreamDeck.width, cStreamDeck.height);
+    const icons = ['🎙️', '📹', '⚡', '💻', '🐙', '🎵', '💡', '🚀', '🔥', '⚙️', '🤖', '💬', '☕', '📈', '✨'];
+    for (let row = 0; row < 3; row++) {
+      for (let col = 0; col < 5; col++) {
+        const idx = row * 5 + col;
+        const kx = 10 + col * 62;
+        const ky = 10 + row * 58;
+        ctxStreamDeck.fillStyle = '#1e293b';
+        ctxStreamDeck.beginPath();
+        ctxStreamDeck.roundRect(kx, ky, 52, 48, 8);
+        ctxStreamDeck.fill();
+        ctxStreamDeck.strokeStyle = (idx % 2 === 0) ? rgbColor : '#38bdf8';
+        ctxStreamDeck.lineWidth = 1.5;
+        ctxStreamDeck.stroke();
+
+        ctxStreamDeck.font = '20px sans-serif';
+        ctxStreamDeck.textAlign = 'center';
+        ctxStreamDeck.fillText(icons[idx], kx + 26, ky + 32);
+      }
+    }
+    texStreamDeck.needsUpdate = true;
+
 
     // Screen 1 (VS Code)
     ctx1.fillStyle = '#0a0f1d';
@@ -562,6 +671,40 @@ export const RoomObjects: React.FC<RoomObjectsProps> = ({
           </group>
         )}
 
+        {/* Animated Cyber Skycars flying in the city skyline */}
+        <group ref={skycar1Ref} position={[-7.2, 3.8, 0]}>
+          <mesh>
+            <boxGeometry args={[0.22, 0.08, 0.6]} />
+            <meshStandardMaterial color="#0f172a" metalness={0.9} />
+          </mesh>
+          {/* Headlights */}
+          <mesh position={[0, 0, 0.32]}>
+            <boxGeometry args={[0.18, 0.02, 0.04]} />
+            <meshBasicMaterial color="#38bdf8" />
+          </mesh>
+          {/* Taillights */}
+          <mesh position={[0, 0, -0.32]}>
+            <boxGeometry args={[0.18, 0.02, 0.04]} />
+            <meshBasicMaterial color="#ef4444" />
+          </mesh>
+          <pointLight color="#38bdf8" intensity={1.5} distance={2.5} />
+        </group>
+
+        <group ref={skycar2Ref} position={[-8.4, 4.6, 0]}>
+          <mesh>
+            <boxGeometry args={[0.18, 0.06, 0.5]} />
+            <meshStandardMaterial color="#0f172a" metalness={0.9} />
+          </mesh>
+          <mesh position={[0, 0, -0.28]}>
+            <boxGeometry args={[0.14, 0.02, 0.04]} />
+            <meshBasicMaterial color="#a855f7" />
+          </mesh>
+          <mesh position={[0, 0, 0.28]}>
+            <boxGeometry args={[0.14, 0.02, 0.04]} />
+            <meshBasicMaterial color="#ec4899" />
+          </mesh>
+        </group>
+
         {/* Distant City Sky Glow */}
         <pointLight 
           position={[-8.5, 4.0, 0]} 
@@ -570,6 +713,7 @@ export const RoomObjects: React.FC<RoomObjectsProps> = ({
           distance={14} 
         />
       </group>
+
 
       {/* Modern Acoustic Slatted Wood Wall Panels */}
       {[-2.8, -1.9, -1.0, -0.1, 0.8, 1.7, 2.6].map((x, i) => (
@@ -1128,156 +1272,402 @@ export const RoomObjects: React.FC<RoomObjectsProps> = ({
           </points>
         </group>
 
-        {/* ================= HIGH-END PANORAMIC AQUARIUM RGB PC RIG ================= */}
+        {/* ================= ELGATO STREAM DECK 15-KEY ================= */}
+        <group position={[-0.72, 1.48, 0.28]} rotation={[-Math.PI / 8, 0, 0.15]}>
+          <mesh castShadow>
+            <boxGeometry args={[0.32, 0.04, 0.22]} />
+            <meshStandardMaterial color="#0b0f19" roughness={0.4} metalness={0.7} />
+          </mesh>
+          <mesh position={[0, 0.022, 0]}>
+            <planeGeometry args={[0.30, 0.20]} />
+            <meshBasicMaterial map={canvasRefs.texStreamDeck} />
+          </mesh>
+        </group>
+
+        {/* ================= STUDIO BROADCAST BOOM ARM & SHURE SM7B MIC ================= */}
+        <group position={[-1.9, 1.45, -0.65]}>
+          {/* Desk Clamp Base */}
+          <mesh position={[0, 0.1, 0]} castShadow>
+            <cylinderGeometry args={[0.06, 0.06, 0.2, 16]} />
+            <meshStandardMaterial color="#0f172a" metalness={0.9} />
+          </mesh>
+          {/* Lower Arm Segment */}
+          <mesh position={[0.2, 0.45, 0.3]} rotation={[0.4, 0.3, -0.5]} castShadow>
+            <cylinderGeometry args={[0.015, 0.015, 0.8, 12]} />
+            <meshStandardMaterial color="#1e293b" metalness={0.9} />
+          </mesh>
+          {/* Upper Arm Segment */}
+          <mesh position={[0.45, 0.8, 0.6]} rotation={[-0.3, 0.2, 0.5]} castShadow>
+            <cylinderGeometry args={[0.015, 0.015, 0.7, 12]} />
+            <meshStandardMaterial color="#1e293b" metalness={0.9} />
+          </mesh>
+          {/* Microphone Body */}
+          <group position={[0.68, 0.68, 0.75]} rotation={[0.4, -0.6, 0]}>
+            <mesh castShadow>
+              <cylinderGeometry args={[0.04, 0.045, 0.24, 24]} />
+              <meshStandardMaterial color="#090d16" roughness={0.3} metalness={0.8} />
+            </mesh>
+            {/* Metal Grille Capsule */}
+            <mesh position={[0, 0.14, 0]}>
+              <cylinderGeometry args={[0.04, 0.04, 0.08, 24]} />
+              <meshStandardMaterial color="#334155" metalness={0.9} roughness={0.1} />
+            </mesh>
+            {/* Pop Filter / Shockmount Ring */}
+            <mesh position={[0, 0, 0]}>
+              <torusGeometry args={[0.065, 0.008, 12, 24]} />
+              <meshStandardMaterial color="#1e293b" metalness={0.8} />
+            </mesh>
+          </group>
+        </group>
+
+        {/* ================= COILED AVIATOR KEYBOARD CABLE ================= */}
+        <group position={[-0.35, 1.46, 0.08]} rotation={[0, 0.25, 0]}>
+          <mesh castShadow rotation={[0, 0, Math.PI / 2]}>
+            <cylinderGeometry args={[0.025, 0.025, 0.45, 16]} />
+            <meshStandardMaterial color={rgbColor} roughness={0.4} />
+          </mesh>
+          <mesh position={[0.26, 0, 0]} rotation={[0, 0, Math.PI / 2]}>
+            <cylinderGeometry args={[0.038, 0.038, 0.08, 16]} />
+            <meshStandardMaterial color="#94a3b8" metalness={0.95} roughness={0.1} />
+          </mesh>
+        </group>
+
+
+        {/* ================= FLAGSHIP CUSTOM HARDLINE LIQUID-COOLED PC RIG ================= */}
         <group 
           position={[1.58, 1.95, 0.08]} 
           onClick={onPcClick}
         >
-          {/* Main Anodized Dark Metal Chassis Frame */}
+          {/* Main Dual-Chamber Aluminum Frame */}
           <mesh castShadow>
-            <boxGeometry args={[0.62, 1.05, 0.98]} />
-            <meshStandardMaterial color="#060911" roughness={0.25} metalness={0.9} />
+            <boxGeometry args={[0.66, 1.08, 1.02]} />
+            <meshStandardMaterial color="#050811" roughness={0.2} metalness={0.92} />
           </mesh>
 
-          {/* Interior Component Cavity */}
+          {/* Interior Component Bay Cavity */}
           <mesh position={[-0.04, 0, 0]}>
-            <boxGeometry args={[0.52, 0.96, 0.9]} />
-            <meshStandardMaterial color="#0b0f19" roughness={0.7} metalness={0.3} />
+            <boxGeometry args={[0.56, 0.98, 0.94]} />
+            <meshStandardMaterial color="#080c16" roughness={0.6} metalness={0.4} />
           </mesh>
 
-          {/* Panoramic Seamless Front Tempered Glass */}
-          <mesh position={[-0.04, 0, 0.49]}>
-            <boxGeometry args={[0.54, 0.98, 0.015]} />
+          {/* Panoramic Seamless Front Tempered Glass Panel */}
+          <mesh position={[-0.04, 0, 0.51]}>
+            <boxGeometry args={[0.58, 1.0, 0.015]} />
             <meshPhysicalMaterial 
               color="#020617" 
               transparent 
-              opacity={0.25} 
-              roughness={0.04} 
-              metalness={0.1}
-              transmission={0.92} 
+              opacity={0.22} 
+              roughness={0.02} 
+              metalness={0.08}
+              transmission={0.95} 
             />
           </mesh>
 
-          {/* Panoramic Seamless Left Side Tempered Glass */}
-          <mesh position={[-0.31, 0, 0]}>
-            <boxGeometry args={[0.015, 0.98, 0.94]} />
+          {/* Panoramic Seamless Left Side Tempered Glass Panel */}
+          <mesh position={[-0.33, 0, 0]}>
+            <boxGeometry args={[0.015, 1.0, 0.98]} />
             <meshPhysicalMaterial 
               color="#020617" 
               transparent 
-              opacity={0.25} 
-              roughness={0.04} 
-              metalness={0.1}
-              transmission={0.92} 
+              opacity={0.22} 
+              roughness={0.02} 
+              metalness={0.08}
+              transmission={0.95} 
             />
           </mesh>
 
-          {/* ================= MOTHERBOARD & VRM HEATSINKS ================= */}
-          <mesh position={[0.2, 0.08, 0]} castShadow>
-            <boxGeometry args={[0.02, 0.72, 0.65]} />
-            <meshStandardMaterial color="#0f172a" roughness={0.6} />
-          </mesh>
-          <mesh position={[0.18, -0.05, 0.05]}>
-            <boxGeometry args={[0.025, 0.05, 0.22]} />
-            <meshStandardMaterial color="#334155" metalness={0.9} roughness={0.2} />
-          </mesh>
-
-          {/* Dual RGB DDR5 RAM Sticks */}
-          <group position={[0.18, 0.22, 0.12]}>
-            <mesh position={[0, 0, 0]}>
-              <boxGeometry args={[0.018, 0.14, 0.03]} />
+          {/* Front I/O Diamond-Cut Power Button with Halo LED */}
+          <group position={[0.26, 0.48, 0.51]}>
+            <mesh rotation={[Math.PI / 2, 0, 0]}>
+              <cylinderGeometry args={[0.02, 0.02, 0.01, 24]} />
+              <meshStandardMaterial color="#334155" metalness={0.9} />
+            </mesh>
+            <mesh position={[0, 0, 0.006]} rotation={[Math.PI / 2, 0, 0]}>
+              <torusGeometry args={[0.025, 0.004, 8, 24]} />
               <meshBasicMaterial color={rgbColor} />
             </mesh>
-            <mesh position={[0, 0, 0.04]}>
-              <boxGeometry args={[0.018, 0.14, 0.03]} />
-              <meshBasicMaterial color={rgbColor} />
+            {/* Front USB-C and USB 3.0 Ports */}
+            <mesh position={[0, -0.06, 0]}>
+              <boxGeometry args={[0.012, 0.03, 0.008]} />
+              <meshStandardMaterial color="#1e293b" />
+            </mesh>
+            <mesh position={[0, -0.11, 0]}>
+              <boxGeometry args={[0.02, 0.01, 0.008]} />
+              <meshStandardMaterial color="#0284c7" />
             </mesh>
           </group>
 
-          {/* ================= CPU AIO 360mm LIQUID COOLER ================= */}
-          <mesh position={[0.18, 0.18, -0.05]} rotation={[0, 0, Math.PI / 2]}>
-            <cylinderGeometry args={[0.08, 0.08, 0.03, 32]} />
-            <meshStandardMaterial color="#0f172a" metalness={0.8} roughness={0.3} />
+          {/* ================= MOTHERBOARD & HIGH-END VRM HEATSINKS ================= */}
+          <mesh position={[0.21, 0.08, 0]} castShadow>
+            <boxGeometry args={[0.02, 0.74, 0.68]} />
+            <meshStandardMaterial color="#090d16" roughness={0.5} />
           </mesh>
-          <mesh position={[0.162, 0.18, -0.05]} rotation={[0, -Math.PI / 2, 0]}>
-            <cylinderGeometry args={[0.065, 0.065, 0.005, 32]} />
-            <meshBasicMaterial color={rgbColor} />
+          {/* Brushed Aluminum Armor Plates */}
+          <mesh position={[0.19, 0.32, -0.15]}>
+            <boxGeometry args={[0.025, 0.16, 0.28]} />
+            <meshStandardMaterial color="#1e293b" metalness={0.92} roughness={0.15} />
           </mesh>
-          <mesh position={[0.08, 0.32, -0.05]} rotation={[0, 0, Math.PI / 4]}>
-            <torusGeometry args={[0.16, 0.015, 12, 24, Math.PI / 1.5]} />
-            <meshStandardMaterial color="#1e293b" roughness={0.8} />
-          </mesh>
-
-          {/* Top 360mm Radiator + Exhaust Mesh */}
-          <mesh position={[-0.04, 0.48, 0]}>
-            <boxGeometry args={[0.5, 0.05, 0.85]} />
-            <meshStandardMaterial color="#020617" roughness={0.5} metalness={0.8} />
+          <mesh position={[0.19, -0.06, 0.06]}>
+            <boxGeometry args={[0.025, 0.06, 0.24]} />
+            <meshStandardMaterial color="#1e293b" metalness={0.92} roughness={0.15} />
           </mesh>
 
-          {/* ================= MASSIVE FLAGSHIP TRIPLE-FAN GPU (RTX 4090) ================= */}
-          <group position={[-0.02, -0.16, 0]}>
+          {/* Quad RGB DDR5 RAM Sticks with Frosted Lightbars */}
+          <group position={[0.19, 0.22, 0.10]}>
+            {[-0.045, -0.015, 0.015, 0.045].map((offsetZ, idx) => (
+              <group key={idx} position={[0, 0, offsetZ]}>
+                <mesh position={[0, 0, 0]}>
+                  <boxGeometry args={[0.016, 0.14, 0.022]} />
+                  <meshStandardMaterial color="#0f172a" metalness={0.8} />
+                </mesh>
+                <mesh position={[0, 0.065, 0]}>
+                  <boxGeometry args={[0.018, 0.015, 0.024]} />
+                  <meshBasicMaterial color={rgbColor} />
+                </mesh>
+              </group>
+            ))}
+          </group>
+
+          {/* ================= CPU BLOCK WITH REAL ROUND DIGITAL LCD DISPLAY ================= */}
+          <group position={[0.19, 0.18, -0.06]}>
+            {/* Black Anodized Outer Ring */}
+            <mesh rotation={[0, -Math.PI / 2, 0]}>
+              <cylinderGeometry args={[0.09, 0.09, 0.025, 32]} />
+              <meshStandardMaterial color="#060911" metalness={0.95} roughness={0.15} />
+            </mesh>
+            {/* Chrome Accent Bezel */}
+            <mesh position={[-0.013, 0, 0]} rotation={[0, -Math.PI / 2, 0]}>
+              <torusGeometry args={[0.088, 0.008, 12, 32]} />
+              <meshStandardMaterial color="#94a3b8" metalness={0.98} roughness={0.1} />
+            </mesh>
+            {/* Active Digital Round LCD Screen */}
+            <mesh position={[-0.014, 0, 0]} rotation={[0, -Math.PI / 2, 0]}>
+              <circleGeometry args={[0.082, 32]} />
+              <meshBasicMaterial map={canvasRefs.texCooler} />
+            </mesh>
+          </group>
+
+          {/* ================= CYLINDRICAL ACRYLIC RESERVOIR & FLOW INDICATOR ================= */}
+          <group position={[-0.14, 0.05, 0.32]}>
+            {/* Black Aluminum Mounting Base and Cap */}
+            <mesh position={[0, -0.32, 0]}>
+              <cylinderGeometry args={[0.075, 0.075, 0.04, 32]} />
+              <meshStandardMaterial color="#090d16" metalness={0.9} />
+            </mesh>
+            <mesh position={[0, 0.32, 0]}>
+              <cylinderGeometry args={[0.075, 0.075, 0.04, 32]} />
+              <meshStandardMaterial color="#090d16" metalness={0.9} />
+            </mesh>
+            {/* Transparent Acrylic Outer Glass Chamber */}
+            <mesh>
+              <cylinderGeometry args={[0.07, 0.07, 0.60, 32]} />
+              <meshPhysicalMaterial 
+                color="#0f172a" 
+                transparent 
+                opacity={0.3} 
+                roughness={0.05} 
+                transmission={0.92} 
+              />
+            </mesh>
+            {/* Glowing Coolant Liquid Cylinder Inside */}
+            <mesh>
+              <cylinderGeometry args={[0.062, 0.062, 0.54, 32]} />
+              <meshStandardMaterial color={rgbColor} roughness={0.2} transparent opacity={0.7} />
+            </mesh>
+            {/* Spinning Turbine Flow Indicator Wheel */}
+            <group ref={flowWheelRef} position={[0, 0.1, 0]}>
+              <mesh>
+                <cylinderGeometry args={[0.035, 0.035, 0.02, 6]} />
+                <meshStandardMaterial color="#ffffff" metalness={0.9} />
+              </mesh>
+            </group>
+          </group>
+
+          {/* ================= HARDLINE RIGID ACRYLIC COOLING TUBES & METALLIC FITTINGS ================= */}
+          {/* Tube 1: CPU Block to Top Radiator */}
+          <group position={[0.14, 0.34, -0.06]}>
+            <mesh>
+              <cylinderGeometry args={[0.012, 0.012, 0.28, 16]} />
+              <meshPhysicalMaterial color={rgbColor} transparent opacity={0.65} transmission={0.8} />
+            </mesh>
+            {/* Compression Fittings (Chrome Rings) */}
+            <mesh position={[0, -0.13, 0]}>
+              <cylinderGeometry args={[0.018, 0.018, 0.025, 16]} />
+              <meshStandardMaterial color="#cbd5e1" metalness={0.95} roughness={0.1} />
+            </mesh>
+            <mesh position={[0, 0.13, 0]}>
+              <cylinderGeometry args={[0.018, 0.018, 0.025, 16]} />
+              <meshStandardMaterial color="#cbd5e1" metalness={0.95} roughness={0.1} />
+            </mesh>
+          </group>
+
+          {/* Tube 2: Top Radiator to Reservoir */}
+          <group position={[0.0, 0.42, 0.18]} rotation={[0, 0, Math.PI / 3.5]}>
+            <mesh>
+              <cylinderGeometry args={[0.012, 0.012, 0.34, 16]} />
+              <meshPhysicalMaterial color={rgbColor} transparent opacity={0.65} transmission={0.8} />
+            </mesh>
+          </group>
+
+          {/* Tube 3: Reservoir to GPU Waterblock */}
+          <group position={[-0.08, -0.22, 0.2]}>
+            <mesh rotation={[0, 0, Math.PI / 2]}>
+              <cylinderGeometry args={[0.012, 0.012, 0.22, 16]} />
+              <meshPhysicalMaterial color={rgbColor} transparent opacity={0.65} transmission={0.8} />
+            </mesh>
+            <mesh position={[-0.10, 0, 0]}>
+              <cylinderGeometry args={[0.018, 0.018, 0.025, 16]} />
+              <meshStandardMaterial color="#cbd5e1" metalness={0.95} />
+            </mesh>
+          </group>
+
+          {/* ================= VERTICAL RTX 4090 CUSTOM WATERBLOCK GPU ================= */}
+          <group position={[-0.04, -0.16, 0]}>
+            {/* Black Brushed Backplate */}
+            <mesh position={[0.08, 0, 0]} castShadow>
+              <boxGeometry args={[0.015, 0.20, 0.72]} />
+              <meshStandardMaterial color="#090d16" roughness={0.2} metalness={0.9} />
+            </mesh>
+            {/* Transparent Acrylic Front Waterblock with Micro-Fin Coldplate */}
+            <mesh position={[-0.06, 0, 0]}>
+              <boxGeometry args={[0.02, 0.18, 0.68]} />
+              <meshPhysicalMaterial 
+                color="#020617" 
+                transparent 
+                opacity={0.3} 
+                roughness={0.05} 
+                transmission={0.9} 
+              />
+            </mesh>
+            {/* Internal Nickel-Plated Copper Micro-Fin Channel Glowing with Coolant */}
+            <mesh position={[-0.05, 0, 0]}>
+              <boxGeometry args={[0.008, 0.14, 0.44]} />
+              <meshStandardMaterial color={rgbColor} roughness={0.2} />
+            </mesh>
+            {/* GPU Anti-Sag Column Stand */}
+            <mesh position={[-0.18, -0.12, 0.30]}>
+              <cylinderGeometry args={[0.015, 0.018, 0.16, 16]} />
+              <meshStandardMaterial color="#334155" metalness={0.95} roughness={0.15} />
+            </mesh>
+            {/* 12VHPWR Custom Braided Sleeved GPU Cable */}
+            <mesh position={[0.04, 0.11, 0.14]} rotation={[0.4, 0, 0]}>
+              <boxGeometry args={[0.06, 0.08, 0.04]} />
+              <meshStandardMaterial color="#1e293b" roughness={0.8} />
+            </mesh>
+          </group>
+
+          {/* ================= 24-PIN ATX MAINBOARD BRAIDED SLEEVED CABLES ================= */}
+          <group position={[0.18, 0.06, 0.32]} rotation={[0, -0.3, 0]}>
             <mesh castShadow>
-              <boxGeometry args={[0.34, 0.16, 0.68]} />
-              <meshStandardMaterial color="#090d16" roughness={0.2} metalness={0.85} />
+              <boxGeometry args={[0.04, 0.16, 0.08]} />
+              <meshStandardMaterial color="#1e293b" roughness={0.9} />
             </mesh>
-            <mesh position={[0, 0.082, 0]}>
-              <boxGeometry args={[0.33, 0.008, 0.66]} />
-              <meshStandardMaterial color="#1e293b" metalness={0.95} roughness={0.15} />
-            </mesh>
-            <mesh position={[-0.172, 0.02, 0]}>
-              <boxGeometry args={[0.005, 0.04, 0.32]} />
-              <meshBasicMaterial color={rgbColor} />
-            </mesh>
-            <mesh position={[-0.15, -0.12, 0.28]}>
-              <boxGeometry args={[0.04, 0.14, 0.04]} />
-              <meshBasicMaterial color={rgbColor} />
+            {/* Transparent Acrylic Cable Comb */}
+            <mesh position={[0, 0, 0]}>
+              <boxGeometry args={[0.045, 0.015, 0.085]} />
+              <meshStandardMaterial color="#94a3b8" metalness={0.8} roughness={0.2} transparent opacity={0.6} />
             </mesh>
           </group>
 
-          {/* ================= TRIPLE STACKED RGB INFINITY FANS ================= */}
-          {/* Fan 1 (Top Front) */}
-          <group ref={fanRef1} position={[0.18, 0.28, 0.42]}>
+          {/* ================= TRIPLE TOP RADIATOR EXHAUST FANS ================= */}
+          <group position={[-0.04, 0.48, 0]}>
+            {/* Top 360mm Radiator Chassis */}
             <mesh>
-              <torusGeometry args={[0.13, 0.015, 16, 32]} />
+              <boxGeometry args={[0.52, 0.05, 0.88]} />
+              <meshStandardMaterial color="#020617" roughness={0.4} metalness={0.9} />
+            </mesh>
+            {/* Fan 1 (Top Front) */}
+            <group ref={fanTop1Ref} position={[0, -0.04, 0.28]} rotation={[Math.PI / 2, 0, 0]}>
+              <mesh>
+                <torusGeometry args={[0.12, 0.014, 12, 24]} />
+                <meshBasicMaterial color={rgbColor} />
+              </mesh>
+              <mesh>
+                <boxGeometry args={[0.20, 0.03, 0.008]} />
+                <meshBasicMaterial color={rgbColor} />
+              </mesh>
+            </group>
+            {/* Fan 2 (Top Center) */}
+            <group ref={fanTop2Ref} position={[0, -0.04, 0]} rotation={[Math.PI / 2, 0, 0]}>
+              <mesh>
+                <torusGeometry args={[0.12, 0.014, 12, 24]} />
+                <meshBasicMaterial color={rgbColor} />
+              </mesh>
+              <mesh>
+                <boxGeometry args={[0.20, 0.03, 0.008]} />
+                <meshBasicMaterial color={rgbColor} />
+              </mesh>
+            </group>
+            {/* Fan 3 (Top Rear) */}
+            <group ref={fanTop3Ref} position={[0, -0.04, -0.28]} rotation={[Math.PI / 2, 0, 0]}>
+              <mesh>
+                <torusGeometry args={[0.12, 0.014, 12, 24]} />
+                <meshBasicMaterial color={rgbColor} />
+              </mesh>
+              <mesh>
+                <boxGeometry args={[0.20, 0.03, 0.008]} />
+                <meshBasicMaterial color={rgbColor} />
+              </mesh>
+            </group>
+          </group>
+
+          {/* ================= TRIPLE SIDE INTAKE INFINITY FANS ================= */}
+          {/* Fan 1 (Top Front) */}
+          <group ref={fanRef1} position={[0.20, 0.28, 0.44]}>
+            <mesh>
+              <torusGeometry args={[0.12, 0.014, 12, 24]} />
               <meshBasicMaterial color={rgbColor} />
             </mesh>
             <mesh>
-              <boxGeometry args={[0.22, 0.035, 0.01]} />
+              <boxGeometry args={[0.20, 0.03, 0.008]} />
               <meshBasicMaterial color={rgbColor} />
             </mesh>
             <mesh rotation={[0, 0, Math.PI / 2]}>
-              <boxGeometry args={[0.22, 0.035, 0.01]} />
+              <boxGeometry args={[0.20, 0.03, 0.008]} />
               <meshBasicMaterial color={rgbColor} />
             </mesh>
           </group>
 
           {/* Fan 2 (Middle Front) */}
-          <group ref={fanRef2} position={[0.18, 0.0, 0.42]}>
+          <group ref={fanRef2} position={[0.20, 0.0, 0.44]}>
             <mesh>
-              <torusGeometry args={[0.13, 0.015, 16, 32]} />
+              <torusGeometry args={[0.12, 0.014, 12, 24]} />
               <meshBasicMaterial color={rgbColor} />
             </mesh>
             <mesh>
-              <boxGeometry args={[0.22, 0.035, 0.01]} />
+              <boxGeometry args={[0.20, 0.03, 0.008]} />
               <meshBasicMaterial color={rgbColor} />
             </mesh>
             <mesh rotation={[0, 0, Math.PI / 2]}>
-              <boxGeometry args={[0.22, 0.035, 0.01]} />
+              <boxGeometry args={[0.20, 0.03, 0.008]} />
               <meshBasicMaterial color={rgbColor} />
             </mesh>
           </group>
 
           {/* Fan 3 (Bottom Front) */}
-          <group ref={fanRef3} position={[0.18, -0.28, 0.42]}>
+          <group ref={fanRef3} position={[0.20, -0.28, 0.44]}>
             <mesh>
-              <torusGeometry args={[0.13, 0.015, 16, 32]} />
+              <torusGeometry args={[0.12, 0.014, 12, 24]} />
               <meshBasicMaterial color={rgbColor} />
             </mesh>
             <mesh>
-              <boxGeometry args={[0.22, 0.035, 0.01]} />
+              <boxGeometry args={[0.20, 0.03, 0.008]} />
               <meshBasicMaterial color={rgbColor} />
             </mesh>
             <mesh rotation={[0, 0, Math.PI / 2]}>
-              <boxGeometry args={[0.22, 0.035, 0.01]} />
+              <boxGeometry args={[0.20, 0.03, 0.008]} />
+              <meshBasicMaterial color={rgbColor} />
+            </mesh>
+          </group>
+
+          {/* ================= REAR EXHAUST FAN ================= */}
+          <group ref={fanRearRef} position={[0.08, 0.22, -0.46]} rotation={[0, 0, 0]}>
+            <mesh>
+              <torusGeometry args={[0.12, 0.014, 12, 24]} />
+              <meshBasicMaterial color={rgbColor} />
+            </mesh>
+            <mesh>
+              <boxGeometry args={[0.20, 0.03, 0.008]} />
               <meshBasicMaterial color={rgbColor} />
             </mesh>
           </group>
@@ -1286,12 +1676,13 @@ export const RoomObjects: React.FC<RoomObjectsProps> = ({
           <pointLight 
             ref={gpuGlowRef} 
             color={rgbColor} 
-            intensity={3.6} 
-            distance={3.5} 
+            intensity={4.2} 
+            distance={3.8} 
             position={[-0.05, 0.1, 0]} 
           />
         </group>
       </group>
+
 
       {/* ================= INTERACTIVE SWIVEL ERGONOMIC CHAIR ================= */}
       <group 
