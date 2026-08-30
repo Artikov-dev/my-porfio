@@ -34,6 +34,7 @@ export const RoomObjects: React.FC<RoomObjectsProps> = ({
 }) => {
   const fanRef1 = useRef<THREE.Group>(null);
   const fanRef2 = useRef<THREE.Group>(null);
+  const fanRef3 = useRef<THREE.Group>(null);
   const speakerPulseRef1 = useRef<THREE.Mesh>(null);
   const speakerPulseRef2 = useRef<THREE.Mesh>(null);
   const steamRef = useRef<THREE.Points>(null);
@@ -150,8 +151,9 @@ export const RoomObjects: React.FC<RoomObjectsProps> = ({
     const time = state.clock.elapsedTime;
 
     // 1. Fans rotation
-    if (fanRef1.current) fanRef1.current.rotation.z += delta * 14;
-    if (fanRef2.current) fanRef2.current.rotation.z += delta * 14;
+    if (fanRef1.current) fanRef1.current.rotation.z += delta * 15;
+    if (fanRef2.current) fanRef2.current.rotation.z += delta * 15;
+    if (fanRef3.current) fanRef3.current.rotation.z += delta * 15;
 
     // 2. Speaker bass pulsing
     const pulse = 1 + Math.sin(time * 8) * 0.06;
@@ -685,11 +687,39 @@ export const RoomObjects: React.FC<RoomObjectsProps> = ({
           distance={3.2} 
         />
 
-        {/* Premium Desk Mat (Felt/Leather) */}
-        <mesh position={[0, 1.455, 0.1]} receiveShadow>
-          <boxGeometry args={[3.4, 0.01, 1.35]} />
-          <meshStandardMaterial color="#020617" roughness={0.95} />
-        </mesh>
+        {/* ================= RGB CHROMA EXTENDED DESK MAT (KOVRIK) ================= */}
+        <group position={[0, 1.455, 0.1]}>
+          {/* Base Premium Micro-Woven Cloth Mat */}
+          <mesh receiveShadow>
+            <boxGeometry args={[3.4, 0.012, 1.35]} />
+            <meshStandardMaterial color="#020617" roughness={0.95} metalness={0.05} />
+          </mesh>
+
+          {/* 360° Fiber-Optic RGB Neon Piping Border */}
+          {/* Front */}
+          <mesh position={[0, 0.008, 0.675]}>
+            <boxGeometry args={[3.42, 0.016, 0.018]} />
+            <meshBasicMaterial color={rgbColor} />
+          </mesh>
+          {/* Back */}
+          <mesh position={[0, 0.008, -0.675]}>
+            <boxGeometry args={[3.42, 0.016, 0.018]} />
+            <meshBasicMaterial color={rgbColor} />
+          </mesh>
+          {/* Left */}
+          <mesh position={[-1.7, 0.008, 0]}>
+            <boxGeometry args={[0.018, 0.016, 1.35]} />
+            <meshBasicMaterial color={rgbColor} />
+          </mesh>
+          {/* Right */}
+          <mesh position={[1.7, 0.008, 0]}>
+            <boxGeometry args={[0.018, 0.016, 1.35]} />
+            <meshBasicMaterial color={rgbColor} />
+          </mesh>
+
+          {/* Mat Surface RGB Ambient Glow */}
+          <pointLight color={rgbColor} intensity={0.7} distance={1.2} position={[0, 0.05, 0]} />
+        </group>
 
         {/* Desk Metal Legs */}
         {[
@@ -1036,61 +1066,167 @@ export const RoomObjects: React.FC<RoomObjectsProps> = ({
           </points>
         </group>
 
-        {/* ================= HIGH-END RGB CUSTOM PC TOWER ================= */}
+        {/* ================= HIGH-END PANORAMIC AQUARIUM RGB PC RIG ================= */}
         <group 
-          position={[1.6, 1.98, 0.1]} 
+          position={[1.58, 1.95, 0.08]} 
           onClick={onPcClick}
         >
+          {/* Main Anodized Dark Metal Chassis Frame */}
           <mesh castShadow>
-            <boxGeometry args={[0.54, 1.0, 0.95]} />
-            <meshStandardMaterial color="#080c14" roughness={0.3} metalness={0.85} />
+            <boxGeometry args={[0.62, 1.05, 0.98]} />
+            <meshStandardMaterial color="#060911" roughness={0.25} metalness={0.9} />
           </mesh>
 
-          <mesh position={[-0.28, 0, 0]}>
-            <boxGeometry args={[0.02, 0.94, 0.9]} />
+          {/* Interior Component Cavity */}
+          <mesh position={[-0.04, 0, 0]}>
+            <boxGeometry args={[0.52, 0.96, 0.9]} />
+            <meshStandardMaterial color="#0b0f19" roughness={0.7} metalness={0.3} />
+          </mesh>
+
+          {/* Panoramic Seamless Front Tempered Glass */}
+          <mesh position={[-0.04, 0, 0.49]}>
+            <boxGeometry args={[0.54, 0.98, 0.015]} />
             <meshPhysicalMaterial 
               color="#020617" 
               transparent 
-              opacity={0.3} 
-              roughness={0.08} 
-              metalness={0.2}
-              transmission={0.85} 
+              opacity={0.25} 
+              roughness={0.04} 
+              metalness={0.1}
+              transmission={0.92} 
             />
           </mesh>
 
-          <mesh position={[-0.05, -0.15, 0]} castShadow>
-            <boxGeometry args={[0.32, 0.14, 0.6]} />
-            <meshStandardMaterial color={rgbColor} roughness={0.15} metalness={0.6} />
+          {/* Panoramic Seamless Left Side Tempered Glass */}
+          <mesh position={[-0.31, 0, 0]}>
+            <boxGeometry args={[0.015, 0.98, 0.94]} />
+            <meshPhysicalMaterial 
+              color="#020617" 
+              transparent 
+              opacity={0.25} 
+              roughness={0.04} 
+              metalness={0.1}
+              transmission={0.92} 
+            />
           </mesh>
 
-          <group ref={fanRef1} position={[0, 0.22, 0.48]}>
-            <mesh>
-              <torusGeometry args={[0.16, 0.02, 12, 32]} />
+          {/* ================= MOTHERBOARD & VRM HEATSINKS ================= */}
+          <mesh position={[0.2, 0.08, 0]} castShadow>
+            <boxGeometry args={[0.02, 0.72, 0.65]} />
+            <meshStandardMaterial color="#0f172a" roughness={0.6} />
+          </mesh>
+          <mesh position={[0.18, -0.05, 0.05]}>
+            <boxGeometry args={[0.025, 0.05, 0.22]} />
+            <meshStandardMaterial color="#334155" metalness={0.9} roughness={0.2} />
+          </mesh>
+
+          {/* Dual RGB DDR5 RAM Sticks */}
+          <group position={[0.18, 0.22, 0.12]}>
+            <mesh position={[0, 0, 0]}>
+              <boxGeometry args={[0.018, 0.14, 0.03]} />
               <meshBasicMaterial color={rgbColor} />
             </mesh>
-            <mesh>
-              <boxGeometry args={[0.28, 0.04, 0.01]} />
+            <mesh position={[0, 0, 0.04]}>
+              <boxGeometry args={[0.018, 0.14, 0.03]} />
               <meshBasicMaterial color={rgbColor} />
             </mesh>
           </group>
 
-          <group ref={fanRef2} position={[0, -0.22, 0.48]}>
-            <mesh>
-              <torusGeometry args={[0.16, 0.02, 12, 32]} />
+          {/* ================= CPU AIO 360mm LIQUID COOLER ================= */}
+          <mesh position={[0.18, 0.18, -0.05]} rotation={[0, 0, Math.PI / 2]}>
+            <cylinderGeometry args={[0.08, 0.08, 0.03, 32]} />
+            <meshStandardMaterial color="#0f172a" metalness={0.8} roughness={0.3} />
+          </mesh>
+          <mesh position={[0.162, 0.18, -0.05]} rotation={[0, -Math.PI / 2, 0]}>
+            <cylinderGeometry args={[0.065, 0.065, 0.005, 32]} />
+            <meshBasicMaterial color={rgbColor} />
+          </mesh>
+          <mesh position={[0.08, 0.32, -0.05]} rotation={[0, 0, Math.PI / 4]}>
+            <torusGeometry args={[0.16, 0.015, 12, 24, Math.PI / 1.5]} />
+            <meshStandardMaterial color="#1e293b" roughness={0.8} />
+          </mesh>
+
+          {/* Top 360mm Radiator + Exhaust Mesh */}
+          <mesh position={[-0.04, 0.48, 0]}>
+            <boxGeometry args={[0.5, 0.05, 0.85]} />
+            <meshStandardMaterial color="#020617" roughness={0.5} metalness={0.8} />
+          </mesh>
+
+          {/* ================= MASSIVE FLAGSHIP TRIPLE-FAN GPU (RTX 4090) ================= */}
+          <group position={[-0.02, -0.16, 0]}>
+            <mesh castShadow>
+              <boxGeometry args={[0.34, 0.16, 0.68]} />
+              <meshStandardMaterial color="#090d16" roughness={0.2} metalness={0.85} />
+            </mesh>
+            <mesh position={[0, 0.082, 0]}>
+              <boxGeometry args={[0.33, 0.008, 0.66]} />
+              <meshStandardMaterial color="#1e293b" metalness={0.95} roughness={0.15} />
+            </mesh>
+            <mesh position={[-0.172, 0.02, 0]}>
+              <boxGeometry args={[0.005, 0.04, 0.32]} />
               <meshBasicMaterial color={rgbColor} />
             </mesh>
-            <mesh>
-              <boxGeometry args={[0.28, 0.04, 0.01]} />
+            <mesh position={[-0.15, -0.12, 0.28]}>
+              <boxGeometry args={[0.04, 0.14, 0.04]} />
               <meshBasicMaterial color={rgbColor} />
             </mesh>
           </group>
 
+          {/* ================= TRIPLE STACKED RGB INFINITY FANS ================= */}
+          {/* Fan 1 (Top Front) */}
+          <group ref={fanRef1} position={[0.18, 0.28, 0.42]}>
+            <mesh>
+              <torusGeometry args={[0.13, 0.015, 16, 32]} />
+              <meshBasicMaterial color={rgbColor} />
+            </mesh>
+            <mesh>
+              <boxGeometry args={[0.22, 0.035, 0.01]} />
+              <meshBasicMaterial color={rgbColor} />
+            </mesh>
+            <mesh rotation={[0, 0, Math.PI / 2]}>
+              <boxGeometry args={[0.22, 0.035, 0.01]} />
+              <meshBasicMaterial color={rgbColor} />
+            </mesh>
+          </group>
+
+          {/* Fan 2 (Middle Front) */}
+          <group ref={fanRef2} position={[0.18, 0.0, 0.42]}>
+            <mesh>
+              <torusGeometry args={[0.13, 0.015, 16, 32]} />
+              <meshBasicMaterial color={rgbColor} />
+            </mesh>
+            <mesh>
+              <boxGeometry args={[0.22, 0.035, 0.01]} />
+              <meshBasicMaterial color={rgbColor} />
+            </mesh>
+            <mesh rotation={[0, 0, Math.PI / 2]}>
+              <boxGeometry args={[0.22, 0.035, 0.01]} />
+              <meshBasicMaterial color={rgbColor} />
+            </mesh>
+          </group>
+
+          {/* Fan 3 (Bottom Front) */}
+          <group ref={fanRef3} position={[0.18, -0.28, 0.42]}>
+            <mesh>
+              <torusGeometry args={[0.13, 0.015, 16, 32]} />
+              <meshBasicMaterial color={rgbColor} />
+            </mesh>
+            <mesh>
+              <boxGeometry args={[0.22, 0.035, 0.01]} />
+              <meshBasicMaterial color={rgbColor} />
+            </mesh>
+            <mesh rotation={[0, 0, Math.PI / 2]}>
+              <boxGeometry args={[0.22, 0.035, 0.01]} />
+              <meshBasicMaterial color={rgbColor} />
+            </mesh>
+          </group>
+
+          {/* Internal Volumetric PC Lighting */}
           <pointLight 
             ref={gpuGlowRef} 
             color={rgbColor} 
-            intensity={3.0} 
-            distance={3.0} 
-            position={[-0.1, 0, 0]} 
+            intensity={3.6} 
+            distance={3.5} 
+            position={[-0.05, 0.1, 0]} 
           />
         </group>
       </group>
