@@ -41,8 +41,6 @@ const corsOptions = {
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
 };
 app.use((0, cors_1.default)(corsOptions));
-// Handle preflight requests explicitly before any other middleware
-app.options('*', (0, cors_1.default)(corsOptions));
 // Security & Logging
 app.use((0, helmet_1.default)({
     crossOriginResourcePolicy: { policy: 'cross-origin' },
