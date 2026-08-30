@@ -1127,56 +1127,170 @@ export const RoomObjects: React.FC<RoomObjectsProps> = ({
           </mesh>
         </group>
 
-        {/* ================= MECHANICAL KEYBOARD & MOUSE ================= */}
+        {/* Modern Stitched Felt & Leather Studio Deskmat */}
+        <mesh position={[0.2, 1.455, 0.35]} receiveShadow>
+          <boxGeometry args={[2.2, 0.008, 0.82]} />
+          <meshStandardMaterial color="#0c1220" roughness={0.92} metalness={0.08} />
+        </mesh>
+        {/* Deskmat Stitched Border */}
+        <mesh position={[0.2, 1.457, 0.35]}>
+          <boxGeometry args={[2.22, 0.006, 0.84]} />
+          <meshStandardMaterial color="#1e293b" wireframe />
+        </mesh>
+
+        {/* ================= HIGH-END 75% CUSTOM MECHANICAL KEYBOARD ================= */}
         <group 
-          position={[0, 1.48, 0.35]} 
+          position={[0, 1.47, 0.35]} 
           onClick={handleKeyboardInteraction}
         >
-          <mesh castShadow>
-            <boxGeometry args={[1.15, 0.04, 0.38]} />
-            <meshStandardMaterial color="#1e293b" roughness={0.3} metalness={0.7} />
+          {/* CNC Anodized Aluminum Keyboard Case with Chamfers */}
+          <mesh castShadow position={[0, 0.02, 0]}>
+            <boxGeometry args={[1.08, 0.045, 0.36]} />
+            <meshStandardMaterial color="#090d16" roughness={0.25} metalness={0.88} />
           </mesh>
-          <mesh position={[0, 0.028, 0]}>
-            <boxGeometry args={[1.06, 0.022, 0.32]} />
-            <meshStandardMaterial color="#0f172a" roughness={0.8} />
+
+          {/* Polycarbonate Translucent Switch Plate & RGB Underglow Diffuser */}
+          <mesh position={[0, 0.042, 0]}>
+            <boxGeometry args={[1.02, 0.01, 0.32]} />
+            <meshStandardMaterial 
+              color={rgbColor} 
+              roughness={0.15} 
+              transparent 
+              opacity={0.85} 
+              emissive={rgbColor}
+              emissiveIntensity={0.6 + keyboardFlash * 2.0}
+            />
           </mesh>
+
+          {/* Brass Accent Weight Badge */}
+          <mesh position={[0, 0.002, 0.175]}>
+            <boxGeometry args={[0.35, 0.015, 0.008]} />
+            <meshStandardMaterial color="#fbbf24" metalness={0.95} roughness={0.1} />
+          </mesh>
+
+          {/* --- KEYCAPS CLUSTERS --- */}
+          {/* 1. Function Row (F1 - F12 + Delete) */}
+          <mesh position={[-0.04, 0.058, -0.125]}>
+            <boxGeometry args={[0.88, 0.02, 0.04]} />
+            <meshStandardMaterial color="#1e293b" roughness={0.5} />
+          </mesh>
+          {/* Accent Escape Key */}
+          <mesh position={[-0.46, 0.06, -0.125]}>
+            <boxGeometry args={[0.06, 0.024, 0.045]} />
+            <meshStandardMaterial color="#ef4444" roughness={0.3} />
+          </mesh>
+          {/* Metallic Knurled Rotary Volume Knob (Top Right) */}
+          <mesh position={[0.46, 0.065, -0.125]}>
+            <cylinderGeometry args={[0.028, 0.028, 0.03, 24]} />
+            <meshStandardMaterial color="#94a3b8" metalness={0.95} roughness={0.1} />
+          </mesh>
+
+          {/* 2. Number Row */}
+          <mesh position={[0, 0.058, -0.065]}>
+            <boxGeometry args={[0.98, 0.02, 0.045]} />
+            <meshStandardMaterial color="#0f172a" roughness={0.6} />
+          </mesh>
+
+          {/* 3. Alpha Key Cluster (QWERTY / ASDF) */}
+          <mesh position={[-0.08, 0.058, 0.0]}>
+            <boxGeometry args={[0.78, 0.02, 0.095]} />
+            <meshStandardMaterial color="#0b1120" roughness={0.6} />
+          </mesh>
+
+          {/* Accent Enter Key */}
+          <mesh position={[0.36, 0.058, 0.005]}>
+            <boxGeometry args={[0.09, 0.022, 0.042]} />
+            <meshStandardMaterial color={rgbColor} roughness={0.4} />
+          </mesh>
+
+          {/* 4. Bottom Row & 6.25u Spacebar */}
+          <mesh position={[-0.08, 0.058, 0.085]}>
+            <boxGeometry args={[0.42, 0.022, 0.048]} />
+            <meshStandardMaterial color="#1e293b" roughness={0.5} />
+          </mesh>
+          <mesh position={[-0.38, 0.058, 0.085]}>
+            <boxGeometry args={[0.18, 0.02, 0.045]} />
+            <meshStandardMaterial color="#0f172a" roughness={0.6} />
+          </mesh>
+
+          {/* Dedicated Arrow Keys Cluster */}
+          <mesh position={[0.40, 0.058, 0.085]}>
+            <boxGeometry args={[0.16, 0.02, 0.045]} />
+            <meshStandardMaterial color="#1e293b" roughness={0.5} />
+          </mesh>
+
+          {/* Keyboard RGB Volumetric Glow */}
           <pointLight 
             ref={keyboardGlowRef} 
             color={rgbColor} 
-            intensity={0.6} 
-            distance={0.8} 
-            position={[0, 0.05, 0]} 
+            intensity={1.2} 
+            distance={1.1} 
+            position={[0, 0.12, 0]} 
           />
         </group>
 
-        <group position={[0.95, 1.48, 0.35]}>
-          <mesh castShadow>
-            <boxGeometry args={[0.17, 0.05, 0.28]} />
-            <meshStandardMaterial color="#1e293b" roughness={0.3} metalness={0.6} />
+        {/* ================= ERGONOMIC WIRELESS GAMING MOUSE ================= */}
+        <group position={[0.92, 1.47, 0.35]}>
+          {/* Sculpted Mouse Body */}
+          <mesh castShadow position={[0, 0.025, 0]}>
+            <boxGeometry args={[0.14, 0.045, 0.24]} />
+            <meshStandardMaterial color="#090d16" roughness={0.3} metalness={0.7} />
+          </mesh>
+          {/* Mouse Wheel & DPI Switch */}
+          <mesh position={[0, 0.048, -0.04]}>
+            <boxGeometry args={[0.018, 0.012, 0.04]} />
+            <meshStandardMaterial color={rgbColor} />
+          </mesh>
+          {/* Subtle RGB Logo Glow */}
+          <mesh position={[0, 0.046, 0.05]}>
+            <circleGeometry args={[0.02, 16]} />
+            <meshBasicMaterial color={rgbColor} />
           </mesh>
         </group>
 
-        {/* ================= INTERACTIVE OLED SMARTPHONE ================= */}
+        {/* ================= ELEGANT ANGLED SMARTPHONE DOCK & OLED PHONE ================= */}
         <group 
-          position={[0.55, 1.465, 0.45]} 
-          rotation={[-Math.PI / 2, 0, 0.18]}
+          position={[-0.82, 1.46, 0.42]} 
+          rotation={[0, 0.35, 0]}
           onClick={onPhoneClick}
         >
-          <mesh castShadow>
-            <boxGeometry args={[0.22, 0.42, 0.018]} />
-            <meshStandardMaterial color="#111827" metalness={0.9} roughness={0.2} />
+          {/* Aluminum Charging Dock Base */}
+          <mesh position={[0, 0.02, 0]} castShadow>
+            <boxGeometry args={[0.26, 0.035, 0.24]} />
+            <meshStandardMaterial color="#1e293b" metalness={0.9} roughness={0.2} />
           </mesh>
-          <mesh position={[0, 0, 0.01]}>
-            <planeGeometry args={[0.20, 0.40]} />
-            <meshBasicMaterial map={canvasRefs.texPhone} />
+          {/* Angled Backrest Support Arm (45-degree angle) */}
+          <mesh position={[0, 0.12, -0.04]} rotation={[-0.45, 0, 0]} castShadow>
+            <boxGeometry args={[0.18, 0.22, 0.02]} />
+            <meshStandardMaterial color="#0f172a" metalness={0.9} roughness={0.2} />
           </mesh>
-          <pointLight 
-            ref={phoneGlowRef}
-            position={[0, 0, 0.05]} 
-            color={rgbColor} 
-            intensity={0.8} 
-            distance={0.7} 
-          />
+
+          {/* OLED Smartphone naturally resting on the dock */}
+          <group position={[0, 0.16, 0.01]} rotation={[-0.45, 0, 0]}>
+            {/* Phone Body with Polished Titanium Rim */}
+            <mesh castShadow>
+              <boxGeometry args={[0.22, 0.44, 0.018]} />
+              <meshStandardMaterial color="#050811" metalness={0.95} roughness={0.15} />
+            </mesh>
+            {/* Front OLED Screen */}
+            <mesh position={[0, 0, 0.01]}>
+              <planeGeometry args={[0.20, 0.42]} />
+              <meshBasicMaterial map={canvasRefs.texPhone} />
+            </mesh>
+            {/* Camera Bump on Back */}
+            <mesh position={[0.05, 0.14, -0.012]}>
+              <boxGeometry args={[0.08, 0.08, 0.008]} />
+              <meshStandardMaterial color="#0f172a" metalness={0.9} />
+            </mesh>
+            {/* Ambient Screen Light */}
+            <pointLight 
+              ref={phoneGlowRef}
+              position={[0, 0, 0.12]} 
+              color={rgbColor} 
+              intensity={1.1} 
+              distance={0.9} 
+            />
+          </group>
         </group>
 
         {/* ================= STUDIO HEADPHONES ON STAND ================= */}
@@ -1240,7 +1354,7 @@ export const RoomObjects: React.FC<RoomObjectsProps> = ({
 
         {/* ================= STEAMING ESPRESSO MUG ================= */}
         <group 
-          position={[-0.95, 1.46, 0.45]} 
+          position={[-0.95, 1.46, 0.12]} 
           onClick={onCoffeeClick}
         >
           <mesh castShadow position={[0, 0.13, 0]}>
@@ -1273,7 +1387,7 @@ export const RoomObjects: React.FC<RoomObjectsProps> = ({
         </group>
 
         {/* ================= ELGATO STREAM DECK 15-KEY ================= */}
-        <group position={[-0.72, 1.48, 0.28]} rotation={[-Math.PI / 8, 0, 0.15]}>
+        <group position={[-0.58, 1.48, 0.12]} rotation={[-Math.PI / 8, 0, 0.15]}>
           <mesh castShadow>
             <boxGeometry args={[0.32, 0.04, 0.22]} />
             <meshStandardMaterial color="#0b0f19" roughness={0.4} metalness={0.7} />
@@ -1332,51 +1446,68 @@ export const RoomObjects: React.FC<RoomObjectsProps> = ({
           </mesh>
         </group>
 
-
-        {/* ================= FLAGSHIP CUSTOM HARDLINE LIQUID-COOLED PC RIG ================= */}
+        {/* ================= FLAGSHIP OPEN-AIR / CRYSTAL-CLEAR RGB PC RIG ================= */}
         <group 
           position={[1.58, 1.95, 0.08]} 
           onClick={onPcClick}
         >
-          {/* Main Dual-Chamber Aluminum Frame */}
+          {/* Main Dual-Chamber Aluminum Frame with Open Venting */}
           <mesh castShadow>
             <boxGeometry args={[0.66, 1.08, 1.02]} />
-            <meshStandardMaterial color="#050811" roughness={0.2} metalness={0.92} />
+            <meshStandardMaterial color="#050811" roughness={0.15} metalness={0.95} />
           </mesh>
 
-          {/* Interior Component Bay Cavity */}
+          {/* Interior Component Bay Cavity with Ultra-Reflective Backplate */}
           <mesh position={[-0.04, 0, 0]}>
             <boxGeometry args={[0.56, 0.98, 0.94]} />
-            <meshStandardMaterial color="#080c16" roughness={0.6} metalness={0.4} />
+            <meshStandardMaterial color="#0a0f1d" roughness={0.3} metalness={0.7} />
           </mesh>
 
-          {/* Panoramic Seamless Front Tempered Glass Panel */}
+          {/* Top & Bottom Internal ARGB Neon Glow Strips */}
+          <mesh position={[-0.04, 0.45, 0.46]}>
+            <boxGeometry args={[0.52, 0.015, 0.015]} />
+            <meshBasicMaterial color={rgbColor} />
+          </mesh>
+          <mesh position={[-0.04, -0.45, 0.46]}>
+            <boxGeometry args={[0.52, 0.015, 0.015]} />
+            <meshBasicMaterial color={rgbColor} />
+          </mesh>
+          <mesh position={[-0.28, 0.45, 0]}>
+            <boxGeometry args={[0.015, 0.015, 0.88]} />
+            <meshBasicMaterial color={rgbColor} />
+          </mesh>
+          <mesh position={[-0.28, -0.45, 0]}>
+            <boxGeometry args={[0.015, 0.015, 0.88]} />
+            <meshBasicMaterial color={rgbColor} />
+          </mesh>
+
+          {/* Front Open-Air Glass Corner / Beveled Crystal Glass */}
           <mesh position={[-0.04, 0, 0.51]}>
-            <boxGeometry args={[0.58, 1.0, 0.015]} />
+            <boxGeometry args={[0.58, 1.0, 0.008]} />
             <meshPhysicalMaterial 
-              color="#020617" 
+              color="#ffffff" 
               transparent 
-              opacity={0.22} 
-              roughness={0.02} 
-              metalness={0.08}
-              transmission={0.95} 
+              opacity={0.06} 
+              roughness={0.0} 
+              metalness={0.0}
+              transmission={0.98} 
             />
           </mesh>
 
-          {/* Panoramic Seamless Left Side Tempered Glass Panel */}
+          {/* Left Side Open-Air Panoramic Crystal Glass */}
           <mesh position={[-0.33, 0, 0]}>
-            <boxGeometry args={[0.015, 1.0, 0.98]} />
+            <boxGeometry args={[0.008, 1.0, 0.98]} />
             <meshPhysicalMaterial 
-              color="#020617" 
+              color="#ffffff" 
               transparent 
-              opacity={0.22} 
-              roughness={0.02} 
-              metalness={0.08}
-              transmission={0.95} 
+              opacity={0.06} 
+              roughness={0.0} 
+              metalness={0.0}
+              transmission={0.98} 
             />
           </mesh>
 
-          {/* Front I/O Diamond-Cut Power Button with Halo LED */}
+          {/* Front I/O Diamond-Cut Power Button with Glowing Halo */}
           <group position={[0.26, 0.48, 0.51]}>
             <mesh rotation={[Math.PI / 2, 0, 0]}>
               <cylinderGeometry args={[0.02, 0.02, 0.01, 24]} />
@@ -1400,19 +1531,19 @@ export const RoomObjects: React.FC<RoomObjectsProps> = ({
           {/* ================= MOTHERBOARD & HIGH-END VRM HEATSINKS ================= */}
           <mesh position={[0.21, 0.08, 0]} castShadow>
             <boxGeometry args={[0.02, 0.74, 0.68]} />
-            <meshStandardMaterial color="#090d16" roughness={0.5} />
+            <meshStandardMaterial color="#090d16" roughness={0.4} metalness={0.6} />
           </mesh>
           {/* Brushed Aluminum Armor Plates */}
           <mesh position={[0.19, 0.32, -0.15]}>
             <boxGeometry args={[0.025, 0.16, 0.28]} />
-            <meshStandardMaterial color="#1e293b" metalness={0.92} roughness={0.15} />
+            <meshStandardMaterial color="#1e293b" metalness={0.95} roughness={0.1} />
           </mesh>
           <mesh position={[0.19, -0.06, 0.06]}>
             <boxGeometry args={[0.025, 0.06, 0.24]} />
-            <meshStandardMaterial color="#1e293b" metalness={0.92} roughness={0.15} />
+            <meshStandardMaterial color="#1e293b" metalness={0.95} roughness={0.1} />
           </mesh>
 
-          {/* Quad RGB DDR5 RAM Sticks with Frosted Lightbars */}
+          {/* Quad RGB DDR5 RAM Sticks with Frosted Lightbars (Super Vivid) */}
           <group position={[0.19, 0.22, 0.10]}>
             {[-0.045, -0.015, 0.015, 0.045].map((offsetZ, idx) => (
               <group key={idx} position={[0, 0, offsetZ]}>
@@ -1421,7 +1552,7 @@ export const RoomObjects: React.FC<RoomObjectsProps> = ({
                   <meshStandardMaterial color="#0f172a" metalness={0.8} />
                 </mesh>
                 <mesh position={[0, 0.065, 0]}>
-                  <boxGeometry args={[0.018, 0.015, 0.024]} />
+                  <boxGeometry args={[0.018, 0.018, 0.024]} />
                   <meshBasicMaterial color={rgbColor} />
                 </mesh>
               </group>
@@ -1458,27 +1589,34 @@ export const RoomObjects: React.FC<RoomObjectsProps> = ({
               <cylinderGeometry args={[0.075, 0.075, 0.04, 32]} />
               <meshStandardMaterial color="#090d16" metalness={0.9} />
             </mesh>
-            {/* Transparent Acrylic Outer Glass Chamber */}
+            {/* Ultra-Clear Acrylic Outer Glass Chamber */}
             <mesh>
               <cylinderGeometry args={[0.07, 0.07, 0.60, 32]} />
               <meshPhysicalMaterial 
-                color="#0f172a" 
+                color="#ffffff" 
                 transparent 
-                opacity={0.3} 
-                roughness={0.05} 
-                transmission={0.92} 
+                opacity={0.15} 
+                roughness={0.0} 
+                transmission={0.98} 
               />
             </mesh>
-            {/* Glowing Coolant Liquid Cylinder Inside */}
+            {/* Glowing Vivid Coolant Liquid Cylinder Inside */}
             <mesh>
               <cylinderGeometry args={[0.062, 0.062, 0.54, 32]} />
-              <meshStandardMaterial color={rgbColor} roughness={0.2} transparent opacity={0.7} />
+              <meshStandardMaterial 
+                color={rgbColor} 
+                roughness={0.1} 
+                transparent 
+                opacity={0.88} 
+                emissive={rgbColor}
+                emissiveIntensity={0.5}
+              />
             </mesh>
             {/* Spinning Turbine Flow Indicator Wheel */}
             <group ref={flowWheelRef} position={[0, 0.1, 0]}>
               <mesh>
                 <cylinderGeometry args={[0.035, 0.035, 0.02, 6]} />
-                <meshStandardMaterial color="#ffffff" metalness={0.9} />
+                <meshStandardMaterial color="#ffffff" metalness={0.95} />
               </mesh>
             </group>
           </group>
@@ -1488,16 +1626,16 @@ export const RoomObjects: React.FC<RoomObjectsProps> = ({
           <group position={[0.14, 0.34, -0.06]}>
             <mesh>
               <cylinderGeometry args={[0.012, 0.012, 0.28, 16]} />
-              <meshPhysicalMaterial color={rgbColor} transparent opacity={0.65} transmission={0.8} />
+              <meshPhysicalMaterial color={rgbColor} transparent opacity={0.8} transmission={0.7} emissive={rgbColor} emissiveIntensity={0.4} />
             </mesh>
             {/* Compression Fittings (Chrome Rings) */}
             <mesh position={[0, -0.13, 0]}>
               <cylinderGeometry args={[0.018, 0.018, 0.025, 16]} />
-              <meshStandardMaterial color="#cbd5e1" metalness={0.95} roughness={0.1} />
+              <meshStandardMaterial color="#e2e8f0" metalness={0.98} roughness={0.05} />
             </mesh>
             <mesh position={[0, 0.13, 0]}>
               <cylinderGeometry args={[0.018, 0.018, 0.025, 16]} />
-              <meshStandardMaterial color="#cbd5e1" metalness={0.95} roughness={0.1} />
+              <meshStandardMaterial color="#e2e8f0" metalness={0.98} roughness={0.05} />
             </mesh>
           </group>
 
@@ -1505,7 +1643,7 @@ export const RoomObjects: React.FC<RoomObjectsProps> = ({
           <group position={[0.0, 0.42, 0.18]} rotation={[0, 0, Math.PI / 3.5]}>
             <mesh>
               <cylinderGeometry args={[0.012, 0.012, 0.34, 16]} />
-              <meshPhysicalMaterial color={rgbColor} transparent opacity={0.65} transmission={0.8} />
+              <meshPhysicalMaterial color={rgbColor} transparent opacity={0.8} transmission={0.7} emissive={rgbColor} emissiveIntensity={0.4} />
             </mesh>
           </group>
 
@@ -1513,11 +1651,11 @@ export const RoomObjects: React.FC<RoomObjectsProps> = ({
           <group position={[-0.08, -0.22, 0.2]}>
             <mesh rotation={[0, 0, Math.PI / 2]}>
               <cylinderGeometry args={[0.012, 0.012, 0.22, 16]} />
-              <meshPhysicalMaterial color={rgbColor} transparent opacity={0.65} transmission={0.8} />
+              <meshPhysicalMaterial color={rgbColor} transparent opacity={0.8} transmission={0.7} emissive={rgbColor} emissiveIntensity={0.4} />
             </mesh>
             <mesh position={[-0.10, 0, 0]}>
               <cylinderGeometry args={[0.018, 0.018, 0.025, 16]} />
-              <meshStandardMaterial color="#cbd5e1" metalness={0.95} />
+              <meshStandardMaterial color="#e2e8f0" metalness={0.98} />
             </mesh>
           </group>
 
@@ -1532,17 +1670,17 @@ export const RoomObjects: React.FC<RoomObjectsProps> = ({
             <mesh position={[-0.06, 0, 0]}>
               <boxGeometry args={[0.02, 0.18, 0.68]} />
               <meshPhysicalMaterial 
-                color="#020617" 
+                color="#ffffff" 
                 transparent 
-                opacity={0.3} 
-                roughness={0.05} 
-                transmission={0.9} 
+                opacity={0.15} 
+                roughness={0.02} 
+                transmission={0.98} 
               />
             </mesh>
             {/* Internal Nickel-Plated Copper Micro-Fin Channel Glowing with Coolant */}
             <mesh position={[-0.05, 0, 0]}>
               <boxGeometry args={[0.008, 0.14, 0.44]} />
-              <meshStandardMaterial color={rgbColor} roughness={0.2} />
+              <meshStandardMaterial color={rgbColor} roughness={0.1} emissive={rgbColor} emissiveIntensity={0.6} />
             </mesh>
             {/* GPU Anti-Sag Column Stand */}
             <mesh position={[-0.18, -0.12, 0.30]}>
@@ -1672,16 +1810,23 @@ export const RoomObjects: React.FC<RoomObjectsProps> = ({
             </mesh>
           </group>
 
-          {/* Internal Volumetric PC Lighting */}
+          {/* Internal Vivid Volumetric Case RGB Illumination */}
           <pointLight 
             ref={gpuGlowRef} 
             color={rgbColor} 
-            intensity={4.2} 
-            distance={3.8} 
-            position={[-0.05, 0.1, 0]} 
+            intensity={5.5} 
+            distance={4.5} 
+            position={[-0.05, 0.1, 0.1]} 
+          />
+          <pointLight 
+            color={rgbColor} 
+            intensity={3.5} 
+            distance={3.0} 
+            position={[0.1, -0.2, 0.2]} 
           />
         </group>
       </group>
+
 
 
       {/* ================= INTERACTIVE SWIVEL ERGONOMIC CHAIR ================= */}
