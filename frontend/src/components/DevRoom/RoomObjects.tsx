@@ -8,6 +8,8 @@ interface RoomObjectsProps {
   lightingMood: 'neon' | 'night' | 'sunset' | 'matrix';
   monitorMode: number;
   hologramIndex: number;
+  lampOn: boolean;
+  keyboardFlashTrigger: number;
   onCoffeeClick: () => void;
   onPcClick: () => void;
   onMonitorClick: () => void;
@@ -16,6 +18,8 @@ interface RoomObjectsProps {
   onChairClick: () => void;
   onPhoneClick: () => void;
   onHologramClick: () => void;
+  onCatClick: () => void;
+  onLampClick: () => void;
 }
 
 export const RoomObjects: React.FC<RoomObjectsProps> = ({
@@ -23,6 +27,8 @@ export const RoomObjects: React.FC<RoomObjectsProps> = ({
   lightingMood,
   monitorMode,
   hologramIndex,
+  lampOn,
+  keyboardFlashTrigger,
   onCoffeeClick,
   onPcClick,
   onMonitorClick,
@@ -31,6 +37,8 @@ export const RoomObjects: React.FC<RoomObjectsProps> = ({
   onChairClick,
   onPhoneClick,
   onHologramClick,
+  onCatClick,
+  onLampClick,
 }) => {
   const fanRef1 = useRef<THREE.Group>(null);
   const fanRef2 = useRef<THREE.Group>(null);
@@ -47,6 +55,10 @@ export const RoomObjects: React.FC<RoomObjectsProps> = ({
   const holoOrbit2Ref = useRef<THREE.Group>(null);
   const holoOrbit3Ref = useRef<THREE.Group>(null);
   const laserGridRef = useRef<THREE.Group>(null);
+  const catBodyRef = useRef<THREE.Group>(null);
+  const catTailRef = useRef<THREE.Mesh>(null);
+  const catZzzRef = useRef<THREE.Points>(null);
+
 
   const [neonActive, setNeonActive] = useState<boolean>(true);
   const [chairTargetRot, setChairTargetRot] = useState<number>(-0.25);
@@ -146,6 +158,18 @@ export const RoomObjects: React.FC<RoomObjectsProps> = ({
     return list;
   }, []);
 
+  // Cat Zzz floating particles
+  const catZzzParticles = useMemo(() => {
+    const count = 15;
+    const pos = new Float32Array(count * 3);
+    for (let i = 0; i < count; i++) {
+      pos[i * 3] = (Math.random() - 0.5) * 0.16;
+      pos[i * 3 + 1] = Math.random() * 0.4;
+      pos[i * 3 + 2] = (Math.random() - 0.5) * 0.16;
+    }
+    return pos;
+  }, []);
+
   // Animation Loop for Canvases & Objects
   useFrame((state, delta) => {
     const time = state.clock.elapsedTime;
@@ -165,12 +189,15 @@ export const RoomObjects: React.FC<RoomObjectsProps> = ({
       gpuGlowRef.current.intensity = 2.0 + Math.sin(time * 4) * 0.8;
     }
 
-    // 4. Keyboard flash decay
+    // 4. Keyboard flash decay & physical typing sync
+    if (keyboardFlashTrigger > 0 && keyboardFlash < 0.5) {
+      setKeyboardFlash(1.0);
+    }
     if (keyboardFlash > 0) {
       setKeyboardFlash(prev => Math.max(0, prev - delta * 4));
     }
     if (keyboardGlowRef.current) {
-      keyboardGlowRef.current.intensity = 0.5 + keyboardFlash * 2.5;
+      keyboardGlowRef.current.intensity = 0.5 + keyboardFlash * 3.2;
     }
 
     // 5. Chair smooth rotation lerp
@@ -195,6 +222,28 @@ export const RoomObjects: React.FC<RoomObjectsProps> = ({
     if (laserGridRef.current && lightingMood === 'matrix') {
       laserGridRef.current.position.y = Math.sin(time * 2) * 0.2;
     }
+
+    // 8. Cyber Cat Breathing, Tail Wag & Zzz particles
+    if (catBodyRef.current) {
+      catBodyRef.current.scale.y = 1 + Math.sin(time * 2.5) * 0.04;
+      catBodyRef.current.scale.x = 1 + Math.cos(time * 2.5) * 0.02;
+    }
+    if (catTailRef.current) {
+      catTailRef.current.rotation.z = Math.sin(time * 3.5) * 0.15;
+    }
+    if (catZzzRef.current) {
+      const positions = catZzzRef.current.geometry.attributes.position.array as Float32Array;
+      for (let i = 0; i < positions.length / 3; i++) {
+        positions[i * 3 + 1] += delta * 0.12;
+        if (positions[i * 3 + 1] > 0.45) {
+          positions[i * 3 + 1] = 0;
+          positions[i * 3] = (Math.random() - 0.5) * 0.16;
+          positions[i * 3 + 2] = (Math.random() - 0.5) * 0.16;
+        }
+      }
+      catZzzRef.current.geometry.attributes.position.needsUpdate = true;
+    }
+
 
     // 8. Steaming coffee particles
     if (steamRef.current) {
@@ -882,20 +931,33 @@ export const RoomObjects: React.FC<RoomObjectsProps> = ({
           </mesh>
 
           {/* BenQ ScreenBar Mounted Lightbar */}
-          <group position={[0, 0.72, 0.12]}>
+          <group 
+            position={[0, 0.72, 0.12]}
+            onClick={(e) => {
+              e.stopPropagation();
+              onLampClick();
+            }}
+          >
             <mesh castShadow>
               <boxGeometry args={[1.2, 0.04, 0.06]} />
               <meshStandardMaterial color="#334155" metalness={0.9} roughness={0.2} />
             </mesh>
-            <spotLight
-              position={[0, 0, 0]}
-              target-position={[0, -1.0, 0.6]}
-              angle={0.7}
-              penumbra={0.6}
-              intensity={1.8}
-              color={lightingMood === 'sunset' ? '#fef08a' : '#f8fafc'}
-              distance={3.5}
-            />
+            {/* LED Diffuser Tube */}
+            <mesh position={[0, -0.02, 0.02]}>
+              <boxGeometry args={[1.16, 0.012, 0.02]} />
+              <meshBasicMaterial color={lampOn ? (lightingMood === 'sunset' ? '#fef08a' : '#f8fafc') : '#1e293b'} />
+            </mesh>
+            {lampOn && (
+              <spotLight
+                position={[0, 0, 0]}
+                target-position={[0, -1.2, 0.6]}
+                angle={0.78}
+                penumbra={0.7}
+                intensity={2.8}
+                color={lightingMood === 'sunset' ? '#fef08a' : (lightingMood === 'matrix' ? '#86efac' : '#f8fafc')}
+                distance={4.2}
+              />
+            )}
           </group>
 
           <pointLight color={rgbColor} intensity={1.2} distance={3.0} position={[0, 0, 0.6]} />
@@ -1266,6 +1328,106 @@ export const RoomObjects: React.FC<RoomObjectsProps> = ({
           <cylinderGeometry args={[0.5, 0.5, 0.06, 5]} />
           <meshStandardMaterial color="#0f172a" metalness={0.8} />
         </mesh>
+      </group>
+
+      {/* ================= COZY SLEEPING CYBER CAT (DEV PET) ================= */}
+      <group 
+        position={[-1.75, 0.0, 0.45]} 
+        onClick={(e) => {
+          e.stopPropagation();
+          onCatClick();
+        }}
+      >
+        {/* Plush Velvet Bed Cushion */}
+        <mesh position={[0, 0.04, 0]} receiveShadow castShadow>
+          <cylinderGeometry args={[0.34, 0.38, 0.08, 32]} />
+          <meshStandardMaterial color="#1e293b" roughness={0.9} />
+        </mesh>
+        <mesh position={[0, 0.09, 0]} receiveShadow>
+          <cylinderGeometry args={[0.31, 0.33, 0.04, 32]} />
+          <meshStandardMaterial color="#334155" roughness={0.95} />
+        </mesh>
+
+        {/* Cat Main Body with breathing animation */}
+        <group ref={catBodyRef} position={[0, 0.18, 0]}>
+          {/* Curled Body Torso */}
+          <mesh castShadow>
+            <sphereGeometry args={[0.19, 24, 24]} />
+            <meshStandardMaterial color="#0f172a" roughness={0.8} />
+          </mesh>
+
+          {/* Cat Head */}
+          <group position={[0.13, 0.04, 0.07]} rotation={[0, -0.3, -0.1]}>
+            <mesh castShadow>
+              <sphereGeometry args={[0.12, 24, 24]} />
+              <meshStandardMaterial color="#0f172a" roughness={0.8} />
+            </mesh>
+
+            {/* Left Ear */}
+            <mesh position={[-0.04, 0.1, -0.04]} rotation={[-0.2, 0.1, 0.2]}>
+              <coneGeometry args={[0.045, 0.08, 4]} />
+              <meshStandardMaterial color="#1e293b" roughness={0.7} />
+            </mesh>
+
+            {/* Right Ear */}
+            <mesh position={[0.06, 0.1, -0.02]} rotation={[-0.2, -0.1, -0.2]}>
+              <coneGeometry args={[0.045, 0.08, 4]} />
+              <meshStandardMaterial color="#1e293b" roughness={0.7} />
+            </mesh>
+
+            {/* Cyber Visor Closed Eyes Line */}
+            <mesh position={[0.04, 0.01, 0.1]}>
+              <boxGeometry args={[0.09, 0.012, 0.02]} />
+              <meshBasicMaterial color={rgbColor} />
+            </mesh>
+
+            {/* Cute Pink Nose */}
+            <mesh position={[0.04, -0.03, 0.11]}>
+              <sphereGeometry args={[0.016, 12, 12]} />
+              <meshStandardMaterial color="#f472b6" roughness={0.4} />
+            </mesh>
+          </group>
+
+          {/* Cyber Collar with Pulsing Holographic Tag */}
+          <mesh position={[0.08, 0.08, 0.05]} rotation={[Math.PI / 4, 0, 0]}>
+            <torusGeometry args={[0.10, 0.014, 12, 24]} />
+            <meshStandardMaterial color="#38bdf8" metalness={0.9} roughness={0.2} />
+          </mesh>
+          <mesh position={[0.12, 0.01, 0.12]}>
+            <sphereGeometry args={[0.022, 12, 12]} />
+            <meshBasicMaterial color={rgbColor} />
+          </mesh>
+
+          {/* Curled Wagging Tail */}
+          <mesh 
+            ref={catTailRef} 
+            position={[-0.14, 0.02, -0.08]} 
+            rotation={[0.3, 0.8, -0.4]}
+          >
+            <torusGeometry args={[0.12, 0.03, 12, 24, Math.PI * 1.2]} />
+            <meshStandardMaterial color="#0f172a" roughness={0.8} />
+          </mesh>
+        </group>
+
+        {/* Floating "Zzz" Sleep Energy Particles */}
+        <points ref={catZzzRef} position={[0.15, 0.35, 0.1]}>
+          <bufferGeometry>
+            <bufferAttribute
+              attach="attributes-position"
+              args={[catZzzParticles, 3]}
+            />
+          </bufferGeometry>
+          <pointsMaterial
+            size={0.035}
+            color={rgbColor}
+            transparent
+            opacity={0.7}
+            blending={THREE.AdditiveBlending}
+          />
+        </points>
+
+        {/* Soft Ambient Cat Glow */}
+        <pointLight color={rgbColor} intensity={0.5} distance={1.4} position={[0, 0.3, 0]} />
       </group>
     </group>
   );

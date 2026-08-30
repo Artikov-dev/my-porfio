@@ -5,7 +5,7 @@ import type { OrbitControls as OrbitControlsImpl } from 'three-stdlib';
 import * as THREE from 'three';
 import { RoomObjects } from './RoomObjects';
 
-export type CameraPreset = 'orbit' | 'monitor' | 'pc' | 'cozy' | 'window';
+export type CameraPreset = 'orbit' | 'monitor' | 'pc' | 'cat' | 'lamp' | 'cozy' | 'window';
 
 interface DevRoomSceneProps {
   rgbColor: string;
@@ -14,6 +14,8 @@ interface DevRoomSceneProps {
   autoRotate: boolean;
   monitorMode: number;
   hologramIndex: number;
+  lampOn: boolean;
+  keyboardFlashTrigger: number;
   onCoffeeClick: () => void;
   onPcClick: () => void;
   onMonitorClick: () => void;
@@ -22,13 +24,17 @@ interface DevRoomSceneProps {
   onChairClick: () => void;
   onPhoneClick: () => void;
   onHologramClick: () => void;
+  onCatClick: () => void;
+  onLampClick: () => void;
 }
 
 // Camera Positions for each cinematic preset
 const CAMERA_CONFIGS: Record<CameraPreset, { pos: [number, number, number]; target: [number, number, number] }> = {
   orbit: { pos: [4.4, 3.8, 5.2], target: [0, 1.2, -0.3] },
-  monitor: { pos: [0, 2.15, 1.4], target: [0, 2.15, -0.4] },
-  pc: { pos: [2.2, 2.4, 1.5], target: [1.6, 1.98, 0.1] },
+  monitor: { pos: [0, 2.15, 1.35], target: [0, 2.15, -0.4] },
+  pc: { pos: [2.2, 2.3, 1.4], target: [1.58, 1.95, 0.08] },
+  cat: { pos: [-2.1, 0.95, 1.45], target: [-1.75, 0.25, 0.45] },
+  lamp: { pos: [0, 2.5, 1.45], target: [0, 1.6, -0.1] },
   cozy: { pos: [-1.6, 2.2, 1.5], target: [-1.0, 1.8, -0.4] },
   window: { pos: [-3.2, 2.8, 3.2], target: [-5.4, 3.2, 0] },
 };
@@ -59,7 +65,7 @@ const CameraController: React.FC<{ cameraPreset: CameraPreset; autoRotate: boole
       autoRotate={autoRotate && cameraPreset === 'orbit'}
       autoRotateSpeed={0.8}
       enablePan={false}
-      minDistance={1.8}
+      minDistance={1.6}
       maxDistance={8.8}
       minPolarAngle={Math.PI / 6}
       maxPolarAngle={Math.PI / 2.05}
@@ -77,6 +83,8 @@ export const DevRoomScene: React.FC<DevRoomSceneProps> = ({
   autoRotate,
   monitorMode,
   hologramIndex,
+  lampOn,
+  keyboardFlashTrigger,
   onCoffeeClick,
   onPcClick,
   onMonitorClick,
@@ -85,6 +93,8 @@ export const DevRoomScene: React.FC<DevRoomSceneProps> = ({
   onChairClick,
   onPhoneClick,
   onHologramClick,
+  onCatClick,
+  onLampClick,
 }) => {
   // Mood lighting configurations
   const moodConfig = {
@@ -178,16 +188,18 @@ export const DevRoomScene: React.FC<DevRoomSceneProps> = ({
             distance={10}
           />
 
-          {/* Warm Desk Spotlight */}
-          <spotLight
-            position={[0, 5.0, 0.2]}
-            target-position={[0, 1.4, -0.2]}
-            angle={0.65}
-            penumbra={0.8}
-            intensity={1.4}
-            color={lightingMood === 'sunset' ? '#fef08a' : (lightingMood === 'matrix' ? '#86efac' : '#e0f2fe')}
-            distance={7}
-          />
+          {/* Warm Desk Spotlight (Linked with lampOn) */}
+          {lampOn && (
+            <spotLight
+              position={[0, 5.0, 0.2]}
+              target-position={[0, 1.4, -0.2]}
+              angle={0.65}
+              penumbra={0.8}
+              intensity={1.5}
+              color={lightingMood === 'sunset' ? '#fef08a' : (lightingMood === 'matrix' ? '#86efac' : '#e0f2fe')}
+              distance={7}
+            />
+          )}
 
           {/* Ambient Dust Sparkles / Golden Sun Motes / Matrix Particles */}
           <Sparkles
@@ -215,6 +227,8 @@ export const DevRoomScene: React.FC<DevRoomSceneProps> = ({
             lightingMood={lightingMood}
             monitorMode={monitorMode}
             hologramIndex={hologramIndex}
+            lampOn={lampOn}
+            keyboardFlashTrigger={keyboardFlashTrigger}
             onCoffeeClick={onCoffeeClick}
             onPcClick={onPcClick}
             onMonitorClick={onMonitorClick}
@@ -223,6 +237,8 @@ export const DevRoomScene: React.FC<DevRoomSceneProps> = ({
             onChairClick={onChairClick}
             onPhoneClick={onPhoneClick}
             onHologramClick={onHologramClick}
+            onCatClick={onCatClick}
+            onLampClick={onLampClick}
           />
 
           {/* Smooth Camera Controller */}
@@ -232,3 +248,4 @@ export const DevRoomScene: React.FC<DevRoomSceneProps> = ({
     </div>
   );
 };
+

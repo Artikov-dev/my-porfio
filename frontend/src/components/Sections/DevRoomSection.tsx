@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { DevRoomScene, CameraPreset } from '../DevRoom/DevRoomScene';
 import { ScrollReveal } from '@/components/ui/ScrollReveal';
 import { useI18n } from '@/contexts/I18nContext';
@@ -22,7 +22,9 @@ import {
   Smartphone, 
   Building2,
   Atom,
-  Binary
+  Binary,
+  Lightbulb,
+  Heart
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
@@ -68,9 +70,26 @@ export const DevRoomSection: React.FC = () => {
   const [autoRotate, setAutoRotate] = useState(true);
   const [monitorMode, setMonitorMode] = useState<number>(0);
   const [hologramIndex, setHologramIndex] = useState<number>(0);
+  const [lampOn, setLampOn] = useState<boolean>(true);
+  const [keyboardFlashTrigger, setKeyboardFlashTrigger] = useState<number>(0);
   const [soundEnabled, setSoundEnabled] = useState<boolean>(true);
 
   const activeRgb = RGB_PALETTE[rgbIndex].color;
+
+  // ⌨️ Physical Keyboard Live Typing Sync
+  useEffect(() => {
+    const handleGlobalKeyDown = (e: KeyboardEvent) => {
+      // Don't trigger if user is actively writing in input or textarea
+      const tag = (e.target as HTMLElement)?.tagName?.toLowerCase();
+      if (tag === 'input' || tag === 'textarea') return;
+
+      if (soundEnabled) playMechanicalClick();
+      setKeyboardFlashTrigger(Date.now());
+    };
+
+    window.addEventListener('keydown', handleGlobalKeyDown);
+    return () => window.removeEventListener('keydown', handleGlobalKeyDown);
+  }, [soundEnabled, playMechanicalClick]);
 
   const cycleRgb = () => {
     if (soundEnabled) playCyberSwitch();
@@ -130,9 +149,37 @@ export const DevRoomSection: React.FC = () => {
     });
   };
 
+  const handleLampToggle = () => {
+    if (soundEnabled) playMechanicalClick();
+    setLampOn(prev => !prev);
+    toast(!lampOn ? '💡 ScreenBar Lamp: ON (Eye-Care Glow)' : '💡 ScreenBar Lamp: OFF', {
+      icon: '💡',
+      style: {
+        borderRadius: '12px',
+        background: '#0a0f1d',
+        color: '#fff',
+        border: '1px solid #eab308',
+      },
+    });
+  };
+
+  const handleCatClick = () => {
+    if (soundEnabled) playWhoosh();
+    toast.success('😸 Cyber Kitty: Purr... (Focus Aura +100%) 🐾', {
+      icon: '🐱',
+      style: {
+        borderRadius: '12px',
+        background: '#0a0f1d',
+        color: '#fff',
+        border: '1px solid #f472b6',
+      },
+    });
+  };
+
   const handleKeyboardClick = () => {
     if (soundEnabled) playMechanicalClick();
-    toast('Custom 75% Mechanical Click ⌨️', {
+    setKeyboardFlashTrigger(Date.now());
+    toast('Custom 75% Mechanical Click ⌨️ (Type any key on your keyboard!)', {
       icon: '⌨️',
       style: {
         borderRadius: '12px',
@@ -207,7 +254,7 @@ export const DevRoomSection: React.FC = () => {
             {t('workspace_title') || 'Virtual Developer Workspace'}
           </h2>
           <p className="text-foreground/60 max-w-2xl text-base md:text-lg">
-            {t('workspace_desc') || 'Explore my 3D developer studio. Enjoy the sunset sunbeams, project 3D floating holograms, inspect live code on the ultra-wide monitor, and experience full 360° RGB underglow.'}
+            {t('workspace_desc') || 'Explore my 3D developer studio. Enjoy the sunset sunbeams, project 3D floating holograms, pet the sleeping cyber cat, and type on your physical keyboard to sync with the 3D setup!'}
           </p>
         </div>
       </ScrollReveal>
@@ -223,6 +270,8 @@ export const DevRoomSection: React.FC = () => {
             autoRotate={autoRotate}
             monitorMode={monitorMode}
             hologramIndex={hologramIndex}
+            lampOn={lampOn}
+            keyboardFlashTrigger={keyboardFlashTrigger}
             onCoffeeClick={handleCoffeeSip}
             onPcClick={cycleRgb}
             onMonitorClick={handleMonitorSwitch}
@@ -231,16 +280,18 @@ export const DevRoomSection: React.FC = () => {
             onChairClick={handleChairClick}
             onPhoneClick={handlePhoneClick}
             onHologramClick={handleHologramClick}
+            onCatClick={handleCatClick}
+            onLampClick={handleLampToggle}
           />
 
           {/* Top Control Bar (HUD) */}
           <div className="absolute top-4 left-4 right-4 flex flex-wrap items-center justify-between gap-2.5 pointer-events-none z-20">
             {/* Cinematic Camera Angle Presets */}
-            <div className="flex items-center gap-1 p-1 rounded-2xl glass border border-white/10 backdrop-blur-xl shadow-lg pointer-events-auto">
+            <div className="flex items-center gap-1 p-1 rounded-2xl glass border border-white/10 backdrop-blur-xl shadow-lg pointer-events-auto overflow-x-auto max-w-full">
               <button
                 onClick={() => switchCamera('orbit')}
                 onMouseEnter={playHover}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all whitespace-nowrap ${
                   cameraPreset === 'orbit' 
                     ? 'bg-primary text-white shadow-md' 
                     : 'text-foreground/60 hover:text-foreground'
@@ -252,7 +303,7 @@ export const DevRoomSection: React.FC = () => {
               <button
                 onClick={() => switchCamera('monitor')}
                 onMouseEnter={playHover}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all whitespace-nowrap ${
                   cameraPreset === 'monitor' 
                     ? 'bg-primary text-white shadow-md' 
                     : 'text-foreground/60 hover:text-foreground'
@@ -264,7 +315,7 @@ export const DevRoomSection: React.FC = () => {
               <button
                 onClick={() => switchCamera('pc')}
                 onMouseEnter={playHover}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all whitespace-nowrap ${
                   cameraPreset === 'pc' 
                     ? 'bg-primary text-white shadow-md' 
                     : 'text-foreground/60 hover:text-foreground'
@@ -274,9 +325,33 @@ export const DevRoomSection: React.FC = () => {
                 <Cpu size={14} /> <span className="hidden sm:inline">PC Rig</span>
               </button>
               <button
+                onClick={() => switchCamera('cat')}
+                onMouseEnter={playHover}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all whitespace-nowrap ${
+                  cameraPreset === 'cat' 
+                    ? 'bg-primary text-white shadow-md' 
+                    : 'text-foreground/60 hover:text-foreground'
+                }`}
+                title="Cozy Sleeping Cyber Cat"
+              >
+                <Heart size={14} className="text-pink-400" /> <span className="hidden sm:inline">Cyber Cat</span>
+              </button>
+              <button
+                onClick={() => switchCamera('lamp')}
+                onMouseEnter={playHover}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all whitespace-nowrap ${
+                  cameraPreset === 'lamp' 
+                    ? 'bg-primary text-white shadow-md' 
+                    : 'text-foreground/60 hover:text-foreground'
+                }`}
+                title="Desk ScreenBar & Lamp"
+              >
+                <Lightbulb size={14} className="text-amber-400" /> <span className="hidden sm:inline">Lamp</span>
+              </button>
+              <button
                 onClick={() => switchCamera('window')}
                 onMouseEnter={playHover}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all whitespace-nowrap ${
                   cameraPreset === 'window' 
                     ? 'bg-primary text-white shadow-md' 
                     : 'text-foreground/60 hover:text-foreground'
@@ -288,7 +363,7 @@ export const DevRoomSection: React.FC = () => {
               <button
                 onClick={() => switchCamera('cozy')}
                 onMouseEnter={playHover}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all whitespace-nowrap ${
                   cameraPreset === 'cozy' 
                     ? 'bg-primary text-white shadow-md' 
                     : 'text-foreground/60 hover:text-foreground'
@@ -433,41 +508,55 @@ export const DevRoomSection: React.FC = () => {
             </div>
 
             {/* Quick Interactive Items */}
-            <div className="flex items-center gap-2 text-xs font-medium text-foreground/80 pointer-events-auto">
+            <div className="flex items-center gap-2 text-xs font-medium text-foreground/80 pointer-events-auto overflow-x-auto max-w-full">
               <button 
-                onClick={handleHologramClick}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl glass border border-white/10 backdrop-blur-md cursor-pointer hover:border-cyan-400/50 transition-colors shadow-md text-cyan-400"
-                title="Project 3D Floating Tech Hologram"
+                onClick={handleCatClick}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl glass border border-white/10 backdrop-blur-md cursor-pointer hover:border-pink-400/50 transition-colors shadow-md text-pink-400 whitespace-nowrap"
+                title="Pet the Sleeping Cyber Cat"
               >
-                <Atom size={14} /> <span className="hidden sm:inline">Hologram</span>
+                <Heart size={14} className="text-pink-400" /> <span>Cat</span>
               </button>
               <button 
-                onClick={handlePhoneClick}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl glass border border-white/10 backdrop-blur-md cursor-pointer hover:border-cyan-400/50 transition-colors shadow-md"
-                title="Check SmartPhone Notifications"
+                onClick={handleLampToggle}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl glass border border-white/10 backdrop-blur-md cursor-pointer hover:border-amber-400/50 transition-colors shadow-md text-amber-400 whitespace-nowrap"
+                title="Toggle ScreenBar Lamp"
               >
-                <Smartphone size={14} className="text-cyan-400" /> <span className="hidden sm:inline">Phone</span>
+                <Lightbulb size={14} className="text-amber-400" /> <span>{lampOn ? 'Lamp (ON)' : 'Lamp (OFF)'}</span>
+              </button>
+              <button 
+                onClick={handleHologramClick}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl glass border border-white/10 backdrop-blur-md cursor-pointer hover:border-cyan-400/50 transition-colors shadow-md text-cyan-400 whitespace-nowrap"
+                title="Project 3D Floating Tech Hologram"
+              >
+                <Atom size={14} /> <span>Holo</span>
               </button>
               <button 
                 onClick={handleKeyboardClick}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl glass border border-white/10 backdrop-blur-md cursor-pointer hover:border-primary/50 transition-colors shadow-md"
-                title="Type on Mechanical Keyboard"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl glass border border-white/10 backdrop-blur-md cursor-pointer hover:border-primary/50 transition-colors shadow-md whitespace-nowrap"
+                title="Type on Keyboard or use your physical keys!"
               >
-                <Keyboard size={14} className="text-primary" /> <span className="hidden sm:inline">Keyboard</span>
+                <Keyboard size={14} className="text-primary" /> <span className="hidden md:inline">Live Typing</span>
+              </button>
+              <button 
+                onClick={handlePhoneClick}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl glass border border-white/10 backdrop-blur-md cursor-pointer hover:border-cyan-400/50 transition-colors shadow-md whitespace-nowrap"
+                title="Check SmartPhone Notifications"
+              >
+                <Smartphone size={14} className="text-cyan-400" /> <span className="hidden md:inline">Phone</span>
               </button>
               <button 
                 onClick={handleChairClick}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl glass border border-white/10 backdrop-blur-md cursor-pointer hover:border-indigo-400/50 transition-colors shadow-md"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl glass border border-white/10 backdrop-blur-md cursor-pointer hover:border-indigo-400/50 transition-colors shadow-md whitespace-nowrap"
                 title="Spin Ergonomic Chair"
               >
-                <Sparkles size={14} className="text-indigo-400" /> <span className="hidden sm:inline">Chair</span>
+                <Sparkles size={14} className="text-indigo-400" /> <span className="hidden md:inline">Chair</span>
               </button>
               <button 
                 onClick={handleCoffeeSip}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl glass border border-white/10 backdrop-blur-md cursor-pointer hover:border-amber-400/50 transition-colors shadow-md"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl glass border border-white/10 backdrop-blur-md cursor-pointer hover:border-amber-400/50 transition-colors shadow-md whitespace-nowrap"
                 title="Sip Hot Espresso"
               >
-                <Coffee size={14} className="text-amber-400" /> <span className="hidden sm:inline">Coffee</span>
+                <Coffee size={14} className="text-amber-400" /> <span className="hidden md:inline">Coffee</span>
               </button>
             </div>
           </div>
@@ -476,3 +565,4 @@ export const DevRoomSection: React.FC = () => {
     </section>
   );
 };
+
