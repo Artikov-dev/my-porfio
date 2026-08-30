@@ -117,6 +117,13 @@ export const RoomObjects: React.FC<RoomObjectsProps> = ({
     cStreamDeck.height = 192;
     const ctxStreamDeck = cStreamDeck.getContext('2d')!;
 
+    // 8. 75% Custom Mechanical Keyboard Canvas (High-Res RGB Matrix)
+    const cKeyboard = document.createElement('canvas');
+    cKeyboard.width = 1024;
+    cKeyboard.height = 360;
+    const ctxKeyboard = cKeyboard.getContext('2d')!;
+
+
     const tex1 = new THREE.CanvasTexture(c1);
     const tex2 = new THREE.CanvasTexture(c2);
     const tex3 = new THREE.CanvasTexture(c3);
@@ -124,6 +131,7 @@ export const RoomObjects: React.FC<RoomObjectsProps> = ({
     const texPhone = new THREE.CanvasTexture(cPhone);
     const texCooler = new THREE.CanvasTexture(cCooler);
     const texStreamDeck = new THREE.CanvasTexture(cStreamDeck);
+    const texKeyboard = new THREE.CanvasTexture(cKeyboard);
 
     return { 
       c1, ctx1, tex1, 
@@ -132,9 +140,11 @@ export const RoomObjects: React.FC<RoomObjectsProps> = ({
       c4, ctx4, tex4, 
       cPhone, ctxPhone, texPhone,
       cCooler, ctxCooler, texCooler,
-      cStreamDeck, ctxStreamDeck, texStreamDeck
+      cStreamDeck, ctxStreamDeck, texStreamDeck,
+      cKeyboard, ctxKeyboard, texKeyboard
     };
   }, []);
+
 
 
   // Matrix column drops
@@ -369,6 +379,96 @@ export const RoomObjects: React.FC<RoomObjectsProps> = ({
       }
     }
     texStreamDeck.needsUpdate = true;
+
+    // 8. 75% Custom Mechanical Keyboard Dynamic RGB Matrix
+    const { ctxKeyboard, cKeyboard, texKeyboard } = canvasRefs;
+    ctxKeyboard.fillStyle = '#060911';
+    ctxKeyboard.fillRect(0, 0, cKeyboard.width, cKeyboard.height);
+
+    const KEY_ROWS: Array<Array<{ l: string; w: number; c?: string; isSpace?: boolean }>> = [
+      // Row 0: Function row
+      [
+        { l: 'ESC', w: 1.1, c: '#f43f5e' },
+        { l: 'F1', w: 1 }, { l: 'F2', w: 1 }, { l: 'F3', w: 1 }, { l: 'F4', w: 1 },
+        { l: 'F5', w: 1 }, { l: 'F6', w: 1 }, { l: 'F7', w: 1 }, { l: 'F8', w: 1 },
+        { l: 'F9', w: 1 }, { l: 'F10', w: 1 }, { l: 'F11', w: 1 }, { l: 'F12', w: 1 },
+        { l: 'DEL', w: 1 }, { l: 'VOL', w: 1, c: rgbColor }
+      ],
+      // Row 1: Number row
+      [
+        { l: '~', w: 1 }, { l: '1', w: 1 }, { l: '2', w: 1 }, { l: '3', w: 1 }, { l: '4', w: 1 },
+        { l: '5', w: 1 }, { l: '6', w: 1 }, { l: '7', w: 1 }, { l: '8', w: 1 }, { l: '9', w: 1 },
+        { l: '0', w: 1 }, { l: '-', w: 1 }, { l: '=', w: 1 }, { l: 'BACK', w: 1.9 }, { l: 'HOME', w: 1 }
+      ],
+      // Row 2: QWERTY row
+      [
+        { l: 'TAB', w: 1.4 }, { l: 'Q', w: 1 }, { l: 'W', w: 1 }, { l: 'E', w: 1 }, { l: 'R', w: 1 },
+        { l: 'T', w: 1 }, { l: 'Y', w: 1 }, { l: 'U', w: 1 }, { l: 'I', w: 1 }, { l: 'O', w: 1 },
+        { l: 'P', w: 1 }, { l: '[', w: 1 }, { l: ']', w: 1 }, { l: '\\', w: 1.5 }, { l: 'PGUP', w: 1 }
+      ],
+      // Row 3: Home row
+      [
+        { l: 'CAPS', w: 1.7 }, { l: 'A', w: 1 }, { l: 'S', w: 1 }, { l: 'D', w: 1 }, { l: 'F', w: 1 },
+        { l: 'G', w: 1 }, { l: 'H', w: 1 }, { l: 'J', w: 1 }, { l: 'K', w: 1 }, { l: 'L', w: 1 },
+        { l: ';', w: 1 }, { l: "'", w: 1 }, { l: 'ENTER', w: 2.2, c: '#38bdf8' }, { l: 'PGDN', w: 1 }
+      ],
+      // Row 4: Shift row
+      [
+        { l: 'SHIFT', w: 2.1 }, { l: 'Z', w: 1 }, { l: 'X', w: 1 }, { l: 'C', w: 1 }, { l: 'V', w: 1 },
+        { l: 'B', w: 1 }, { l: 'N', w: 1 }, { l: 'M', w: 1 }, { l: '<', w: 1 }, { l: '>', w: 1 },
+        { l: '?', w: 1 }, { l: 'SHIFT', w: 1.8 }, { l: '▲', w: 1, c: '#a855f7' }, { l: 'END', w: 1 }
+      ],
+      // Row 5: Bottom row
+      [
+        { l: 'CTRL', w: 1.25 }, { l: 'WIN', w: 1.2 }, { l: 'ALT', w: 1.2 },
+        { l: 'SPACEBAR', w: 6.2, isSpace: true },
+        { l: 'ALT', w: 1.0 }, { l: 'FN', w: 1.0 }, { l: '◄', w: 1.0, c: '#a855f7' }, { l: '▼', w: 1.0, c: '#a855f7' }, { l: '►', w: 1.0, c: '#a855f7' }
+      ]
+    ];
+
+    const unitW = 58;
+    const rowH = 50;
+    const padX = 16;
+    const padY = 14;
+
+    KEY_ROWS.forEach((row, rIdx) => {
+      let curX = padX;
+      const curY = padY + rIdx * (rowH + 6);
+      row.forEach((key) => {
+        const kw = key.w * unitW;
+        const kh = rowH;
+
+        // Dynamic Wave Spectrum RGB for each key
+        const hue = (time * 100 + curX * 0.45 + curY * 0.3) % 360;
+        const rgbGlow = `hsl(${hue}, 100%, 65%)`;
+
+        // Keycap Underglow Halo
+        ctxKeyboard.strokeStyle = key.c || rgbGlow;
+        ctxKeyboard.lineWidth = keyboardFlash > 0.1 ? 3.5 : 2;
+        ctxKeyboard.fillStyle = key.isSpace ? '#111827' : '#0f172a';
+        ctxKeyboard.beginPath();
+        ctxKeyboard.roundRect(curX + 2, curY + 2, kw - 4, kh - 4, 7);
+        ctxKeyboard.fill();
+        ctxKeyboard.stroke();
+
+        // Inner Keycap Bevel Cap
+        ctxKeyboard.fillStyle = key.c ? 'rgba(244, 63, 94, 0.2)' : '#1e293b';
+        ctxKeyboard.beginPath();
+        ctxKeyboard.roundRect(curX + 5, curY + 5, kw - 10, kh - 10, 4);
+        ctxKeyboard.fill();
+
+        // Key Legend Text
+        ctxKeyboard.fillStyle = key.c || (keyboardFlash > 0.1 ? '#ffffff' : rgbGlow);
+        ctxKeyboard.font = key.w > 1.8 ? 'bold 12px sans-serif' : 'bold 14px monospace';
+        ctxKeyboard.textAlign = 'center';
+        ctxKeyboard.textBaseline = 'middle';
+        ctxKeyboard.fillText(key.l, curX + kw / 2, curY + kh / 2);
+
+        curX += kw + 5;
+      });
+    });
+    texKeyboard.needsUpdate = true;
+
 
 
     // Screen 1 (VS Code)
@@ -1143,91 +1243,60 @@ export const RoomObjects: React.FC<RoomObjectsProps> = ({
           position={[0, 1.47, 0.35]} 
           onClick={handleKeyboardInteraction}
         >
-          {/* CNC Anodized Aluminum Keyboard Case with Chamfers */}
+          {/* CNC Anodized Aluminum Keyboard Case with Chamfered Edges */}
           <mesh castShadow position={[0, 0.02, 0]}>
-            <boxGeometry args={[1.08, 0.045, 0.36]} />
-            <meshStandardMaterial color="#090d16" roughness={0.25} metalness={0.88} />
+            <boxGeometry args={[1.14, 0.048, 0.38]} />
+            <meshStandardMaterial color="#080c16" roughness={0.2} metalness={0.92} />
           </mesh>
 
-          {/* Polycarbonate Translucent Switch Plate & RGB Underglow Diffuser */}
-          <mesh position={[0, 0.042, 0]}>
-            <boxGeometry args={[1.02, 0.01, 0.32]} />
+          {/* Polycarbonate Translucent Frosted Perimeter RGB Underglow Strip */}
+          <mesh position={[0, 0.012, 0]}>
+            <boxGeometry args={[1.15, 0.018, 0.39]} />
             <meshStandardMaterial 
               color={rgbColor} 
-              roughness={0.15} 
+              roughness={0.1} 
               transparent 
-              opacity={0.85} 
+              opacity={0.88} 
               emissive={rgbColor}
-              emissiveIntensity={0.6 + keyboardFlash * 2.0}
+              emissiveIntensity={1.2 + keyboardFlash * 3.0}
             />
           </mesh>
 
-          {/* Brass Accent Weight Badge */}
-          <mesh position={[0, 0.002, 0.175]}>
-            <boxGeometry args={[0.35, 0.015, 0.008]} />
-            <meshStandardMaterial color="#fbbf24" metalness={0.95} roughness={0.1} />
+          {/* Top Plate with High-Res Dynamic RGB Keycaps Matrix Canvas */}
+          <mesh position={[0, 0.046, -0.005]} rotation={[-Math.PI / 2, 0, 0]}>
+            <planeGeometry args={[1.08, 0.34]} />
+            <meshBasicMaterial map={canvasRefs.texKeyboard} />
           </mesh>
 
-          {/* --- KEYCAPS CLUSTERS --- */}
-          {/* 1. Function Row (F1 - F12 + Delete) */}
-          <mesh position={[-0.04, 0.058, -0.125]}>
-            <boxGeometry args={[0.88, 0.02, 0.04]} />
-            <meshStandardMaterial color="#1e293b" roughness={0.5} />
-          </mesh>
-          {/* Accent Escape Key */}
-          <mesh position={[-0.46, 0.06, -0.125]}>
-            <boxGeometry args={[0.06, 0.024, 0.045]} />
-            <meshStandardMaterial color="#ef4444" roughness={0.3} />
-          </mesh>
-          {/* Metallic Knurled Rotary Volume Knob (Top Right) */}
-          <mesh position={[0.46, 0.065, -0.125]}>
-            <cylinderGeometry args={[0.028, 0.028, 0.03, 24]} />
-            <meshStandardMaterial color="#94a3b8" metalness={0.95} roughness={0.1} />
+          {/* Laser-Engraved Solid Brass Weight Badge */}
+          <mesh position={[0, 0.002, 0.188]}>
+            <boxGeometry args={[0.38, 0.012, 0.006]} />
+            <meshStandardMaterial color="#fbbf24" metalness={0.98} roughness={0.08} />
           </mesh>
 
-          {/* 2. Number Row */}
-          <mesh position={[0, 0.058, -0.065]}>
-            <boxGeometry args={[0.98, 0.02, 0.045]} />
-            <meshStandardMaterial color="#0f172a" roughness={0.6} />
-          </mesh>
+          {/* CNC Knurled Metallic Rotary Volume Knob (Top Right) */}
+          <group position={[0.48, 0.065, -0.135]}>
+            <mesh>
+              <cylinderGeometry args={[0.028, 0.028, 0.035, 32]} />
+              <meshStandardMaterial color="#cbd5e1" metalness={0.98} roughness={0.05} />
+            </mesh>
+            {/* Knob RGB Halo Base */}
+            <mesh position={[0, -0.016, 0]}>
+              <torusGeometry args={[0.032, 0.004, 8, 24]} />
+              <meshBasicMaterial color={rgbColor} />
+            </mesh>
+          </group>
 
-          {/* 3. Alpha Key Cluster (QWERTY / ASDF) */}
-          <mesh position={[-0.08, 0.058, 0.0]}>
-            <boxGeometry args={[0.78, 0.02, 0.095]} />
-            <meshStandardMaterial color="#0b1120" roughness={0.6} />
-          </mesh>
-
-          {/* Accent Enter Key */}
-          <mesh position={[0.36, 0.058, 0.005]}>
-            <boxGeometry args={[0.09, 0.022, 0.042]} />
-            <meshStandardMaterial color={rgbColor} roughness={0.4} />
-          </mesh>
-
-          {/* 4. Bottom Row & 6.25u Spacebar */}
-          <mesh position={[-0.08, 0.058, 0.085]}>
-            <boxGeometry args={[0.42, 0.022, 0.048]} />
-            <meshStandardMaterial color="#1e293b" roughness={0.5} />
-          </mesh>
-          <mesh position={[-0.38, 0.058, 0.085]}>
-            <boxGeometry args={[0.18, 0.02, 0.045]} />
-            <meshStandardMaterial color="#0f172a" roughness={0.6} />
-          </mesh>
-
-          {/* Dedicated Arrow Keys Cluster */}
-          <mesh position={[0.40, 0.058, 0.085]}>
-            <boxGeometry args={[0.16, 0.02, 0.045]} />
-            <meshStandardMaterial color="#1e293b" roughness={0.5} />
-          </mesh>
-
-          {/* Keyboard RGB Volumetric Glow */}
+          {/* Keyboard RGB Volumetric Glow and Spillage */}
           <pointLight 
             ref={keyboardGlowRef} 
             color={rgbColor} 
-            intensity={1.2} 
-            distance={1.1} 
-            position={[0, 0.12, 0]} 
+            intensity={1.8} 
+            distance={1.4} 
+            position={[0, 0.15, 0]} 
           />
         </group>
+
 
         {/* ================= ERGONOMIC WIRELESS GAMING MOUSE ================= */}
         <group position={[0.92, 1.47, 0.35]}>
