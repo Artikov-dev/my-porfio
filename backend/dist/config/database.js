@@ -7,30 +7,53 @@ exports.connectDB = exports.db = void 0;
 const pg_1 = require("pg");
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
+let isConnected = false;
+const isProduction = process.env.NODE_ENV === 'production';
+const connectionString = process.env.DATABASE_URL;
 const pool = new pg_1.Pool({
-    connectionString: process.env.DATABASE_URL,
-    ssl: { rejectUnauthorized: false }, // Render requires SSL even in dev from local
-    connectionTimeoutMillis: 5000, // 5s connection timeout to avoid hanging requests
+    connectionString,
+    ssl: connectionString?.includes('localhost') ? false : { rejectUnauthorized: false },
+    connectionTimeoutMillis: 4000,
     idleTimeoutMillis: 10000,
+    max: 10,
 });
 pool.on('error', (err) => {
-    console.error('Unexpected error on idle client:', err.message);
+    isConnected = false;
+    // Log once without crashing the process
 });
 exports.db = {
-    query: (text, params) => pool.query(text, params),
+    get isConnected() {
+        return isConnected;
+    },
+    query: async (text, params) => {
+        try {
+            const res = await pool.query(text, params);
+            isConnected = true;
+            return res;
+        }
+        catch (err) {
+            isConnected = false;
+            throw err;
+        }
+    },
     getClient: () => pool.connect(),
 };
-// Test connection
+// Test connection without throwing uncaught errors
 const connectDB = async () => {
+    if (!connectionString) {
+        console.warn('⚠️ DATABASE_URL is not set. Running in fallback memory mode.');
+        return;
+    }
     try {
         const client = await pool.connect();
+        isConnected = true;
         console.log('📦 Successfully connected to PostgreSQL database');
         client.release();
     }
     catch (error) {
-        console.error('❌ Failed to connect to PostgreSQL database:', error);
-        console.warn('⚠️ Server will continue without database connection. Some features may not work.');
-        console.warn('⚠️ Check if your Render PostgreSQL database is still active (free tier expires after 90 days).');
+        isConnected = false;
+        console.error('❌ Failed to connect to PostgreSQL database:', error?.message || error);
+        console.warn('⚠️ Server will continue in fallback mode. Note: Render Free PostgreSQL expires after 30-90 days.');
     }
 };
 exports.connectDB = connectDB;

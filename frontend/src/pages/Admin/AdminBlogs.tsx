@@ -36,18 +36,13 @@ export const AdminBlogs = () => {
 
   const fetchBlogs = async () => {
     try {
-      const timeoutPromise = new Promise((_, reject) =>
-        setTimeout(() => reject(new Error('Fetch timeout')), 2000)
-      );
-      const apiPromise = api.get('/blogs');
-      const res: any = await Promise.race([apiPromise, timeoutPromise]);
+      const res = await api.get('/blogs', { timeout: 6000 });
       if (res?.data?.data && Array.isArray(res.data.data) && res.data.data.length > 0) {
         setBlogs(res.data.data);
       } else {
         setBlogs(DEFAULT_BLOGS as any);
       }
     } catch (err) {
-      console.warn('Backend unavailable, using default blogs in admin:', err);
       setBlogs(DEFAULT_BLOGS as any);
     } finally {
       setLoading(false);

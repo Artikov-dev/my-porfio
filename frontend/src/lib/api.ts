@@ -3,7 +3,7 @@ import axios from 'axios';
 export const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api',
   withCredentials: true,
-  timeout: 10000, // 10s timeout for fast responsiveness
+  timeout: 30000, // 30s timeout to allow sleeping Render instances to cold-start
 });
 
 api.interceptors.response.use(
@@ -20,7 +20,6 @@ api.interceptors.response.use(
         await api.post('/auth/refresh'); // Silent token refresh
         return api(originalRequest);
       } catch (err) {
-        // If token refresh fails on an active admin page, check if offline
         return Promise.reject(err);
       }
     }

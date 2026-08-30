@@ -15,17 +15,12 @@ export const Blogs = () => {
     queryKey: ['blogs'],
     queryFn: async () => {
       try {
-        const timeoutPromise = new Promise((_, reject) =>
-          setTimeout(() => reject(new Error('Fetch timeout')), 2500)
-        );
-        const apiPromise = api.get('/blogs');
-        const res: any = await Promise.race([apiPromise, timeoutPromise]);
+        const res = await api.get('/blogs', { timeout: 6000 });
         if (res?.data?.data && Array.isArray(res.data.data) && res.data.data.length > 0) {
           return res.data.data;
         }
         return DEFAULT_BLOGS;
       } catch (err) {
-        console.warn('API error or timeout fetching blogs, using fallback:', err);
         return DEFAULT_BLOGS;
       }
     },

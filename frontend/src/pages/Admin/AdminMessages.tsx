@@ -34,17 +34,12 @@ export const AdminMessages = () => {
   useEffect(() => {
     const fetchMessages = async () => {
       try {
-        const timeoutPromise = new Promise((_, reject) =>
-          setTimeout(() => reject(new Error('Fetch timeout')), 2000)
-        );
-        const apiPromise = api.get('/contact/messages');
-        const res: any = await Promise.race([apiPromise, timeoutPromise]);
+        const res = await api.get('/contact/messages', { timeout: 6000 });
         if (res?.data?.data) {
           setContacts(res.data.data.contacts || []);
           setChats(res.data.data.chats || []);
         }
       } catch (err) {
-        console.warn('Backend unavailable, using empty messages state:', err);
         setContacts([]);
         setChats([]);
       } finally {

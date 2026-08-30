@@ -14,19 +14,15 @@ export const ProtectedRoute = () => {
       const hasLocalAdmin = localStorage.getItem('isAdmin') === 'true';
 
       try {
-        const timeoutPromise = new Promise((_, reject) =>
-          setTimeout(() => reject(new Error('Auth check timeout')), 3000)
-        );
-        const authPromise = api.get('/auth/me');
-        await Promise.race([authPromise, timeoutPromise]);
+        await api.get('/auth/me', { timeout: 5000 });
         
         if (isMounted) {
           setIsAuthenticated(true);
           localStorage.setItem('isAdmin', 'true');
         }
       } catch (err: any) {
-        // If server returns explicit 403 Forbidden, revoke access
-        if (err?.response?.status === 403) {
+        // If server returns explicit 403 or 401, revoke access
+        if (err?.response?.status === 403 || err?.response?.status === 401) {
           if (isMounted) {
             setIsAuthenticated(false);
             localStorage.removeItem('isAdmin');

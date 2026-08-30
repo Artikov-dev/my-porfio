@@ -89,12 +89,12 @@ export const LiveGlobe = () => {
   useEffect(() => {
     const fetchLocations = async () => {
       try {
-        const res = await api.get('/analytics/locations');
-        if (res.data?.success) {
+        const res = await api.get('/analytics/locations', { timeout: 6000 });
+        if (res.data?.success && Array.isArray(res.data.data) && res.data.data.length > 0) {
           setLocations(res.data.data);
         }
       } catch (err) {
-        console.error('Failed to fetch globe locations:', err);
+        // Use default globe locations
       }
     };
     fetchLocations();

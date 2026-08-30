@@ -11,36 +11,28 @@ export const AdminSystem = () => {
     queryKey: ['system-health'],
     queryFn: async () => {
       try {
-        const timeoutPromise = new Promise((_, reject) =>
-          setTimeout(() => reject(new Error('Fetch timeout')), 2000)
-        );
-        const apiPromise = api.get('/system/health');
-        const res: any = await Promise.race([apiPromise, timeoutPromise]);
+        const res = await api.get('/system/health', { timeout: 6000 });
         if (res?.data?.data) return res.data.data;
         return { status: 'OK', uptime: '99.9%', memoryUsage: { heapUsed: '45MB', heapTotal: '128MB' }, cpuLoad: '1.2%' };
       } catch (err) {
         return { status: 'OK', uptime: '99.9%', memoryUsage: { heapUsed: '45MB', heapTotal: '128MB' }, cpuLoad: '1.2%' };
       }
     },
-    refetchInterval: 10000,
+    refetchInterval: 15000,
   });
 
   const { data: logsData, isLoading: logsLoading, refetch: refetchLogs, isFetching: logsFetching } = useQuery({
     queryKey: ['system-logs', logType],
     queryFn: async () => {
       try {
-        const timeoutPromise = new Promise((_, reject) =>
-          setTimeout(() => reject(new Error('Fetch timeout')), 2000)
-        );
-        const apiPromise = api.get(`/system/logs?type=${logType}`);
-        const res: any = await Promise.race([apiPromise, timeoutPromise]);
+        const res = await api.get(`/system/logs?type=${logType}`, { timeout: 6000 });
         if (res?.data?.data?.logs) return res.data.data.logs as string[];
         return ['System online. Listening for events...'];
       } catch (err) {
         return ['System online. Remote backend logs unavailable.'];
       }
     },
-    refetchInterval: 15000,
+    refetchInterval: 20000,
   });
 
   // Auto-scroll logs to bottom

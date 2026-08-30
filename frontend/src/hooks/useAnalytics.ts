@@ -11,9 +11,9 @@ export const useAnalytics = () => {
 
     const recordVisit = async () => {
       try {
-        await api.post('/analytics/visit', { path: location.pathname });
+        await api.post('/analytics/visit', { path: location.pathname }, { timeout: 4000 });
       } catch (error) {
-        // Silently fail if backend is offline or analytics unavailable
+        // Silently fail if backend is offline or waking up
       }
     };
 

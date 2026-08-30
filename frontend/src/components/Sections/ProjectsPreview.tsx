@@ -17,17 +17,12 @@ export const ProjectsPreviewSection = () => {
     queryKey: ['projects'],
     queryFn: async () => {
       try {
-        const timeoutPromise = new Promise((_, reject) =>
-          setTimeout(() => reject(new Error('Fetch timeout')), 2500)
-        );
-        const apiPromise = api.get('/projects');
-        const res: any = await Promise.race([apiPromise, timeoutPromise]);
+        const res = await api.get('/projects', { timeout: 6000 });
         if (res?.data?.data && Array.isArray(res.data.data) && res.data.data.length > 0) {
           return res.data.data;
         }
         return DEFAULT_PROJECTS;
       } catch (err) {
-        console.warn('API error or timeout fetching projects, using fallback:', err);
         return DEFAULT_PROJECTS;
       }
     },

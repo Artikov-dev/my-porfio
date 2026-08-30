@@ -21,16 +21,20 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
     const socketInstance = io(socketUrl, {
       withCredentials: true,
-      transports: ['websocket', 'polling'],
+      transports: ['polling', 'websocket'], // Polling first prevents immediate WebSocket failure errors during cold-starts
       reconnection: true,
-      reconnectionAttempts: 20,
-      reconnectionDelay: 3000,
-      reconnectionDelayMax: 15000,
-      timeout: 45000,
+      reconnectionAttempts: 10,
+      reconnectionDelay: 4000,
+      reconnectionDelayMax: 20000,
+      timeout: 20000,
     });
 
     socketInstance.on('connect', () => {
-      console.log('Connected to WebSocket (Singleton)');
+      // Connected successfully
+    });
+
+    socketInstance.on('connect_error', () => {
+      // Quietly handle connection errors during server sleeping/wake-up
     });
 
     socketInstance.on('active_users_update', (users: number) => {
@@ -38,7 +42,7 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     });
 
     socketInstance.on('new_contact_message', (data: any) => {
-      console.log('New contact message received:', data);
+      // New contact message
     });
 
     setSocket(socketInstance);

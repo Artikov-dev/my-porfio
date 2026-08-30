@@ -46,18 +46,13 @@ export const AdminProjects = () => {
 
   const fetchProjects = async () => {
     try {
-      const timeoutPromise = new Promise((_, reject) =>
-        setTimeout(() => reject(new Error('Fetch timeout')), 2000)
-      );
-      const apiPromise = api.get('/projects');
-      const res: any = await Promise.race([apiPromise, timeoutPromise]);
+      const res = await api.get('/projects', { timeout: 6000 });
       if (res?.data?.data && Array.isArray(res.data.data) && res.data.data.length > 0) {
         setProjects(res.data.data);
       } else {
         setProjects(DEFAULT_PROJECTS as any);
       }
     } catch (err) {
-      console.warn('Backend unavailable, using default projects in admin:', err);
       setProjects(DEFAULT_PROJECTS as any);
     } finally {
       setLoading(false);

@@ -73,13 +73,19 @@ exports.ProjectService = {
         }
     },
     async getProjectById(id) {
-        const result = await database_1.db.query('SELECT * FROM projects WHERE id = $1', [id]);
-        if (result.rows.length === 0) {
-            throw new error_middleware_1.CustomError('Project not found', 404);
+        try {
+            const result = await database_1.db.query('SELECT * FROM projects WHERE id = $1', [id]);
+            if (result.rows.length > 0) {
+                // Increment views asynchronously
+                database_1.db.query('UPDATE projects SET views = COALESCE(views, 0) + 1 WHERE id = $1', [id]).catch(() => { });
+                return result.rows[0];
+            }
         }
-        // Increment views
-        await database_1.db.query('UPDATE projects SET views = COALESCE(views, 0) + 1 WHERE id = $1', [id]);
-        return result.rows[0];
+        catch (e) { }
+        const fallback = DEFAULT_BACKEND_PROJECTS.find((p) => p.id === id);
+        if (fallback)
+            return fallback;
+        throw new error_middleware_1.CustomError('Project not found', 404);
     },
     async createProject(data) {
         const query = `
