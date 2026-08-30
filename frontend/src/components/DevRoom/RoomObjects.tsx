@@ -5,8 +5,9 @@ import { Text } from '@react-three/drei';
 
 interface RoomObjectsProps {
   rgbColor: string;
-  lightingMood: 'neon' | 'night' | 'sunset';
+  lightingMood: 'neon' | 'night' | 'sunset' | 'matrix';
   monitorMode: number;
+  hologramIndex: number;
   onCoffeeClick: () => void;
   onPcClick: () => void;
   onMonitorClick: () => void;
@@ -14,12 +15,14 @@ interface RoomObjectsProps {
   onKeyboardClick: () => void;
   onChairClick: () => void;
   onPhoneClick: () => void;
+  onHologramClick: () => void;
 }
 
 export const RoomObjects: React.FC<RoomObjectsProps> = ({
   rgbColor,
   lightingMood,
   monitorMode,
+  hologramIndex,
   onCoffeeClick,
   onPcClick,
   onMonitorClick,
@@ -27,6 +30,7 @@ export const RoomObjects: React.FC<RoomObjectsProps> = ({
   onKeyboardClick,
   onChairClick,
   onPhoneClick,
+  onHologramClick,
 }) => {
   const fanRef1 = useRef<THREE.Group>(null);
   const fanRef2 = useRef<THREE.Group>(null);
@@ -37,6 +41,11 @@ export const RoomObjects: React.FC<RoomObjectsProps> = ({
   const keyboardGlowRef = useRef<THREE.PointLight>(null);
   const gpuGlowRef = useRef<THREE.PointLight>(null);
   const phoneGlowRef = useRef<THREE.PointLight>(null);
+  const hologramGroupRef = useRef<THREE.Group>(null);
+  const holoOrbit1Ref = useRef<THREE.Group>(null);
+  const holoOrbit2Ref = useRef<THREE.Group>(null);
+  const holoOrbit3Ref = useRef<THREE.Group>(null);
+  const laserGridRef = useRef<THREE.Group>(null);
 
   const [neonActive, setNeonActive] = useState<boolean>(true);
   const [chairTargetRot, setChairTargetRot] = useState<number>(-0.25);
@@ -171,7 +180,21 @@ export const RoomObjects: React.FC<RoomObjectsProps> = ({
       );
     }
 
-    // 6. Steaming coffee particles
+    // 6. Hologram Rotation & Orbits
+    if (hologramGroupRef.current) {
+      hologramGroupRef.current.rotation.y += delta * 1.5;
+      hologramGroupRef.current.position.y = 1.85 + Math.sin(time * 2.5) * 0.04;
+    }
+    if (holoOrbit1Ref.current) holoOrbit1Ref.current.rotation.z += delta * 3.0;
+    if (holoOrbit2Ref.current) holoOrbit2Ref.current.rotation.x += delta * 2.5;
+    if (holoOrbit3Ref.current) holoOrbit3Ref.current.rotation.y += delta * 2.8;
+
+    // 7. Matrix Laser Grid Wave
+    if (laserGridRef.current && lightingMood === 'matrix') {
+      laserGridRef.current.position.y = Math.sin(time * 2) * 0.2;
+    }
+
+    // 8. Steaming coffee particles
     if (steamRef.current) {
       const positions = steamRef.current.geometry.attributes.position.array as Float32Array;
       for (let i = 0; i < positions.length / 3; i++) {
@@ -185,13 +208,12 @@ export const RoomObjects: React.FC<RoomObjectsProps> = ({
       steamRef.current.geometry.attributes.position.needsUpdate = true;
     }
 
-    // 7. Dynamic Canvas Rendering
+    // 9. Dynamic Canvas Rendering
     const { ctx1, c1, tex1, ctx2, c2, tex2, ctx3, c3, tex3, ctx4, c4, tex4, ctxPhone, cPhone, texPhone } = canvasRefs;
 
     // Screen 1 (VS Code)
     ctx1.fillStyle = '#0a0f1d';
     ctx1.fillRect(0, 0, c1.width, c1.height);
-    // Editor top bar
     ctx1.fillStyle = '#1e293b';
     ctx1.fillRect(0, 0, c1.width, 28);
     ctx1.fillStyle = '#ef4444'; ctx1.beginPath(); ctx1.arc(15, 14, 5, 0, Math.PI * 2); ctx1.fill();
@@ -210,14 +232,14 @@ export const RoomObjects: React.FC<RoomObjectsProps> = ({
     // Blinking cursor
     if (Math.floor(time * 3) % 2 === 0 && activeLinesCount < codeLines.length) {
       ctx1.fillStyle = rgbColor;
-      ctx1.fillRect(45 + codeLines[activeLinesCount]?.t?.length * 7.8 || 45, 42 + activeLinesCount * 24, 8, 16);
+      ctx1.fillRect(45 + (codeLines[activeLinesCount]?.t?.length || 0) * 7.8, 42 + activeLinesCount * 24, 8, 16);
     }
     tex1.needsUpdate = true;
 
     // Screen 2 (Matrix Rain)
     ctx2.fillStyle = 'rgba(5, 12, 8, 0.2)';
     ctx2.fillRect(0, 0, c2.width, c2.height);
-    ctx2.fillStyle = rgbColor || '#22c55e';
+    ctx2.fillStyle = (lightingMood === 'matrix') ? '#22c55e' : (rgbColor || '#22c55e');
     ctx2.font = '14px monospace';
     const chars = '01ABCDEFRA2026$#%&*<>{}[]=+/';
     for (let i = 0; i < matrixColumns.length; i++) {
@@ -289,7 +311,6 @@ export const RoomObjects: React.FC<RoomObjectsProps> = ({
     ctxPhone.fillStyle = '#030712';
     ctxPhone.fillRect(0, 0, cPhone.width, cPhone.height);
 
-    // Status bar
     const now = new Date();
     const timeStr = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
     ctxPhone.fillStyle = '#94a3b8';
@@ -297,7 +318,6 @@ export const RoomObjects: React.FC<RoomObjectsProps> = ({
     ctxPhone.fillText(timeStr, 20, 32);
     ctxPhone.fillText('98% ⚡', 185, 32);
 
-    // Dynamic notification card
     const notifs = [
       { app: '💬 Telegram', title: 'New Client Inquiry', body: 'Let\'s collaborate on a high-scale project 🚀', color: '#38bdf8' },
       { app: '⭐️ GitHub', title: 'Repo Starred', body: '@artikov-dev/wedding-platform got a ⭐️', color: '#22c55e' },
@@ -307,7 +327,6 @@ export const RoomObjects: React.FC<RoomObjectsProps> = ({
     const currentNotifIndex = Math.floor((time / 4) % notifs.length);
     const n = notifs[currentNotifIndex];
 
-    // Notification box
     ctxPhone.fillStyle = 'rgba(30, 41, 59, 0.85)';
     ctxPhone.beginPath();
     ctxPhone.roundRect(14, 60, 228, 120, 18);
@@ -328,7 +347,6 @@ export const RoomObjects: React.FC<RoomObjectsProps> = ({
     ctxPhone.font = '12px sans-serif';
     ctxPhone.fillText(n.body, 28, 142);
 
-    // Phone wallpaper art
     ctxPhone.fillStyle = '#0f172a';
     ctxPhone.beginPath();
     ctxPhone.roundRect(14, 200, 228, 280, 20);
@@ -374,7 +392,7 @@ export const RoomObjects: React.FC<RoomObjectsProps> = ({
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]} receiveShadow>
         <planeGeometry args={[14, 14]} />
         <meshStandardMaterial 
-          color={lightingMood === 'sunset' ? '#1c1917' : '#070b14'} 
+          color={lightingMood === 'sunset' ? '#1c1917' : (lightingMood === 'matrix' ? '#040b06' : '#070b14')} 
           roughness={0.65} 
           metalness={0.25} 
         />
@@ -384,7 +402,7 @@ export const RoomObjects: React.FC<RoomObjectsProps> = ({
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.008, 0.2]} receiveShadow>
         <planeGeometry args={[5.4, 4.0]} />
         <meshStandardMaterial 
-          color={lightingMood === 'sunset' ? '#26201c' : '#0f172a'} 
+          color={lightingMood === 'sunset' ? '#26201c' : (lightingMood === 'matrix' ? '#07160d' : '#0f172a')} 
           roughness={0.9} 
           metalness={0.05}
         />
@@ -399,14 +417,13 @@ export const RoomObjects: React.FC<RoomObjectsProps> = ({
       <mesh position={[0, 3.2, -4]} receiveShadow>
         <planeGeometry args={[14, 7.5]} />
         <meshStandardMaterial 
-          color={lightingMood === 'sunset' ? '#1e1b18' : '#0b0f1c'} 
+          color={lightingMood === 'sunset' ? '#1e1b18' : (lightingMood === 'matrix' ? '#050f09' : '#0b0f1c')} 
           roughness={0.9} 
         />
       </mesh>
 
       {/* Left Wall with Window Cutout Frame */}
       <group position={[-5.4, 3.2, 0]} rotation={[0, Math.PI / 2, 0]}>
-        {/* Wall panels around window */}
         <mesh position={[-3.8, 0, 0]} receiveShadow>
           <boxGeometry args={[2.5, 7.5, 0.1]} />
           <meshStandardMaterial color={lightingMood === 'sunset' ? '#1a1614' : '#090d18'} roughness={0.9} />
@@ -459,27 +476,47 @@ export const RoomObjects: React.FC<RoomObjectsProps> = ({
           <group key={i} position={[b.x, b.y, b.z]}>
             <mesh>
               <boxGeometry args={[b.w, b.h, b.d]} />
-              <meshStandardMaterial color={b.color} roughness={0.8} metalness={0.5} />
+              <meshStandardMaterial 
+                color={lightingMood === 'matrix' ? '#041a0b' : b.color} 
+                roughness={0.8} 
+                metalness={0.5} 
+              />
             </mesh>
             {/* Illuminated Windows Matrix on Building */}
             <mesh position={[0.48, 0, 0]}>
               <planeGeometry args={[b.w * 0.9, b.h * 0.85]} />
-              <meshBasicMaterial color={b.lightColor} transparent opacity={0.35} />
+              <meshBasicMaterial 
+                color={lightingMood === 'matrix' ? '#22c55e' : (lightingMood === 'sunset' ? '#f59e0b' : b.lightColor)} 
+                transparent 
+                opacity={0.4} 
+              />
             </mesh>
             {/* Skyscraper Beacon Light */}
             <mesh position={[0, b.h / 2 + 0.1, 0]}>
               <sphereGeometry args={[0.08, 8, 8]} />
-              <meshBasicMaterial color="#ef4444" />
+              <meshBasicMaterial color={lightingMood === 'matrix' ? '#22c55e' : '#ef4444'} />
             </mesh>
           </group>
         ))}
 
-        {/* Distant City Glow */}
+        {/* Laser Grid Lines in Sky for Matrix Mode */}
+        {lightingMood === 'matrix' && (
+          <group ref={laserGridRef} position={[-8.0, 4.5, 0]}>
+            {[-2, 0, 2, 4].map((z, idx) => (
+              <mesh key={idx} position={[0, 0, z]} rotation={[0, 0, Math.PI / 2]}>
+                <cylinderGeometry args={[0.015, 0.015, 8, 8]} />
+                <meshBasicMaterial color="#22c55e" transparent opacity={0.6} />
+              </mesh>
+            ))}
+          </group>
+        )}
+
+        {/* Distant City Sky Glow */}
         <pointLight 
           position={[-8.5, 4.0, 0]} 
-          color={lightingMood === 'sunset' ? '#f59e0b' : '#38bdf8'} 
-          intensity={2.8} 
-          distance={12} 
+          color={lightingMood === 'sunset' ? '#f59e0b' : (lightingMood === 'matrix' ? '#22c55e' : '#38bdf8')} 
+          intensity={3.2} 
+          distance={14} 
         />
       </group>
 
@@ -503,7 +540,6 @@ export const RoomObjects: React.FC<RoomObjectsProps> = ({
           onNeonClick();
         }}
       >
-        {/* Glow backing frame */}
         <mesh position={[0, 0, -0.02]}>
           <boxGeometry args={[4.2, 0.8, 0.05]} />
           <meshStandardMaterial color="#020617" roughness={0.9} metalness={0.8} />
@@ -526,12 +562,10 @@ export const RoomObjects: React.FC<RoomObjectsProps> = ({
 
       {/* ================= FRAMED TECH CERTIFICATE ON WALL ================= */}
       <group position={[2.8, 3.4, -3.92]}>
-        {/* Frame Border */}
         <mesh castShadow>
           <boxGeometry args={[1.5, 1.1, 0.04]} />
           <meshStandardMaterial color="#0f172a" metalness={0.8} roughness={0.3} />
         </mesh>
-        {/* Certificate Paper */}
         <mesh position={[0, 0, 0.022]}>
           <planeGeometry args={[1.38, 0.98]} />
           <meshStandardMaterial color="#f8fafc" roughness={0.3} />
@@ -563,7 +597,6 @@ export const RoomObjects: React.FC<RoomObjectsProps> = ({
         >
           Cloud Systems & AI Architecture • 2026
         </Text>
-        {/* Gold Seal Badge */}
         <mesh position={[0.42, -0.28, 0.026]}>
           <cylinderGeometry args={[0.12, 0.12, 0.01, 24]} />
           <meshStandardMaterial color="#eab308" metalness={0.8} roughness={0.2} />
@@ -572,13 +605,11 @@ export const RoomObjects: React.FC<RoomObjectsProps> = ({
 
       {/* ================= FLOATING WALL SHELF ================= */}
       <group position={[-2.8, 3.2, -3.8]}>
-        {/* Shelf board */}
         <mesh castShadow receiveShadow>
           <boxGeometry args={[2.5, 0.08, 0.45]} />
           <meshStandardMaterial color="#334155" roughness={0.4} metalness={0.7} />
         </mesh>
         
-        {/* Engineering Books on shelf */}
         <group position={[-0.8, 0.35, 0]}>
           <mesh castShadow position={[0, 0, 0]} rotation={[0, 0, 0.05]}>
             <boxGeometry args={[0.12, 0.62, 0.32]} />
@@ -594,7 +625,6 @@ export const RoomObjects: React.FC<RoomObjectsProps> = ({
           </mesh>
         </group>
 
-        {/* Minimalist Geometric Succulent Pot */}
         <group position={[0.7, 0.25, 0]}>
           <mesh castShadow>
             <cylinderGeometry args={[0.16, 0.12, 0.22, 16]} />
@@ -609,7 +639,7 @@ export const RoomObjects: React.FC<RoomObjectsProps> = ({
 
       {/* ================= DEVELOPER WORKSPACE DESK ================= */}
       <group position={[0, 0, -1.2]}>
-        {/* Desk Top */}
+        {/* Desk Top Board */}
         <mesh position={[0, 1.4, 0]} castShadow receiveShadow>
           <boxGeometry args={[4.6, 0.1, 2.1]} />
           <meshStandardMaterial 
@@ -619,16 +649,40 @@ export const RoomObjects: React.FC<RoomObjectsProps> = ({
           />
         </mesh>
 
-        {/* Desk Ambilight Wall-Wash LED Strip (Behind Desk) */}
-        <mesh position={[0, 1.42, -1.02]}>
-          <boxGeometry args={[4.2, 0.02, 0.04]} />
+        {/* ================= 360° DYNAMIC RGB PERIMETER EDGE GLOW ================= */}
+        {/* Front Edge Light Strip */}
+        <mesh position={[0, 1.395, 1.055]}>
+          <boxGeometry args={[4.62, 0.02, 0.02]} />
           <meshBasicMaterial color={rgbColor} />
         </mesh>
+        {/* Back Edge Light Strip */}
+        <mesh position={[0, 1.395, -1.055]}>
+          <boxGeometry args={[4.62, 0.02, 0.02]} />
+          <meshBasicMaterial color={rgbColor} />
+        </mesh>
+        {/* Left Edge Light Strip */}
+        <mesh position={[-2.305, 1.395, 0]}>
+          <boxGeometry args={[0.02, 0.02, 2.12]} />
+          <meshBasicMaterial color={rgbColor} />
+        </mesh>
+        {/* Right Edge Light Strip */}
+        <mesh position={[2.305, 1.395, 0]}>
+          <boxGeometry args={[0.02, 0.02, 2.12]} />
+          <meshBasicMaterial color={rgbColor} />
+        </mesh>
+
+        {/* 360° Underglow Desk Lights */}
         <pointLight 
-          position={[0, 1.6, -1.2]} 
+          position={[0, 1.25, 0]} 
           color={rgbColor} 
-          intensity={2.2} 
-          distance={3.5} 
+          intensity={3.5} 
+          distance={3.8} 
+        />
+        <pointLight 
+          position={[0, 1.5, -1.1]} 
+          color={rgbColor} 
+          intensity={2.8} 
+          distance={3.2} 
         />
 
         {/* Premium Desk Mat (Felt/Leather) */}
@@ -650,13 +704,116 @@ export const RoomObjects: React.FC<RoomObjectsProps> = ({
           </mesh>
         ))}
 
+        {/* ================= 🛸 3D FLOATING TECH HOLOGRAM PROJECTOR ================= */}
+        <group 
+          position={[-0.6, 1.46, -0.2]} 
+          onClick={onHologramClick}
+        >
+          {/* Circular Hologram Base Projector */}
+          <mesh castShadow position={[0, 0.015, 0]}>
+            <cylinderGeometry args={[0.22, 0.26, 0.035, 32]} />
+            <meshStandardMaterial color="#0f172a" metalness={0.9} roughness={0.2} />
+          </mesh>
+          {/* Emitter Lens */}
+          <mesh position={[0, 0.036, 0]}>
+            <cylinderGeometry args={[0.16, 0.16, 0.01, 32]} />
+            <meshBasicMaterial color={rgbColor} />
+          </mesh>
+          {/* Laser Projector Light Cone */}
+          <mesh position={[0, 0.28, 0]}>
+            <coneGeometry args={[0.32, 0.5, 32, 1, true]} />
+            <meshBasicMaterial 
+              color={rgbColor} 
+              transparent 
+              opacity={0.18} 
+              side={THREE.DoubleSide} 
+              blending={THREE.AdditiveBlending} 
+            />
+          </mesh>
+
+          {/* Floating Rotating 3D Holographic Geometry */}
+          <group ref={hologramGroupRef} position={[0, 0.55, 0]}>
+            {/* Hologram Mode 0: React Atom */}
+            {hologramIndex % 4 === 0 && (
+              <group>
+                <mesh>
+                  <sphereGeometry args={[0.08, 16, 16]} />
+                  <meshBasicMaterial color="#38bdf8" wireframe />
+                </mesh>
+                <group ref={holoOrbit1Ref}>
+                  <mesh rotation={[Math.PI / 3, 0, 0]}>
+                    <torusGeometry args={[0.22, 0.012, 12, 36]} />
+                    <meshBasicMaterial color="#38bdf8" />
+                  </mesh>
+                </group>
+                <group ref={holoOrbit2Ref}>
+                  <mesh rotation={[-Math.PI / 3, 0, 0]}>
+                    <torusGeometry args={[0.22, 0.012, 12, 36]} />
+                    <meshBasicMaterial color="#38bdf8" />
+                  </mesh>
+                </group>
+                <group ref={holoOrbit3Ref}>
+                  <mesh rotation={[0, 0, Math.PI / 2]}>
+                    <torusGeometry args={[0.22, 0.012, 12, 36]} />
+                    <meshBasicMaterial color="#38bdf8" />
+                  </mesh>
+                </group>
+              </group>
+            )}
+
+            {/* Hologram Mode 1: TypeScript Hypercube */}
+            {hologramIndex % 4 === 1 && (
+              <group>
+                <mesh>
+                  <boxGeometry args={[0.28, 0.28, 0.28]} />
+                  <meshBasicMaterial color="#3b82f6" wireframe />
+                </mesh>
+                <mesh>
+                  <sphereGeometry args={[0.07, 16, 16]} />
+                  <meshBasicMaterial color="#60a5fa" />
+                </mesh>
+              </group>
+            )}
+
+            {/* Hologram Mode 2: Node.js Hexagon Prism */}
+            {hologramIndex % 4 === 2 && (
+              <group>
+                <mesh rotation={[Math.PI / 2, 0, 0]}>
+                  <cylinderGeometry args={[0.22, 0.22, 0.15, 6]} />
+                  <meshBasicMaterial color="#22c55e" wireframe />
+                </mesh>
+                <mesh>
+                  <octahedronGeometry args={[0.09, 0]} />
+                  <meshBasicMaterial color="#4ade80" />
+                </mesh>
+              </group>
+            )}
+
+            {/* Hologram Mode 3: AI Neural Network Cluster */}
+            {hologramIndex % 4 === 3 && (
+              <group>
+                <mesh>
+                  <icosahedronGeometry args={[0.22, 1]} />
+                  <meshBasicMaterial color="#ec4899" wireframe />
+                </mesh>
+                <mesh>
+                  <dodecahedronGeometry args={[0.1, 0]} />
+                  <meshBasicMaterial color="#f472b6" />
+                </mesh>
+              </group>
+            )}
+
+            {/* Hologram Light Glow */}
+            <pointLight color={rgbColor} intensity={2.2} distance={1.8} />
+          </group>
+        </group>
+
         {/* ================= DUAL MONITORS & SCREENBAR ================= */}
         {/* Main Ultra-wide Curved Monitor */}
         <group 
           position={[0, 2.35, -0.4]} 
           onClick={onMonitorClick}
         >
-          {/* Monitor Stand Base & Arm */}
           <mesh position={[0, -0.88, 0]} castShadow>
             <cylinderGeometry args={[0.32, 0.38, 0.03, 32]} />
             <meshStandardMaterial color="#1e293b" metalness={0.9} roughness={0.25} />
@@ -666,13 +823,11 @@ export const RoomObjects: React.FC<RoomObjectsProps> = ({
             <meshStandardMaterial color="#1e293b" metalness={0.9} roughness={0.25} />
           </mesh>
 
-          {/* Ultra-wide Curved Frame */}
           <mesh castShadow>
             <boxGeometry args={[2.6, 1.3, 0.08]} />
             <meshStandardMaterial color="#0b0f19" metalness={0.85} roughness={0.25} />
           </mesh>
 
-          {/* Active Live Animated Screen Display */}
           <mesh position={[0, 0, 0.045]}>
             <planeGeometry args={[2.5, 1.2]} />
             <meshBasicMaterial map={activeMonitorTexture} />
@@ -684,7 +839,6 @@ export const RoomObjects: React.FC<RoomObjectsProps> = ({
               <boxGeometry args={[1.2, 0.04, 0.06]} />
               <meshStandardMaterial color="#334155" metalness={0.9} roughness={0.2} />
             </mesh>
-            {/* Lightbar Downward Spotlight */}
             <spotLight
               position={[0, 0, 0]}
               target-position={[0, -1.0, 0.6]}
@@ -696,13 +850,11 @@ export const RoomObjects: React.FC<RoomObjectsProps> = ({
             />
           </group>
 
-          {/* Screen Ambient Glow */}
           <pointLight color={rgbColor} intensity={1.2} distance={3.0} position={[0, 0, 0.6]} />
         </group>
 
         {/* Side Vertical Secondary Monitor */}
         <group position={[-1.85, 2.35, -0.18]} rotation={[0, 0.38, 0]}>
-          {/* Stand */}
           <mesh position={[0, -0.88, 0]} castShadow>
             <cylinderGeometry args={[0.22, 0.26, 0.03, 24]} />
             <meshStandardMaterial color="#1e293b" metalness={0.8} />
@@ -711,12 +863,10 @@ export const RoomObjects: React.FC<RoomObjectsProps> = ({
             <boxGeometry args={[0.06, 0.85, 0.06]} />
             <meshStandardMaterial color="#1e293b" metalness={0.8} />
           </mesh>
-          {/* Vertical Frame */}
           <mesh castShadow>
             <boxGeometry args={[0.92, 1.55, 0.06]} />
             <meshStandardMaterial color="#0b0f19" metalness={0.85} />
           </mesh>
-          {/* Vertical Screen */}
           <mesh position={[0, 0, 0.035]}>
             <planeGeometry args={[0.84, 1.47]} />
             <meshBasicMaterial map={canvasRefs.tex2} />
@@ -724,22 +874,18 @@ export const RoomObjects: React.FC<RoomObjectsProps> = ({
         </group>
 
         {/* ================= MECHANICAL KEYBOARD & MOUSE ================= */}
-        {/* Custom 75% Mechanical Keyboard */}
         <group 
           position={[0, 1.48, 0.35]} 
           onClick={handleKeyboardInteraction}
         >
-          {/* CNC Anodized Aluminum Keyboard Case */}
           <mesh castShadow>
             <boxGeometry args={[1.15, 0.04, 0.38]} />
             <meshStandardMaterial color="#1e293b" roughness={0.3} metalness={0.7} />
           </mesh>
-          {/* Custom Gradient Keycaps Cluster */}
           <mesh position={[0, 0.028, 0]}>
             <boxGeometry args={[1.06, 0.022, 0.32]} />
             <meshStandardMaterial color="#0f172a" roughness={0.8} />
           </mesh>
-          {/* RGB Dynamic Underglow */}
           <pointLight 
             ref={keyboardGlowRef} 
             color={rgbColor} 
@@ -749,7 +895,6 @@ export const RoomObjects: React.FC<RoomObjectsProps> = ({
           />
         </group>
 
-        {/* Ergonomic Wireless Mouse & Charging Dock */}
         <group position={[0.95, 1.48, 0.35]}>
           <mesh castShadow>
             <boxGeometry args={[0.17, 0.05, 0.28]} />
@@ -763,17 +908,14 @@ export const RoomObjects: React.FC<RoomObjectsProps> = ({
           rotation={[-Math.PI / 2, 0, 0.18]}
           onClick={onPhoneClick}
         >
-          {/* Phone Aluminum Chassis */}
           <mesh castShadow>
             <boxGeometry args={[0.22, 0.42, 0.018]} />
             <meshStandardMaterial color="#111827" metalness={0.9} roughness={0.2} />
           </mesh>
-          {/* OLED Active Screen */}
           <mesh position={[0, 0, 0.01]}>
             <planeGeometry args={[0.20, 0.40]} />
             <meshBasicMaterial map={canvasRefs.texPhone} />
           </mesh>
-          {/* Phone Notification Glow */}
           <pointLight 
             ref={phoneGlowRef}
             position={[0, 0, 0.05]} 
@@ -785,7 +927,6 @@ export const RoomObjects: React.FC<RoomObjectsProps> = ({
 
         {/* ================= STUDIO HEADPHONES ON STAND ================= */}
         <group position={[-1.25, 1.46, -0.3]}>
-          {/* Wooden / Aluminum Headphone Stand */}
           <mesh castShadow position={[0, 0.35, 0]}>
             <cylinderGeometry args={[0.02, 0.02, 0.7, 16]} />
             <meshStandardMaterial color="#64748b" metalness={0.9} roughness={0.2} />
@@ -794,17 +935,14 @@ export const RoomObjects: React.FC<RoomObjectsProps> = ({
             <cylinderGeometry args={[0.14, 0.16, 0.04, 24]} />
             <meshStandardMaterial color="#1e293b" metalness={0.8} roughness={0.3} />
           </mesh>
-          {/* Top curved hanger */}
           <mesh castShadow position={[0, 0.7, 0]}>
             <boxGeometry args={[0.18, 0.04, 0.12]} />
             <meshStandardMaterial color="#0f172a" roughness={0.5} />
           </mesh>
-          {/* Headphones Headband */}
           <mesh castShadow position={[0, 0.65, 0]} rotation={[0, 0, Math.PI / 2]}>
             <torusGeometry args={[0.16, 0.02, 12, 24, Math.PI]} />
             <meshStandardMaterial color="#020617" roughness={0.4} />
           </mesh>
-          {/* Earcups */}
           <mesh castShadow position={[-0.15, 0.5, 0]}>
             <cylinderGeometry args={[0.06, 0.06, 0.05, 16]} />
             <meshStandardMaterial color="#334155" roughness={0.3} metalness={0.7} />
@@ -816,13 +954,11 @@ export const RoomObjects: React.FC<RoomObjectsProps> = ({
         </group>
 
         {/* ================= STUDIO AUDIO SPEAKERS ================= */}
-        {/* Left Studio Monitor Speaker */}
         <group position={[-1.6, 1.85, -0.6]} rotation={[0, 0.32, 0]}>
           <mesh castShadow>
             <boxGeometry args={[0.38, 0.7, 0.38]} />
             <meshStandardMaterial color="#0a0f19" roughness={0.5} />
           </mesh>
-          {/* Pulsing Bass Cone */}
           <mesh ref={speakerPulseRef1} position={[0, 0.06, 0.195]} rotation={[Math.PI / 2, 0, 0]}>
             <cylinderGeometry args={[0.12, 0.12, 0.02, 24]} />
             <meshStandardMaterial color={rgbColor} roughness={0.2} metalness={0.5} />
@@ -833,13 +969,11 @@ export const RoomObjects: React.FC<RoomObjectsProps> = ({
           </mesh>
         </group>
 
-        {/* Right Studio Monitor Speaker */}
         <group position={[1.6, 1.85, -0.6]} rotation={[0, -0.32, 0]}>
           <mesh castShadow>
             <boxGeometry args={[0.38, 0.7, 0.38]} />
             <meshStandardMaterial color="#0a0f19" roughness={0.5} />
           </mesh>
-          {/* Pulsing Bass Cone */}
           <mesh ref={speakerPulseRef2} position={[0, 0.06, 0.195]} rotation={[Math.PI / 2, 0, 0]}>
             <cylinderGeometry args={[0.12, 0.12, 0.02, 24]} />
             <meshStandardMaterial color={rgbColor} roughness={0.2} metalness={0.5} />
@@ -852,25 +986,21 @@ export const RoomObjects: React.FC<RoomObjectsProps> = ({
 
         {/* ================= STEAMING ESPRESSO MUG ================= */}
         <group 
-          position={[-0.85, 1.46, 0.45]} 
+          position={[-0.95, 1.46, 0.45]} 
           onClick={onCoffeeClick}
         >
-          {/* Ceramic Mug Cup */}
           <mesh castShadow position={[0, 0.13, 0]}>
             <cylinderGeometry args={[0.11, 0.09, 0.24, 24]} />
             <meshStandardMaterial color="#f8fafc" roughness={0.15} />
           </mesh>
-          {/* Rich Espresso liquid */}
           <mesh position={[0, 0.22, 0]}>
             <cylinderGeometry args={[0.1, 0.1, 0.02, 24]} />
             <meshStandardMaterial color="#2d1a12" roughness={0.1} />
           </mesh>
-          {/* Mug Handle */}
           <mesh position={[-0.13, 0.13, 0]} rotation={[0, 0, Math.PI / 2]}>
             <torusGeometry args={[0.07, 0.02, 12, 24]} />
             <meshStandardMaterial color="#f8fafc" roughness={0.15} />
           </mesh>
-          {/* Volumetric Animated Steam Particles */}
           <points ref={steamRef} position={[0, 0.28, 0]}>
             <bufferGeometry>
               <bufferAttribute
@@ -880,7 +1010,7 @@ export const RoomObjects: React.FC<RoomObjectsProps> = ({
             </bufferGeometry>
             <pointsMaterial
               size={0.04}
-              color="#ffffff"
+              color={lightingMood === 'sunset' ? '#fed7aa' : '#ffffff'}
               transparent
               opacity={0.45}
               blending={THREE.AdditiveBlending}
@@ -893,13 +1023,11 @@ export const RoomObjects: React.FC<RoomObjectsProps> = ({
           position={[1.6, 1.98, 0.1]} 
           onClick={onPcClick}
         >
-          {/* PC Chassis (Anodized Aluminum) */}
           <mesh castShadow>
             <boxGeometry args={[0.54, 1.0, 0.95]} />
             <meshStandardMaterial color="#080c14" roughness={0.3} metalness={0.85} />
           </mesh>
 
-          {/* Tempered Glass Side Panel (Transparent Reflection) */}
           <mesh position={[-0.28, 0, 0]}>
             <boxGeometry args={[0.02, 0.94, 0.9]} />
             <meshPhysicalMaterial 
@@ -908,17 +1036,15 @@ export const RoomObjects: React.FC<RoomObjectsProps> = ({
               opacity={0.3} 
               roughness={0.08} 
               metalness={0.2}
-              transmission={0.85}
+              transmission={0.85} 
             />
           </mesh>
 
-          {/* Glowing RTX Graphics Card / GPU inside */}
           <mesh position={[-0.05, -0.15, 0]} castShadow>
             <boxGeometry args={[0.32, 0.14, 0.6]} />
             <meshStandardMaterial color={rgbColor} roughness={0.15} metalness={0.6} />
           </mesh>
 
-          {/* Dual RGB Front Intake Fans */}
           <group ref={fanRef1} position={[0, 0.22, 0.48]}>
             <mesh>
               <torusGeometry args={[0.16, 0.02, 12, 32]} />
@@ -941,7 +1067,6 @@ export const RoomObjects: React.FC<RoomObjectsProps> = ({
             </mesh>
           </group>
 
-          {/* Internal Volumetric PC Lighting */}
           <pointLight 
             ref={gpuGlowRef} 
             color={rgbColor} 
@@ -959,22 +1084,18 @@ export const RoomObjects: React.FC<RoomObjectsProps> = ({
         rotation={[0, -0.25, 0]}
         onClick={handleChairInteraction}
       >
-        {/* Seat Cushion */}
         <mesh position={[0, 0, 0]} castShadow receiveShadow>
           <boxGeometry args={[0.9, 0.14, 0.9]} />
           <meshStandardMaterial color="#1e293b" roughness={0.7} />
         </mesh>
-        {/* Chair Backrest with Lumbar Support */}
         <mesh position={[0, 0.7, 0.4]} rotation={[-0.12, 0, 0]} castShadow>
           <boxGeometry args={[0.8, 1.2, 0.12]} />
           <meshStandardMaterial color="#0f172a" roughness={0.8} />
         </mesh>
-        {/* Headrest */}
         <mesh position={[0, 1.38, 0.48]} castShadow>
           <boxGeometry args={[0.48, 0.22, 0.1]} />
           <meshStandardMaterial color="#334155" roughness={0.6} />
         </mesh>
-        {/* Ergonomic Armrests */}
         <mesh position={[-0.48, 0.4, 0.05]} castShadow>
           <boxGeometry args={[0.1, 0.06, 0.4]} />
           <meshStandardMaterial color="#0f172a" roughness={0.5} />
@@ -983,12 +1104,10 @@ export const RoomObjects: React.FC<RoomObjectsProps> = ({
           <boxGeometry args={[0.1, 0.06, 0.4]} />
           <meshStandardMaterial color="#0f172a" roughness={0.5} />
         </mesh>
-        {/* Metal Hydraulic Cylinder */}
         <mesh position={[0, -0.45, 0]} castShadow>
           <cylinderGeometry args={[0.07, 0.07, 0.8, 16]} />
           <meshStandardMaterial color="#64748b" metalness={0.9} roughness={0.2} />
         </mesh>
-        {/* 5-Star Wheel Base */}
         <mesh position={[0, -0.85, 0]}>
           <cylinderGeometry args={[0.5, 0.5, 0.06, 5]} />
           <meshStandardMaterial color="#0f172a" metalness={0.8} />

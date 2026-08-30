@@ -11,16 +11,18 @@ import {
   Coffee, 
   Monitor, 
   Cpu, 
-  Keyboard,
-  Compass,
-  Code2,
-  Terminal,
-  Activity,
-  GitBranch,
-  Volume2,
-  VolumeX,
-  Smartphone,
-  Building2
+  Keyboard, 
+  Compass, 
+  Code2, 
+  Terminal, 
+  Activity, 
+  GitBranch, 
+  Volume2, 
+  VolumeX, 
+  Smartphone, 
+  Building2,
+  Atom,
+  Binary
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
@@ -40,6 +42,13 @@ const MONITOR_MODES = [
   { id: 3, name: 'GitHub Stream', icon: GitBranch, desc: 'Streaming Recent Commit Log' },
 ];
 
+const HOLOGRAM_NAMES = [
+  { name: 'React 3D Atom', color: '#38bdf8' },
+  { name: 'TypeScript Hypercube', color: '#3b82f6' },
+  { name: 'Node.js Hexagon Prism', color: '#22c55e' },
+  { name: 'AI Neural Network Cluster', color: '#ec4899' },
+];
+
 export const DevRoomSection: React.FC = () => {
   const { t } = useI18n();
   const { 
@@ -54,10 +63,11 @@ export const DevRoomSection: React.FC = () => {
   } = useSound();
 
   const [rgbIndex, setRgbIndex] = useState(0);
-  const [lightingMood, setLightingMood] = useState<'neon' | 'night' | 'sunset'>('neon');
+  const [lightingMood, setLightingMood] = useState<'neon' | 'night' | 'sunset' | 'matrix'>('neon');
   const [cameraPreset, setCameraPreset] = useState<CameraPreset>('orbit');
   const [autoRotate, setAutoRotate] = useState(true);
   const [monitorMode, setMonitorMode] = useState<number>(0);
+  const [hologramIndex, setHologramIndex] = useState<number>(0);
   const [soundEnabled, setSoundEnabled] = useState<boolean>(true);
 
   const activeRgb = RGB_PALETTE[rgbIndex].color;
@@ -66,7 +76,7 @@ export const DevRoomSection: React.FC = () => {
     if (soundEnabled) playCyberSwitch();
     const next = (rgbIndex + 1) % RGB_PALETTE.length;
     setRgbIndex(next);
-    toast.success(`RGB Theme: ${RGB_PALETTE[next].name}`, {
+    toast.success(`360° RGB Desk Theme: ${RGB_PALETTE[next].name}`, {
       icon: '🌈',
       style: {
         borderRadius: '12px',
@@ -101,6 +111,21 @@ export const DevRoomSection: React.FC = () => {
         background: '#0a0f1d',
         color: '#fff',
         border: '1px solid #38bdf8',
+      },
+    });
+  };
+
+  const handleHologramClick = () => {
+    if (soundEnabled) playCyberSwitch();
+    const nextHolo = (hologramIndex + 1) % HOLOGRAM_NAMES.length;
+    setHologramIndex(nextHolo);
+    toast.success(`Hologram: ${HOLOGRAM_NAMES[nextHolo].name} 🛸`, {
+      icon: '✨',
+      style: {
+        borderRadius: '12px',
+        background: '#0a0f1d',
+        color: '#fff',
+        border: `1px solid ${HOLOGRAM_NAMES[nextHolo].color}`,
       },
     });
   };
@@ -168,7 +193,7 @@ export const DevRoomSection: React.FC = () => {
       {/* Background Ambient Glow */}
       <div 
         className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[650px] md:w-[1000px] h-[550px] blur-[160px] rounded-full pointer-events-none opacity-20 transition-colors duration-700 -z-10"
-        style={{ backgroundColor: activeRgb }}
+        style={{ backgroundColor: lightingMood === 'matrix' ? '#22c55e' : (lightingMood === 'sunset' ? '#f59e0b' : activeRgb) }}
       />
 
       {/* Section Header */}
@@ -182,7 +207,7 @@ export const DevRoomSection: React.FC = () => {
             {t('workspace_title') || 'Virtual Developer Workspace'}
           </h2>
           <p className="text-foreground/60 max-w-2xl text-base md:text-lg">
-            {t('workspace_desc') || 'Explore my photorealistic 3D developer studio. Enjoy the panoramic city skyline, inspect live code on the ultra-wide monitor, and interact with the workspace.'}
+            {t('workspace_desc') || 'Explore my 3D developer studio. Enjoy the sunset sunbeams, project 3D floating holograms, inspect live code on the ultra-wide monitor, and experience full 360° RGB underglow.'}
           </p>
         </div>
       </ScrollReveal>
@@ -197,6 +222,7 @@ export const DevRoomSection: React.FC = () => {
             cameraPreset={cameraPreset}
             autoRotate={autoRotate}
             monitorMode={monitorMode}
+            hologramIndex={hologramIndex}
             onCoffeeClick={handleCoffeeSip}
             onPcClick={cycleRgb}
             onMonitorClick={handleMonitorSwitch}
@@ -204,6 +230,7 @@ export const DevRoomSection: React.FC = () => {
             onKeyboardClick={handleKeyboardClick}
             onChairClick={handleChairClick}
             onPhoneClick={handlePhoneClick}
+            onHologramClick={handleHologramClick}
           />
 
           {/* Top Control Bar (HUD) */}
@@ -281,7 +308,7 @@ export const DevRoomSection: React.FC = () => {
                   onMouseEnter={playHover}
                   className={`p-2 rounded-xl text-xs transition-all ${
                     lightingMood === 'neon' 
-                      ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/30' 
+                      ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 shadow-md' 
                       : 'text-foreground/60 hover:text-foreground'
                   }`}
                   title="Cyber Neon Lighting"
@@ -293,7 +320,7 @@ export const DevRoomSection: React.FC = () => {
                   onMouseEnter={playHover}
                   className={`p-2 rounded-xl text-xs transition-all ${
                     lightingMood === 'night' 
-                      ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30' 
+                      ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30 shadow-md' 
                       : 'text-foreground/60 hover:text-foreground'
                   }`}
                   title="Midnight Blue"
@@ -305,16 +332,28 @@ export const DevRoomSection: React.FC = () => {
                   onMouseEnter={playHover}
                   className={`p-2 rounded-xl text-xs transition-all ${
                     lightingMood === 'sunset' 
-                      ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' 
+                      ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30 shadow-md' 
                       : 'text-foreground/60 hover:text-foreground'
                   }`}
-                  title="Golden Hour Sunset"
+                  title="🌅 Golden Sunset Sunbeams"
                 >
                   <Sun size={15} />
                 </button>
+                <button
+                  onClick={() => { if (soundEnabled) playClick(); setLightingMood('matrix'); }}
+                  onMouseEnter={playHover}
+                  className={`p-2 rounded-xl text-xs transition-all ${
+                    lightingMood === 'matrix' 
+                      ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 shadow-md' 
+                      : 'text-foreground/60 hover:text-foreground'
+                  }`}
+                  title="🌌 Cyberpunk Matrix Fog"
+                >
+                  <Binary size={15} />
+                </button>
               </div>
 
-              {/* RGB Swatches */}
+              {/* RGB Swatches (Controls 360° Desk & PC Underglow) */}
               <div className="hidden sm:flex items-center gap-1.5 p-1.5 rounded-2xl glass border border-white/10 backdrop-blur-xl shadow-lg">
                 {RGB_PALETTE.map((swatch, idx) => (
                   <button
@@ -328,7 +367,7 @@ export const DevRoomSection: React.FC = () => {
                       rgbIndex === idx ? 'scale-125 ring-2 ring-white' : 'opacity-70 hover:opacity-100 hover:scale-110'
                     }`}
                     style={{ backgroundColor: swatch.color }}
-                    title={swatch.name}
+                    title={`360° Desk RGB: ${swatch.name}`}
                   />
                 ))}
               </div>
@@ -395,6 +434,13 @@ export const DevRoomSection: React.FC = () => {
 
             {/* Quick Interactive Items */}
             <div className="flex items-center gap-2 text-xs font-medium text-foreground/80 pointer-events-auto">
+              <button 
+                onClick={handleHologramClick}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl glass border border-white/10 backdrop-blur-md cursor-pointer hover:border-cyan-400/50 transition-colors shadow-md text-cyan-400"
+                title="Project 3D Floating Tech Hologram"
+              >
+                <Atom size={14} /> <span className="hidden sm:inline">Hologram</span>
+              </button>
               <button 
                 onClick={handlePhoneClick}
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl glass border border-white/10 backdrop-blur-md cursor-pointer hover:border-cyan-400/50 transition-colors shadow-md"

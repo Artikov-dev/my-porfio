@@ -9,10 +9,11 @@ export type CameraPreset = 'orbit' | 'monitor' | 'pc' | 'cozy' | 'window';
 
 interface DevRoomSceneProps {
   rgbColor: string;
-  lightingMood: 'neon' | 'night' | 'sunset';
+  lightingMood: 'neon' | 'night' | 'sunset' | 'matrix';
   cameraPreset: CameraPreset;
   autoRotate: boolean;
   monitorMode: number;
+  hologramIndex: number;
   onCoffeeClick: () => void;
   onPcClick: () => void;
   onMonitorClick: () => void;
@@ -20,6 +21,7 @@ interface DevRoomSceneProps {
   onKeyboardClick: () => void;
   onChairClick: () => void;
   onPhoneClick: () => void;
+  onHologramClick: () => void;
 }
 
 // Camera Positions for each cinematic preset
@@ -74,6 +76,7 @@ export const DevRoomScene: React.FC<DevRoomSceneProps> = ({
   cameraPreset,
   autoRotate,
   monitorMode,
+  hologramIndex,
   onCoffeeClick,
   onPcClick,
   onMonitorClick,
@@ -81,6 +84,7 @@ export const DevRoomScene: React.FC<DevRoomSceneProps> = ({
   onKeyboardClick,
   onChairClick,
   onPhoneClick,
+  onHologramClick,
 }) => {
   // Mood lighting configurations
   const moodConfig = {
@@ -106,17 +110,27 @@ export const DevRoomScene: React.FC<DevRoomSceneProps> = ({
     },
     sunset: {
       ambient: '#1c120c',
-      ambientIntensity: 0.75,
+      ambientIntensity: 0.8,
       mainLight: '#fbbf24',
-      mainIntensity: 2.4,
+      mainIntensity: 2.6,
       secondaryLight: '#f43f5e',
       secondaryIntensity: 1.8,
       windowLight: '#f97316',
       sparkleColor: '#fbbf24',
     },
+    matrix: {
+      ambient: '#021208',
+      ambientIntensity: 0.75,
+      mainLight: '#22c55e',
+      mainIntensity: 2.2,
+      secondaryLight: '#10b981',
+      secondaryIntensity: 2.4,
+      windowLight: '#22c55e',
+      sparkleColor: '#4ade80',
+    },
   };
 
-  const currentMood = moodConfig[lightingMood];
+  const currentMood = moodConfig[lightingMood] || moodConfig.neon;
 
   return (
     <div className="w-full h-full relative cursor-grab active:cursor-grabbing select-none">
@@ -146,11 +160,11 @@ export const DevRoomScene: React.FC<DevRoomSceneProps> = ({
             shadow-bias={-0.0001}
           />
 
-          {/* Window Light Influx */}
+          {/* Window Light Influx (Golden Sunbeam / Cyber Moonbeam) */}
           <directionalLight
-            position={[-8, 4, 1]}
+            position={[-8, 4.5, 1]}
             color={currentMood.windowLight}
-            intensity={1.6}
+            intensity={lightingMood === 'sunset' ? 3.0 : 1.8}
             castShadow
             shadow-mapSize-width={512}
             shadow-mapSize-height={512}
@@ -171,28 +185,28 @@ export const DevRoomScene: React.FC<DevRoomSceneProps> = ({
             angle={0.65}
             penumbra={0.8}
             intensity={1.4}
-            color={lightingMood === 'sunset' ? '#fef08a' : '#e0f2fe'}
+            color={lightingMood === 'sunset' ? '#fef08a' : (lightingMood === 'matrix' ? '#86efac' : '#e0f2fe')}
             distance={7}
           />
 
-          {/* Ambient Dust Sparkles */}
+          {/* Ambient Dust Sparkles / Golden Sun Motes / Matrix Particles */}
           <Sparkles
-            count={50}
-            scale={8}
-            size={3.2}
-            speed={0.45}
-            opacity={0.65}
+            count={lightingMood === 'sunset' ? 70 : (lightingMood === 'matrix' ? 80 : 50)}
+            scale={8.5}
+            size={lightingMood === 'sunset' ? 3.8 : 3.2}
+            speed={lightingMood === 'sunset' ? 0.35 : 0.6}
+            opacity={0.7}
             color={currentMood.sparkleColor}
           />
 
           {/* Photorealistic Soft Contact Shadows */}
           <ContactShadows
             position={[0, -0.59, 0]}
-            opacity={0.8}
+            opacity={0.82}
             scale={12}
             blur={2.2}
             far={4.5}
-            color="#020617"
+            color={lightingMood === 'matrix' ? '#021808' : '#020617'}
           />
 
           {/* 3D Room Meshes */}
@@ -200,6 +214,7 @@ export const DevRoomScene: React.FC<DevRoomSceneProps> = ({
             rgbColor={rgbColor}
             lightingMood={lightingMood}
             monitorMode={monitorMode}
+            hologramIndex={hologramIndex}
             onCoffeeClick={onCoffeeClick}
             onPcClick={onPcClick}
             onMonitorClick={onMonitorClick}
@@ -207,6 +222,7 @@ export const DevRoomScene: React.FC<DevRoomSceneProps> = ({
             onKeyboardClick={onKeyboardClick}
             onChairClick={onChairClick}
             onPhoneClick={onPhoneClick}
+            onHologramClick={onHologramClick}
           />
 
           {/* Smooth Camera Controller */}
