@@ -89,15 +89,21 @@ const seedProjects = async () => {
 
     console.log('Inserting projects...');
     for (const p of projects) {
-      // Assuming 'content' doesn't exist, remove it from the query
+      const content = {
+        en: p.description.en,
+        uz: p.description.uz,
+        ru: p.description.ru,
+      };
+
       await client.query(
         `
-        INSERT INTO projects (title, description, image_url, github_url, live_url, tech_stack)
-        VALUES ($1, $2, $3, $4, $5, $6)
+        INSERT INTO projects (title, description, content, image_url, github_url, live_url, tech_stack)
+        VALUES ($1, $2, $3, $4, $5, $6, $7)
       `,
         [
           p.title,
           p.description,
+          content,
           p.image_url,
           p.github_url,
           p.live_url,
@@ -107,7 +113,7 @@ const seedProjects = async () => {
     }
 
     client.release();
-    console.log('🎉 3 Projects successfully seeded!');
+    console.log('🎉 4 Projects successfully seeded!');
     process.exit(0);
   } catch (error) {
     console.error('❌ Error seeding database:', error);
