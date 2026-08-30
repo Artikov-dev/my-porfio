@@ -16,6 +16,7 @@ interface DevRoomSceneProps {
   hologramIndex: number;
   lampOn: boolean;
   keyboardFlashTrigger: number;
+  onHoverObject?: (label: string | null) => void;
   onCoffeeClick: () => void;
   onPcClick: () => void;
   onMonitorClick: () => void;
@@ -72,7 +73,136 @@ const CameraController: React.FC<{ cameraPreset: CameraPreset; autoRotate: boole
       minAzimuthAngle={-Math.PI / 2.2}
       maxAzimuthAngle={Math.PI / 2.2}
       target={[0, 1.2, -0.3]}
+      touches={{
+        ONE: THREE.TOUCH.ROTATE,
+        TWO: THREE.TOUCH.DOLLY_PAN,
+      }}
     />
+  );
+};
+
+// Smooth Cinematic Lighting Lerp Component
+const SmoothLighting: React.FC<{
+  lightingMood: 'neon' | 'night' | 'sunset' | 'matrix';
+  lampOn: boolean;
+}> = ({ lightingMood, lampOn }) => {
+  const ambientRef = useRef<THREE.AmbientLight>(null);
+  const mainDirRef = useRef<THREE.DirectionalLight>(null);
+  const windowDirRef = useRef<THREE.DirectionalLight>(null);
+  const secondaryPointRef = useRef<THREE.PointLight>(null);
+  const spotRef = useRef<THREE.SpotLight>(null);
+
+  const moodConfig = {
+    neon: {
+      ambient: new THREE.Color('#0b1329'),
+      ambientIntensity: 0.65,
+      mainLight: new THREE.Color('#38bdf8'),
+      mainIntensity: 1.8,
+      secondaryLight: new THREE.Color('#c084fc'),
+      secondaryIntensity: 2.0,
+      windowLight: new THREE.Color('#38bdf8'),
+    },
+    night: {
+      ambient: new THREE.Color('#040714'),
+      ambientIntensity: 0.45,
+      mainLight: new THREE.Color('#22d3ee'),
+      mainIntensity: 1.2,
+      secondaryLight: new THREE.Color('#3b82f6'),
+      secondaryIntensity: 1.5,
+      windowLight: new THREE.Color('#60a5fa'),
+    },
+    sunset: {
+      ambient: new THREE.Color('#1c120c'),
+      ambientIntensity: 0.8,
+      mainLight: new THREE.Color('#fbbf24'),
+      mainIntensity: 2.6,
+      secondaryLight: new THREE.Color('#f43f5e'),
+      secondaryIntensity: 1.8,
+      windowLight: new THREE.Color('#f97316'),
+    },
+    matrix: {
+      ambient: new THREE.Color('#021208'),
+      ambientIntensity: 0.75,
+      mainLight: new THREE.Color('#22c55e'),
+      mainIntensity: 2.2,
+      secondaryLight: new THREE.Color('#10b981'),
+      secondaryIntensity: 2.4,
+      windowLight: new THREE.Color('#22c55e'),
+    },
+  };
+
+  const targetMood = moodConfig[lightingMood] || moodConfig.neon;
+
+  useFrame((_, delta) => {
+    const lerpSpeed = delta * 3.2;
+    if (ambientRef.current) {
+      ambientRef.current.color.lerp(targetMood.ambient, lerpSpeed);
+      ambientRef.current.intensity = THREE.MathUtils.lerp(ambientRef.current.intensity, targetMood.ambientIntensity, lerpSpeed);
+    }
+    if (mainDirRef.current) {
+      mainDirRef.current.color.lerp(targetMood.mainLight, lerpSpeed);
+      mainDirRef.current.intensity = THREE.MathUtils.lerp(mainDirRef.current.intensity, targetMood.mainIntensity, lerpSpeed);
+    }
+    if (windowDirRef.current) {
+      windowDirRef.current.color.lerp(targetMood.windowLight, lerpSpeed);
+      const targetWindowIntensity = lightingMood === 'sunset' ? 3.0 : 1.8;
+      windowDirRef.current.intensity = THREE.MathUtils.lerp(windowDirRef.current.intensity, targetWindowIntensity, lerpSpeed);
+    }
+    if (secondaryPointRef.current) {
+      secondaryPointRef.current.color.lerp(targetMood.secondaryLight, lerpSpeed);
+      secondaryPointRef.current.intensity = THREE.MathUtils.lerp(secondaryPointRef.current.intensity, targetMood.secondaryIntensity, lerpSpeed);
+    }
+    if (spotRef.current) {
+      const targetSpotIntensity = lampOn ? 1.5 : 0;
+      spotRef.current.intensity = THREE.MathUtils.lerp(spotRef.current.intensity, targetSpotIntensity, lerpSpeed);
+    }
+  });
+
+  return (
+    <>
+      <ambientLight ref={ambientRef} color="#0b1329" intensity={0.65} />
+      <directionalLight
+        ref={mainDirRef}
+        position={[6, 9, 5]}
+        color="#38bdf8"
+        intensity={1.8}
+        castShadow
+        shadow-mapSize-width={1024}
+        shadow-mapSize-height={1024}
+        shadow-camera-far={16}
+        shadow-camera-left={-6}
+        shadow-camera-right={6}
+        shadow-camera-top={6}
+        shadow-camera-bottom={-6}
+        shadow-bias={-0.0001}
+      />
+      <directionalLight
+        ref={windowDirRef}
+        position={[-8, 4.5, 1]}
+        color="#38bdf8"
+        intensity={1.8}
+        castShadow
+        shadow-mapSize-width={512}
+        shadow-mapSize-height={512}
+      />
+      <pointLight
+        ref={secondaryPointRef}
+        position={[-4.5, 4.5, 2.5]}
+        color="#c084fc"
+        intensity={2.0}
+        distance={10}
+      />
+      <spotLight
+        ref={spotRef}
+        position={[0, 5.0, 0.2]}
+        target-position={[0, 1.4, -0.2]}
+        angle={0.65}
+        penumbra={0.8}
+        intensity={1.5}
+        color={lightingMood === 'sunset' ? '#fef08a' : (lightingMood === 'matrix' ? '#86efac' : '#e0f2fe')}
+        distance={7}
+      />
+    </>
   );
 };
 
@@ -85,6 +215,7 @@ export const DevRoomScene: React.FC<DevRoomSceneProps> = ({
   hologramIndex,
   lampOn,
   keyboardFlashTrigger,
+  onHoverObject,
   onCoffeeClick,
   onPcClick,
   onMonitorClick,
@@ -96,51 +227,12 @@ export const DevRoomScene: React.FC<DevRoomSceneProps> = ({
   onCatClick,
   onLampClick,
 }) => {
-  // Mood lighting configurations
-  const moodConfig = {
-    neon: {
-      ambient: '#0b1329',
-      ambientIntensity: 0.65,
-      mainLight: '#38bdf8',
-      mainIntensity: 1.8,
-      secondaryLight: '#c084fc',
-      secondaryIntensity: 2.0,
-      windowLight: '#38bdf8',
-      sparkleColor: '#38bdf8',
-    },
-    night: {
-      ambient: '#040714',
-      ambientIntensity: 0.45,
-      mainLight: '#22d3ee',
-      mainIntensity: 1.2,
-      secondaryLight: '#3b82f6',
-      secondaryIntensity: 1.5,
-      windowLight: '#60a5fa',
-      sparkleColor: '#2dd4bf',
-    },
-    sunset: {
-      ambient: '#1c120c',
-      ambientIntensity: 0.8,
-      mainLight: '#fbbf24',
-      mainIntensity: 2.6,
-      secondaryLight: '#f43f5e',
-      secondaryIntensity: 1.8,
-      windowLight: '#f97316',
-      sparkleColor: '#fbbf24',
-    },
-    matrix: {
-      ambient: '#021208',
-      ambientIntensity: 0.75,
-      mainLight: '#22c55e',
-      mainIntensity: 2.2,
-      secondaryLight: '#10b981',
-      secondaryIntensity: 2.4,
-      windowLight: '#22c55e',
-      sparkleColor: '#4ade80',
-    },
+  const sparkleColors: Record<string, string> = {
+    neon: '#38bdf8',
+    night: '#2dd4bf',
+    sunset: '#fbbf24',
+    matrix: '#4ade80',
   };
-
-  const currentMood = moodConfig[lightingMood] || moodConfig.neon;
 
   return (
     <div className="w-full h-full relative cursor-grab active:cursor-grabbing select-none">
@@ -151,55 +243,8 @@ export const DevRoomScene: React.FC<DevRoomSceneProps> = ({
         dpr={[1, 1.5]}
       >
         <Suspense fallback={null}>
-          {/* Ambient Lighting */}
-          <ambientLight color={currentMood.ambient} intensity={currentMood.ambientIntensity} />
-
-          {/* Key Directional Shadow Caster */}
-          <directionalLight
-            position={[6, 9, 5]}
-            color={currentMood.mainLight}
-            intensity={currentMood.mainIntensity}
-            castShadow
-            shadow-mapSize-width={1024}
-            shadow-mapSize-height={1024}
-            shadow-camera-far={16}
-            shadow-camera-left={-6}
-            shadow-camera-right={6}
-            shadow-camera-top={6}
-            shadow-camera-bottom={-6}
-            shadow-bias={-0.0001}
-          />
-
-          {/* Window Light Influx (Golden Sunbeam / Cyber Moonbeam) */}
-          <directionalLight
-            position={[-8, 4.5, 1]}
-            color={currentMood.windowLight}
-            intensity={lightingMood === 'sunset' ? 3.0 : 1.8}
-            castShadow
-            shadow-mapSize-width={512}
-            shadow-mapSize-height={512}
-          />
-
-          {/* Secondary Fill Light */}
-          <pointLight
-            position={[-4.5, 4.5, 2.5]}
-            color={currentMood.secondaryLight}
-            intensity={currentMood.secondaryIntensity}
-            distance={10}
-          />
-
-          {/* Warm Desk Spotlight (Linked with lampOn) */}
-          {lampOn && (
-            <spotLight
-              position={[0, 5.0, 0.2]}
-              target-position={[0, 1.4, -0.2]}
-              angle={0.65}
-              penumbra={0.8}
-              intensity={1.5}
-              color={lightingMood === 'sunset' ? '#fef08a' : (lightingMood === 'matrix' ? '#86efac' : '#e0f2fe')}
-              distance={7}
-            />
-          )}
+          {/* Smooth Interpolating Cinematic Lighting */}
+          <SmoothLighting lightingMood={lightingMood} lampOn={lampOn} />
 
           {/* Ambient Dust Sparkles / Golden Sun Motes / Matrix Particles */}
           <Sparkles
@@ -208,7 +253,7 @@ export const DevRoomScene: React.FC<DevRoomSceneProps> = ({
             size={lightingMood === 'sunset' ? 3.8 : 3.2}
             speed={lightingMood === 'sunset' ? 0.35 : 0.6}
             opacity={0.7}
-            color={currentMood.sparkleColor}
+            color={sparkleColors[lightingMood] || '#38bdf8'}
           />
 
           {/* Photorealistic Soft Contact Shadows */}
@@ -229,6 +274,7 @@ export const DevRoomScene: React.FC<DevRoomSceneProps> = ({
             hologramIndex={hologramIndex}
             lampOn={lampOn}
             keyboardFlashTrigger={keyboardFlashTrigger}
+            onHoverObject={onHoverObject}
             onCoffeeClick={onCoffeeClick}
             onPcClick={onPcClick}
             onMonitorClick={onMonitorClick}
@@ -248,4 +294,5 @@ export const DevRoomScene: React.FC<DevRoomSceneProps> = ({
     </div>
   );
 };
+
 

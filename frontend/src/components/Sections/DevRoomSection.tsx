@@ -73,6 +73,8 @@ export const DevRoomSection: React.FC = () => {
   const [lampOn, setLampOn] = useState<boolean>(true);
   const [keyboardFlashTrigger, setKeyboardFlashTrigger] = useState<number>(0);
   const [soundEnabled, setSoundEnabled] = useState<boolean>(true);
+  const [hoveredObject, setHoveredObject] = useState<string | null>(null);
+
 
   const activeRgb = RGB_PALETTE[rgbIndex].color;
 
@@ -272,6 +274,7 @@ export const DevRoomSection: React.FC = () => {
             hologramIndex={hologramIndex}
             lampOn={lampOn}
             keyboardFlashTrigger={keyboardFlashTrigger}
+            onHoverObject={setHoveredObject}
             onCoffeeClick={handleCoffeeSip}
             onPcClick={cycleRgb}
             onMonitorClick={handleMonitorSwitch}
@@ -284,8 +287,22 @@ export const DevRoomSection: React.FC = () => {
             onLampClick={handleLampToggle}
           />
 
+          {/* Smart Interactive Object Hover Tooltip */}
+          {hoveredObject && (
+            <div className="absolute top-20 left-1/2 -translate-x-1/2 z-30 pointer-events-none px-4 py-2 rounded-full bg-slate-950/90 backdrop-blur-xl border border-cyan-500/50 text-cyan-300 text-xs sm:text-sm font-medium shadow-[0_0_25px_rgba(6,182,212,0.4)] flex items-center gap-2 transition-all">
+              <Sparkles className="w-4 h-4 text-cyan-400 animate-spin" />
+              <span>{hoveredObject}</span>
+            </div>
+          )}
+
+          {/* Mobile Gestures Hint */}
+          <div className="absolute top-20 right-4 sm:hidden z-20 pointer-events-none px-2.5 py-1 rounded-lg bg-black/60 backdrop-blur-md text-[10px] text-foreground/70 border border-white/10 flex items-center gap-1.5 shadow-md">
+            <span>👆 1-finger rotate • ✌️ 2-finger zoom</span>
+          </div>
+
           {/* Top Control Bar (HUD) */}
           <div className="absolute top-4 left-4 right-4 flex flex-wrap items-center justify-between gap-2.5 pointer-events-none z-20">
+
             {/* Cinematic Camera Angle Presets */}
             <div className="flex items-center gap-1 p-1 rounded-2xl glass border border-white/10 backdrop-blur-xl shadow-lg pointer-events-auto overflow-x-auto max-w-full">
               <button

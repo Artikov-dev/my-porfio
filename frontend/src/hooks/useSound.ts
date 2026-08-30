@@ -66,33 +66,52 @@ export const useSound = () => {
       if (ctx.state === 'suspended') ctx.resume();
 
       const now = ctx.currentTime;
-      // High click
+
+      // 1. Tactile Leaf Snap (Crisp High Clack)
       const osc1 = ctx.createOscillator();
       const gain1 = ctx.createGain();
-      osc1.type = 'sine';
-      osc1.frequency.setValueAtTime(1400, now);
-      osc1.frequency.exponentialRampToValueAtTime(200, now + 0.04);
-      gain1.gain.setValueAtTime(0.12, now);
-      gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
-      osc1.connect(gain1);
+      const filter1 = ctx.createBiquadFilter();
+
+      osc1.type = 'triangle';
+      osc1.frequency.setValueAtTime(1800, now);
+      osc1.frequency.exponentialRampToValueAtTime(450, now + 0.025);
+
+      filter1.type = 'bandpass';
+      filter1.frequency.setValueAtTime(2400, now);
+      filter1.Q.setValueAtTime(3.0, now);
+
+      gain1.gain.setValueAtTime(0.14, now);
+      gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.025);
+
+      osc1.connect(filter1);
+      filter1.connect(gain1);
       gain1.connect(ctx.destination);
       osc1.start(now);
-      osc1.stop(now + 0.04);
+      osc1.stop(now + 0.025);
 
-      // Low mechanical thud
+      // 2. Lubed Bottom-Out "Thock" (Warm Low-Frequency Resonance)
       const osc2 = ctx.createOscillator();
       const gain2 = ctx.createGain();
-      osc2.type = 'triangle';
-      osc2.frequency.setValueAtTime(180, now);
-      osc2.frequency.exponentialRampToValueAtTime(60, now + 0.06);
-      gain2.gain.setValueAtTime(0.15, now);
-      gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
-      osc2.connect(gain2);
+      const filter2 = ctx.createBiquadFilter();
+
+      osc2.type = 'sine';
+      osc2.frequency.setValueAtTime(280, now);
+      osc2.frequency.exponentialRampToValueAtTime(75, now + 0.055);
+
+      filter2.type = 'lowpass';
+      filter2.frequency.setValueAtTime(500, now);
+
+      gain2.gain.setValueAtTime(0.22, now);
+      gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.055);
+
+      osc2.connect(filter2);
+      filter2.connect(gain2);
       gain2.connect(ctx.destination);
       osc2.start(now);
-      osc2.stop(now + 0.06);
+      osc2.stop(now + 0.055);
     } catch (e) {}
   }, []);
+
 
   const playSip = useCallback(() => {
     try {
