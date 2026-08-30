@@ -1,11 +1,11 @@
-import React, { Suspense, useRef, useEffect } from 'react';
+import React, { Suspense, useRef } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { OrbitControls, Sparkles } from '@react-three/drei';
+import { OrbitControls, Sparkles, ContactShadows } from '@react-three/drei';
 import type { OrbitControls as OrbitControlsImpl } from 'three-stdlib';
 import * as THREE from 'three';
 import { RoomObjects } from './RoomObjects';
 
-export type CameraPreset = 'orbit' | 'monitor' | 'pc' | 'cozy';
+export type CameraPreset = 'orbit' | 'monitor' | 'pc' | 'cozy' | 'window';
 
 interface DevRoomSceneProps {
   rgbColor: string;
@@ -19,6 +19,7 @@ interface DevRoomSceneProps {
   onNeonClick: () => void;
   onKeyboardClick: () => void;
   onChairClick: () => void;
+  onPhoneClick: () => void;
 }
 
 // Camera Positions for each cinematic preset
@@ -27,13 +28,14 @@ const CAMERA_CONFIGS: Record<CameraPreset, { pos: [number, number, number]; targ
   monitor: { pos: [0, 2.15, 1.4], target: [0, 2.15, -0.4] },
   pc: { pos: [2.2, 2.4, 1.5], target: [1.6, 1.98, 0.1] },
   cozy: { pos: [-1.6, 2.2, 1.5], target: [-1.0, 1.8, -0.4] },
+  window: { pos: [-3.2, 2.8, 3.2], target: [-5.4, 3.2, 0] },
 };
 
 const CameraController: React.FC<{ cameraPreset: CameraPreset; autoRotate: boolean }> = ({ cameraPreset, autoRotate }) => {
   const controlsRef = useRef<OrbitControlsImpl>(null);
   const { camera } = useThree();
 
-  const targetConfig = CAMERA_CONFIGS[cameraPreset];
+  const targetConfig = CAMERA_CONFIGS[cameraPreset] || CAMERA_CONFIGS.orbit;
 
   useFrame((_, delta) => {
     if (!controlsRef.current) return;
@@ -56,11 +58,11 @@ const CameraController: React.FC<{ cameraPreset: CameraPreset; autoRotate: boole
       autoRotateSpeed={0.8}
       enablePan={false}
       minDistance={1.8}
-      maxDistance={8.5}
+      maxDistance={8.8}
       minPolarAngle={Math.PI / 6}
       maxPolarAngle={Math.PI / 2.05}
-      minAzimuthAngle={-Math.PI / 2.5}
-      maxAzimuthAngle={Math.PI / 2.5}
+      minAzimuthAngle={-Math.PI / 2.2}
+      maxAzimuthAngle={Math.PI / 2.2}
       target={[0, 1.2, -0.3]}
     />
   );
@@ -78,6 +80,7 @@ export const DevRoomScene: React.FC<DevRoomSceneProps> = ({
   onNeonClick,
   onKeyboardClick,
   onChairClick,
+  onPhoneClick,
 }) => {
   // Mood lighting configurations
   const moodConfig = {
@@ -88,6 +91,7 @@ export const DevRoomScene: React.FC<DevRoomSceneProps> = ({
       mainIntensity: 1.8,
       secondaryLight: '#c084fc',
       secondaryIntensity: 2.0,
+      windowLight: '#38bdf8',
       sparkleColor: '#38bdf8',
     },
     night: {
@@ -97,6 +101,7 @@ export const DevRoomScene: React.FC<DevRoomSceneProps> = ({
       mainIntensity: 1.2,
       secondaryLight: '#3b82f6',
       secondaryIntensity: 1.5,
+      windowLight: '#60a5fa',
       sparkleColor: '#2dd4bf',
     },
     sunset: {
@@ -106,6 +111,7 @@ export const DevRoomScene: React.FC<DevRoomSceneProps> = ({
       mainIntensity: 2.4,
       secondaryLight: '#f43f5e',
       secondaryIntensity: 1.8,
+      windowLight: '#f97316',
       sparkleColor: '#fbbf24',
     },
   };
@@ -140,6 +146,16 @@ export const DevRoomScene: React.FC<DevRoomSceneProps> = ({
             shadow-bias={-0.0001}
           />
 
+          {/* Window Light Influx */}
+          <directionalLight
+            position={[-8, 4, 1]}
+            color={currentMood.windowLight}
+            intensity={1.6}
+            castShadow
+            shadow-mapSize-width={512}
+            shadow-mapSize-height={512}
+          />
+
           {/* Secondary Fill Light */}
           <pointLight
             position={[-4.5, 4.5, 2.5]}
@@ -161,12 +177,22 @@ export const DevRoomScene: React.FC<DevRoomSceneProps> = ({
 
           {/* Ambient Dust Sparkles */}
           <Sparkles
-            count={45}
-            scale={7}
+            count={50}
+            scale={8}
             size={3.2}
             speed={0.45}
             opacity={0.65}
             color={currentMood.sparkleColor}
+          />
+
+          {/* Photorealistic Soft Contact Shadows */}
+          <ContactShadows
+            position={[0, -0.59, 0]}
+            opacity={0.8}
+            scale={12}
+            blur={2.2}
+            far={4.5}
+            color="#020617"
           />
 
           {/* 3D Room Meshes */}
@@ -180,6 +206,7 @@ export const DevRoomScene: React.FC<DevRoomSceneProps> = ({
             onNeonClick={onNeonClick}
             onKeyboardClick={onKeyboardClick}
             onChairClick={onChairClick}
+            onPhoneClick={onPhoneClick}
           />
 
           {/* Smooth Camera Controller */}

@@ -18,7 +18,9 @@ import {
   Activity,
   GitBranch,
   Volume2,
-  VolumeX
+  VolumeX,
+  Smartphone,
+  Building2
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
@@ -47,7 +49,8 @@ export const DevRoomSection: React.FC = () => {
     playSip, 
     playCyberSwitch, 
     playWhoosh, 
-    playGlitch 
+    playGlitch,
+    playNotification
   } = useSound();
 
   const [rgbIndex, setRgbIndex] = useState(0);
@@ -141,6 +144,19 @@ export const DevRoomSection: React.FC = () => {
     });
   };
 
+  const handlePhoneClick = () => {
+    if (soundEnabled) playNotification();
+    toast.success('Telegram: "Client inquiry for High-Scale Web Architecture!" 💬', {
+      icon: '📱',
+      style: {
+        borderRadius: '12px',
+        background: '#0a0f1d',
+        color: '#fff',
+        border: '1px solid #38bdf8',
+      },
+    });
+  };
+
   const switchCamera = (preset: CameraPreset) => {
     if (soundEnabled) playWhoosh();
     setCameraPreset(preset);
@@ -166,7 +182,7 @@ export const DevRoomSection: React.FC = () => {
             {t('workspace_title') || 'Virtual Developer Workspace'}
           </h2>
           <p className="text-foreground/60 max-w-2xl text-base md:text-lg">
-            {t('workspace_desc') || 'Explore my virtual high-performance coding setup in 3D. Choose cinematic camera angles, inspect live code on the ultra-wide monitor, and interact with objects.'}
+            {t('workspace_desc') || 'Explore my photorealistic 3D developer studio. Enjoy the panoramic city skyline, inspect live code on the ultra-wide monitor, and interact with the workspace.'}
           </p>
         </div>
       </ScrollReveal>
@@ -187,6 +203,7 @@ export const DevRoomSection: React.FC = () => {
             onNeonClick={handleNeonClick}
             onKeyboardClick={handleKeyboardClick}
             onChairClick={handleChairClick}
+            onPhoneClick={handlePhoneClick}
           />
 
           {/* Top Control Bar (HUD) */}
@@ -228,6 +245,18 @@ export const DevRoomSection: React.FC = () => {
                 title="PC Rig Showcase"
               >
                 <Cpu size={14} /> <span className="hidden sm:inline">PC Rig</span>
+              </button>
+              <button
+                onClick={() => switchCamera('window')}
+                onMouseEnter={playHover}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+                  cameraPreset === 'window' 
+                    ? 'bg-primary text-white shadow-md' 
+                    : 'text-foreground/60 hover:text-foreground'
+                }`}
+                title="Cyber City Skyline Window"
+              >
+                <Building2 size={14} /> <span className="hidden sm:inline">City View</span>
               </button>
               <button
                 onClick={() => switchCamera('cozy')}
@@ -366,6 +395,13 @@ export const DevRoomSection: React.FC = () => {
 
             {/* Quick Interactive Items */}
             <div className="flex items-center gap-2 text-xs font-medium text-foreground/80 pointer-events-auto">
+              <button 
+                onClick={handlePhoneClick}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl glass border border-white/10 backdrop-blur-md cursor-pointer hover:border-cyan-400/50 transition-colors shadow-md"
+                title="Check SmartPhone Notifications"
+              >
+                <Smartphone size={14} className="text-cyan-400" /> <span className="hidden sm:inline">Phone</span>
+              </button>
               <button 
                 onClick={handleKeyboardClick}
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl glass border border-white/10 backdrop-blur-md cursor-pointer hover:border-primary/50 transition-colors shadow-md"

@@ -13,6 +13,7 @@ interface RoomObjectsProps {
   onNeonClick: () => void;
   onKeyboardClick: () => void;
   onChairClick: () => void;
+  onPhoneClick: () => void;
 }
 
 export const RoomObjects: React.FC<RoomObjectsProps> = ({
@@ -25,6 +26,7 @@ export const RoomObjects: React.FC<RoomObjectsProps> = ({
   onNeonClick,
   onKeyboardClick,
   onChairClick,
+  onPhoneClick,
 }) => {
   const fanRef1 = useRef<THREE.Group>(null);
   const fanRef2 = useRef<THREE.Group>(null);
@@ -34,6 +36,7 @@ export const RoomObjects: React.FC<RoomObjectsProps> = ({
   const chairRef = useRef<THREE.Group>(null);
   const keyboardGlowRef = useRef<THREE.PointLight>(null);
   const gpuGlowRef = useRef<THREE.PointLight>(null);
+  const phoneGlowRef = useRef<THREE.PointLight>(null);
 
   const [neonActive, setNeonActive] = useState<boolean>(true);
   const [chairTargetRot, setChairTargetRot] = useState<number>(-0.25);
@@ -65,12 +68,19 @@ export const RoomObjects: React.FC<RoomObjectsProps> = ({
     c4.height = 360;
     const ctx4 = c4.getContext('2d')!;
 
+    // 5. Smartphone OLED Screen Canvas
+    const cPhone = document.createElement('canvas');
+    cPhone.width = 256;
+    cPhone.height = 512;
+    const ctxPhone = cPhone.getContext('2d')!;
+
     const tex1 = new THREE.CanvasTexture(c1);
     const tex2 = new THREE.CanvasTexture(c2);
     const tex3 = new THREE.CanvasTexture(c3);
     const tex4 = new THREE.CanvasTexture(c4);
+    const texPhone = new THREE.CanvasTexture(cPhone);
 
-    return { c1, ctx1, tex1, c2, ctx2, tex2, c3, ctx3, tex3, c4, ctx4, tex4 };
+    return { c1, ctx1, tex1, c2, ctx2, tex2, c3, ctx3, tex3, c4, ctx4, tex4, cPhone, ctxPhone, texPhone };
   }, []);
 
   // Matrix column drops
@@ -105,6 +115,25 @@ export const RoomObjects: React.FC<RoomObjectsProps> = ({
       pos[i * 3 + 2] = (Math.random() - 0.5) * 0.09;
     }
     return pos;
+  }, []);
+
+  // City skyscrapers procedural building coordinates
+  const cityBuildings = useMemo(() => {
+    const list = [];
+    const heights = [3.5, 4.8, 6.2, 5.0, 7.1, 4.2, 5.8, 6.5, 3.8, 5.4, 6.8, 4.5];
+    for (let i = 0; i < heights.length; i++) {
+      list.push({
+        x: -7.5 - (i % 3) * 1.8,
+        y: heights[i] / 2 - 1.0,
+        z: -4.5 + (i * 0.95),
+        w: 0.9 + (i % 2) * 0.4,
+        h: heights[i],
+        d: 0.9 + (i % 3) * 0.3,
+        color: (i % 2 === 0) ? '#09101f' : '#0e172e',
+        lightColor: (i % 3 === 0) ? '#38bdf8' : (i % 3 === 1) ? '#ec4899' : '#eab308'
+      });
+    }
+    return list;
   }, []);
 
   // Animation Loop for Canvases & Objects
@@ -157,8 +186,7 @@ export const RoomObjects: React.FC<RoomObjectsProps> = ({
     }
 
     // 7. Dynamic Canvas Rendering
-    // Screen 1: VS Code Typer
-    const { ctx1, c1, tex1, ctx2, c2, tex2, ctx3, c3, tex3, ctx4, c4, tex4 } = canvasRefs;
+    const { ctx1, c1, tex1, ctx2, c2, tex2, ctx3, c3, tex3, ctx4, c4, tex4, ctxPhone, cPhone, texPhone } = canvasRefs;
 
     // Screen 1 (VS Code)
     ctx1.fillStyle = '#0a0f1d';
@@ -256,6 +284,66 @@ export const RoomObjects: React.FC<RoomObjectsProps> = ({
       ctx4.fillText(`* ${c}`, 20, 65 + idx * 38);
     });
     tex4.needsUpdate = true;
+
+    // Screen 5 (OLED Smartphone with Notifications)
+    ctxPhone.fillStyle = '#030712';
+    ctxPhone.fillRect(0, 0, cPhone.width, cPhone.height);
+
+    // Status bar
+    const now = new Date();
+    const timeStr = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+    ctxPhone.fillStyle = '#94a3b8';
+    ctxPhone.font = 'bold 16px sans-serif';
+    ctxPhone.fillText(timeStr, 20, 32);
+    ctxPhone.fillText('98% ⚡', 185, 32);
+
+    // Dynamic notification card
+    const notifs = [
+      { app: '💬 Telegram', title: 'New Client Inquiry', body: 'Let\'s collaborate on a high-scale project 🚀', color: '#38bdf8' },
+      { app: '⭐️ GitHub', title: 'Repo Starred', body: '@artikov-dev/wedding-platform got a ⭐️', color: '#22c55e' },
+      { app: '🤖 Antigravity AI', title: 'System Status', body: 'Distributed agents deployed 100%', color: '#ec4899' },
+      { app: '📈 Analytics Live', title: 'Visitor Surge', body: 'Active users online: +24% today', color: '#f59e0b' },
+    ];
+    const currentNotifIndex = Math.floor((time / 4) % notifs.length);
+    const n = notifs[currentNotifIndex];
+
+    // Notification box
+    ctxPhone.fillStyle = 'rgba(30, 41, 59, 0.85)';
+    ctxPhone.beginPath();
+    ctxPhone.roundRect(14, 60, 228, 120, 18);
+    ctxPhone.fill();
+    ctxPhone.strokeStyle = n.color;
+    ctxPhone.lineWidth = 2;
+    ctxPhone.stroke();
+
+    ctxPhone.fillStyle = n.color;
+    ctxPhone.font = 'bold 15px sans-serif';
+    ctxPhone.fillText(n.app, 28, 90);
+
+    ctxPhone.fillStyle = '#ffffff';
+    ctxPhone.font = 'bold 14px sans-serif';
+    ctxPhone.fillText(n.title, 28, 118);
+
+    ctxPhone.fillStyle = '#94a3b8';
+    ctxPhone.font = '12px sans-serif';
+    ctxPhone.fillText(n.body, 28, 142);
+
+    // Phone wallpaper art
+    ctxPhone.fillStyle = '#0f172a';
+    ctxPhone.beginPath();
+    ctxPhone.roundRect(14, 200, 228, 280, 20);
+    ctxPhone.fill();
+    ctxPhone.fillStyle = rgbColor;
+    ctxPhone.font = 'bold 22px monospace';
+    ctxPhone.fillText('ROMA.DEV', 60, 340);
+    ctxPhone.fillStyle = '#64748b';
+    ctxPhone.font = '12px monospace';
+    ctxPhone.fillText('Swipe up to unlock', 58, 440);
+
+    texPhone.needsUpdate = true;
+    if (phoneGlowRef.current) {
+      phoneGlowRef.current.intensity = 0.8 + Math.sin(time * 3) * 0.4;
+    }
   });
 
   // Pick active screen texture
@@ -282,33 +370,118 @@ export const RoomObjects: React.FC<RoomObjectsProps> = ({
   return (
     <group position={[0, -0.6, 0]}>
       {/* ================= FLOOR & WALLS ================= */}
-      {/* Floor */}
+      {/* Dark Walnut / Concrete Hardwood Floor */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]} receiveShadow>
-        <planeGeometry args={[12, 12]} />
+        <planeGeometry args={[14, 14]} />
         <meshStandardMaterial 
           color={lightingMood === 'sunset' ? '#1c1917' : '#070b14'} 
-          roughness={0.7} 
-          metalness={0.3} 
+          roughness={0.65} 
+          metalness={0.25} 
         />
       </mesh>
 
+      {/* Modern Minimalist Designer Geometric Rug */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.008, 0.2]} receiveShadow>
+        <planeGeometry args={[5.4, 4.0]} />
+        <meshStandardMaterial 
+          color={lightingMood === 'sunset' ? '#26201c' : '#0f172a'} 
+          roughness={0.9} 
+          metalness={0.05}
+        />
+      </mesh>
+      {/* Rug woven border */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.009, 0.2]}>
+        <planeGeometry args={[5.5, 4.1]} />
+        <meshStandardMaterial color="#1e293b" roughness={0.95} wireframe />
+      </mesh>
+
       {/* Back Wall */}
-      <mesh position={[0, 3, -4]} receiveShadow>
-        <planeGeometry args={[12, 7]} />
+      <mesh position={[0, 3.2, -4]} receiveShadow>
+        <planeGeometry args={[14, 7.5]} />
         <meshStandardMaterial 
           color={lightingMood === 'sunset' ? '#1e1b18' : '#0b0f1c'} 
           roughness={0.9} 
         />
       </mesh>
 
-      {/* Left Wall */}
-      <mesh position={[-5.5, 3, 0]} rotation={[0, Math.PI / 2, 0]} receiveShadow>
-        <planeGeometry args={[12, 7]} />
-        <meshStandardMaterial 
-          color={lightingMood === 'sunset' ? '#1a1614' : '#090d18'} 
-          roughness={0.9} 
+      {/* Left Wall with Window Cutout Frame */}
+      <group position={[-5.4, 3.2, 0]} rotation={[0, Math.PI / 2, 0]}>
+        {/* Wall panels around window */}
+        <mesh position={[-3.8, 0, 0]} receiveShadow>
+          <boxGeometry args={[2.5, 7.5, 0.1]} />
+          <meshStandardMaterial color={lightingMood === 'sunset' ? '#1a1614' : '#090d18'} roughness={0.9} />
+        </mesh>
+        <mesh position={[3.8, 0, 0]} receiveShadow>
+          <boxGeometry args={[2.5, 7.5, 0.1]} />
+          <meshStandardMaterial color={lightingMood === 'sunset' ? '#1a1614' : '#090d18'} roughness={0.9} />
+        </mesh>
+        <mesh position={[0, 2.9, 0]} receiveShadow>
+          <boxGeometry args={[5.2, 1.8, 0.1]} />
+          <meshStandardMaterial color={lightingMood === 'sunset' ? '#1a1614' : '#090d18'} roughness={0.9} />
+        </mesh>
+        <mesh position={[0, -2.9, 0]} receiveShadow>
+          <boxGeometry args={[5.2, 1.8, 0.1]} />
+          <meshStandardMaterial color={lightingMood === 'sunset' ? '#1a1614' : '#090d18'} roughness={0.9} />
+        </mesh>
+
+        {/* Panoramic Window Aluminum Frame */}
+        <mesh position={[0, 0, 0.05]}>
+          <boxGeometry args={[5.2, 4.2, 0.12]} />
+          <meshStandardMaterial color="#0f172a" metalness={0.9} roughness={0.2} />
+        </mesh>
+        {/* Window Cross Mullions */}
+        <mesh position={[0, 0, 0.06]}>
+          <boxGeometry args={[0.08, 4.2, 0.1]} />
+          <meshStandardMaterial color="#1e293b" metalness={0.8} />
+        </mesh>
+        <mesh position={[0, 0, 0.06]}>
+          <boxGeometry args={[5.2, 0.08, 0.1]} />
+          <meshStandardMaterial color="#1e293b" metalness={0.8} />
+        </mesh>
+
+        {/* Window Glass with Physical Transmission */}
+        <mesh position={[0, 0, 0]}>
+          <planeGeometry args={[5.1, 4.1]} />
+          <meshPhysicalMaterial 
+            color="#0f172a" 
+            transparent 
+            opacity={0.15} 
+            roughness={0.05} 
+            metalness={0.1}
+            transmission={0.95} 
+          />
+        </mesh>
+      </group>
+
+      {/* ================= CYBER CITY SKYLINE OUTSIDE WINDOW ================= */}
+      <group position={[-0.5, 0, 0]}>
+        {cityBuildings.map((b, i) => (
+          <group key={i} position={[b.x, b.y, b.z]}>
+            <mesh>
+              <boxGeometry args={[b.w, b.h, b.d]} />
+              <meshStandardMaterial color={b.color} roughness={0.8} metalness={0.5} />
+            </mesh>
+            {/* Illuminated Windows Matrix on Building */}
+            <mesh position={[0.48, 0, 0]}>
+              <planeGeometry args={[b.w * 0.9, b.h * 0.85]} />
+              <meshBasicMaterial color={b.lightColor} transparent opacity={0.35} />
+            </mesh>
+            {/* Skyscraper Beacon Light */}
+            <mesh position={[0, b.h / 2 + 0.1, 0]}>
+              <sphereGeometry args={[0.08, 8, 8]} />
+              <meshBasicMaterial color="#ef4444" />
+            </mesh>
+          </group>
+        ))}
+
+        {/* Distant City Glow */}
+        <pointLight 
+          position={[-8.5, 4.0, 0]} 
+          color={lightingMood === 'sunset' ? '#f59e0b' : '#38bdf8'} 
+          intensity={2.8} 
+          distance={12} 
         />
-      </mesh>
+      </group>
 
       {/* Modern Acoustic Slatted Wood Wall Panels */}
       {[-2.8, -1.9, -1.0, -0.1, 0.8, 1.7, 2.6].map((x, i) => (
@@ -349,6 +522,52 @@ export const RoomObjects: React.FC<RoomObjectsProps> = ({
         {neonActive && (
           <pointLight color={rgbColor} intensity={3.2} distance={5} />
         )}
+      </group>
+
+      {/* ================= FRAMED TECH CERTIFICATE ON WALL ================= */}
+      <group position={[2.8, 3.4, -3.92]}>
+        {/* Frame Border */}
+        <mesh castShadow>
+          <boxGeometry args={[1.5, 1.1, 0.04]} />
+          <meshStandardMaterial color="#0f172a" metalness={0.8} roughness={0.3} />
+        </mesh>
+        {/* Certificate Paper */}
+        <mesh position={[0, 0, 0.022]}>
+          <planeGeometry args={[1.38, 0.98]} />
+          <meshStandardMaterial color="#f8fafc" roughness={0.3} />
+        </mesh>
+        <Text
+          position={[0, 0.22, 0.025]}
+          fontSize={0.075}
+          color="#0f172a"
+          anchorX="center"
+          anchorY="middle"
+        >
+          CERTIFICATE OF EXCELLENCE
+        </Text>
+        <Text
+          position={[0, 0.06, 0.025]}
+          fontSize={0.06}
+          color="#0284c7"
+          anchorX="center"
+          anchorY="middle"
+        >
+          Senior Full Stack Engineer
+        </Text>
+        <Text
+          position={[0, -0.1, 0.025]}
+          fontSize={0.045}
+          color="#64748b"
+          anchorX="center"
+          anchorY="middle"
+        >
+          Cloud Systems & AI Architecture • 2026
+        </Text>
+        {/* Gold Seal Badge */}
+        <mesh position={[0.42, -0.28, 0.026]}>
+          <cylinderGeometry args={[0.12, 0.12, 0.01, 24]} />
+          <meshStandardMaterial color="#eab308" metalness={0.8} roughness={0.2} />
+        </mesh>
       </group>
 
       {/* ================= FLOATING WALL SHELF ================= */}
@@ -399,6 +618,18 @@ export const RoomObjects: React.FC<RoomObjectsProps> = ({
             metalness={0.25} 
           />
         </mesh>
+
+        {/* Desk Ambilight Wall-Wash LED Strip (Behind Desk) */}
+        <mesh position={[0, 1.42, -1.02]}>
+          <boxGeometry args={[4.2, 0.02, 0.04]} />
+          <meshBasicMaterial color={rgbColor} />
+        </mesh>
+        <pointLight 
+          position={[0, 1.6, -1.2]} 
+          color={rgbColor} 
+          intensity={2.2} 
+          distance={3.5} 
+        />
 
         {/* Premium Desk Mat (Felt/Leather) */}
         <mesh position={[0, 1.455, 0.1]} receiveShadow>
@@ -524,6 +755,32 @@ export const RoomObjects: React.FC<RoomObjectsProps> = ({
             <boxGeometry args={[0.17, 0.05, 0.28]} />
             <meshStandardMaterial color="#1e293b" roughness={0.3} metalness={0.6} />
           </mesh>
+        </group>
+
+        {/* ================= INTERACTIVE OLED SMARTPHONE ================= */}
+        <group 
+          position={[0.55, 1.465, 0.45]} 
+          rotation={[-Math.PI / 2, 0, 0.18]}
+          onClick={onPhoneClick}
+        >
+          {/* Phone Aluminum Chassis */}
+          <mesh castShadow>
+            <boxGeometry args={[0.22, 0.42, 0.018]} />
+            <meshStandardMaterial color="#111827" metalness={0.9} roughness={0.2} />
+          </mesh>
+          {/* OLED Active Screen */}
+          <mesh position={[0, 0, 0.01]}>
+            <planeGeometry args={[0.20, 0.40]} />
+            <meshBasicMaterial map={canvasRefs.texPhone} />
+          </mesh>
+          {/* Phone Notification Glow */}
+          <pointLight 
+            ref={phoneGlowRef}
+            position={[0, 0, 0.05]} 
+            color={rgbColor} 
+            intensity={0.8} 
+            distance={0.7} 
+          />
         </group>
 
         {/* ================= STUDIO HEADPHONES ON STAND ================= */}

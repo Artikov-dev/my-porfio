@@ -182,6 +182,36 @@ export const useSound = () => {
     } catch (e) {}
   }, []);
 
-  return { playClick, playHover, playMechanicalClick, playSip, playCyberSwitch, playWhoosh, playGlitch };
+  const playNotification = useCallback(() => {
+    try {
+      const ctx = initAudio();
+      if (!ctx) return;
+      if (ctx.state === 'suspended') ctx.resume();
+
+      const now = ctx.currentTime;
+      const osc1 = ctx.createOscillator();
+      const gain1 = ctx.createGain();
+      osc1.type = 'sine';
+      osc1.frequency.setValueAtTime(587.33, now); // D5
+      osc1.frequency.setValueAtTime(880.00, now + 0.08); // A5
+      gain1.gain.setValueAtTime(0.08, now);
+      gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+      osc1.connect(gain1);
+      gain1.connect(ctx.destination);
+      osc1.start(now);
+      osc1.stop(now + 0.25);
+    } catch (e) {}
+  }, []);
+
+  return { 
+    playClick, 
+    playHover, 
+    playMechanicalClick, 
+    playSip, 
+    playCyberSwitch, 
+    playWhoosh, 
+    playGlitch,
+    playNotification
+  };
 };
 
