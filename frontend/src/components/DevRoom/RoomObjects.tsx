@@ -183,7 +183,7 @@ export const RoomObjects: React.FC<RoomObjectsProps> = ({
     // 6. Hologram Rotation & Orbits
     if (hologramGroupRef.current) {
       hologramGroupRef.current.rotation.y += delta * 1.5;
-      hologramGroupRef.current.position.y = 1.85 + Math.sin(time * 2.5) * 0.04;
+      hologramGroupRef.current.position.y = 0.36 + Math.sin(time * 2.5) * 0.025;
     }
     if (holoOrbit1Ref.current) holoOrbit1Ref.current.rotation.z += delta * 3.0;
     if (holoOrbit2Ref.current) holoOrbit2Ref.current.rotation.x += delta * 2.5;
@@ -706,55 +706,73 @@ export const RoomObjects: React.FC<RoomObjectsProps> = ({
 
         {/* ================= 🛸 3D FLOATING TECH HOLOGRAM PROJECTOR ================= */}
         <group 
-          position={[-0.6, 1.46, -0.2]} 
+          position={[-1.25, 1.46, 0.2]} 
           onClick={onHologramClick}
         >
-          {/* Circular Hologram Base Projector */}
+          {/* Futuristic Circular Projector Base */}
           <mesh castShadow position={[0, 0.015, 0]}>
-            <cylinderGeometry args={[0.22, 0.26, 0.035, 32]} />
-            <meshStandardMaterial color="#0f172a" metalness={0.9} roughness={0.2} />
+            <cylinderGeometry args={[0.18, 0.22, 0.03, 32]} />
+            <meshStandardMaterial color="#0b1120" metalness={0.9} roughness={0.2} />
           </mesh>
-          {/* Emitter Lens */}
-          <mesh position={[0, 0.036, 0]}>
-            <cylinderGeometry args={[0.16, 0.16, 0.01, 32]} />
+          {/* Glowing Concentric Neon Emitter Ring */}
+          <mesh position={[0, 0.032, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+            <torusGeometry args={[0.13, 0.008, 16, 32]} />
             <meshBasicMaterial color={rgbColor} />
           </mesh>
-          {/* Laser Projector Light Cone */}
-          <mesh position={[0, 0.28, 0]}>
-            <coneGeometry args={[0.32, 0.5, 32, 1, true]} />
+          {/* Emitter Core Lens */}
+          <mesh position={[0, 0.032, 0]}>
+            <cylinderGeometry args={[0.08, 0.08, 0.005, 32]} />
+            <meshBasicMaterial color="#ffffff" />
+          </mesh>
+          {/* Subtle Vertical Ethereal Light Column */}
+          <mesh position={[0, 0.18, 0]}>
+            <cylinderGeometry args={[0.14, 0.08, 0.32, 32, 1, true]} />
             <meshBasicMaterial 
               color={rgbColor} 
               transparent 
-              opacity={0.18} 
+              opacity={0.12} 
               side={THREE.DoubleSide} 
-              blending={THREE.AdditiveBlending} 
+              blending={THREE.AdditiveBlending}
+              depthWrite={false}
             />
           </mesh>
 
-          {/* Floating Rotating 3D Holographic Geometry */}
-          <group ref={hologramGroupRef} position={[0, 0.55, 0]}>
+          {/* Floating Rotating 3D Holographic Geometry (Floats right above base!) */}
+          <group ref={hologramGroupRef} position={[0, 0.36, 0]}>
             {/* Hologram Mode 0: React Atom */}
             {hologramIndex % 4 === 0 && (
-              <group>
+              <group scale={0.85}>
                 <mesh>
-                  <sphereGeometry args={[0.08, 16, 16]} />
+                  <sphereGeometry args={[0.07, 16, 16]} />
                   <meshBasicMaterial color="#38bdf8" wireframe />
                 </mesh>
                 <group ref={holoOrbit1Ref}>
                   <mesh rotation={[Math.PI / 3, 0, 0]}>
-                    <torusGeometry args={[0.22, 0.012, 12, 36]} />
+                    <torusGeometry args={[0.2, 0.01, 12, 36]} />
+                    <meshBasicMaterial color="#38bdf8" />
+                  </mesh>
+                  <mesh position={[0.2, 0, 0]}>
+                    <sphereGeometry args={[0.025, 8, 8]} />
                     <meshBasicMaterial color="#38bdf8" />
                   </mesh>
                 </group>
                 <group ref={holoOrbit2Ref}>
                   <mesh rotation={[-Math.PI / 3, 0, 0]}>
-                    <torusGeometry args={[0.22, 0.012, 12, 36]} />
+                    <torusGeometry args={[0.2, 0.01, 12, 36]} />
+                    <meshBasicMaterial color="#38bdf8" />
+                  </mesh>
+                  <mesh position={[-0.2, 0, 0]}>
+                    <sphereGeometry args={[0.025, 8, 8]} />
                     <meshBasicMaterial color="#38bdf8" />
                   </mesh>
                 </group>
                 <group ref={holoOrbit3Ref}>
                   <mesh rotation={[0, 0, Math.PI / 2]}>
-                    <torusGeometry args={[0.22, 0.012, 12, 36]} />
+                    <torusGeometry args={[0.2, 0.01, 12, 36]} />
+                    <meshBasicMaterial color="#38bdf8" />
+                  </mesh>
+                  <mesh position={[0, 0.2, 0]}>
+                    <sphereGeometry args={[0.025, 8, 8]} />
                     <meshBasicMaterial color="#38bdf8" />
                   </mesh>
                 </group>
@@ -763,13 +781,13 @@ export const RoomObjects: React.FC<RoomObjectsProps> = ({
 
             {/* Hologram Mode 1: TypeScript Hypercube */}
             {hologramIndex % 4 === 1 && (
-              <group>
+              <group scale={0.85}>
                 <mesh>
-                  <boxGeometry args={[0.28, 0.28, 0.28]} />
+                  <boxGeometry args={[0.24, 0.24, 0.24]} />
                   <meshBasicMaterial color="#3b82f6" wireframe />
                 </mesh>
                 <mesh>
-                  <sphereGeometry args={[0.07, 16, 16]} />
+                  <sphereGeometry args={[0.06, 16, 16]} />
                   <meshBasicMaterial color="#60a5fa" />
                 </mesh>
               </group>
@@ -777,13 +795,13 @@ export const RoomObjects: React.FC<RoomObjectsProps> = ({
 
             {/* Hologram Mode 2: Node.js Hexagon Prism */}
             {hologramIndex % 4 === 2 && (
-              <group>
+              <group scale={0.85}>
                 <mesh rotation={[Math.PI / 2, 0, 0]}>
-                  <cylinderGeometry args={[0.22, 0.22, 0.15, 6]} />
+                  <cylinderGeometry args={[0.18, 0.18, 0.12, 6]} />
                   <meshBasicMaterial color="#22c55e" wireframe />
                 </mesh>
                 <mesh>
-                  <octahedronGeometry args={[0.09, 0]} />
+                  <octahedronGeometry args={[0.07, 0]} />
                   <meshBasicMaterial color="#4ade80" />
                 </mesh>
               </group>
@@ -791,20 +809,20 @@ export const RoomObjects: React.FC<RoomObjectsProps> = ({
 
             {/* Hologram Mode 3: AI Neural Network Cluster */}
             {hologramIndex % 4 === 3 && (
-              <group>
+              <group scale={0.85}>
                 <mesh>
-                  <icosahedronGeometry args={[0.22, 1]} />
+                  <icosahedronGeometry args={[0.18, 1]} />
                   <meshBasicMaterial color="#ec4899" wireframe />
                 </mesh>
                 <mesh>
-                  <dodecahedronGeometry args={[0.1, 0]} />
+                  <dodecahedronGeometry args={[0.08, 0]} />
                   <meshBasicMaterial color="#f472b6" />
                 </mesh>
               </group>
             )}
 
-            {/* Hologram Light Glow */}
-            <pointLight color={rgbColor} intensity={2.2} distance={1.8} />
+            {/* Hologram Focused Upward Glow */}
+            <pointLight color={rgbColor} intensity={2.0} distance={1.2} />
           </group>
         </group>
 
