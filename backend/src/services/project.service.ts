@@ -18,18 +18,18 @@ const DEFAULT_BACKEND_PROJECTS = [
     title: { en: 'ControlLife - Task & Life Management System', uz: 'ControlLife - Topshiriqlar va Hayotni Boshqarish Tizimi', ru: 'ControlLife - Система Управления Задачами и Жизнью' },
     description: { en: 'An all-in-one productivity and personal management dashboard designed to track tasks, goals, habits, and daily workflow efficiently.', uz: "Vazifalar, maqsadlar, odatlar va kunlik ish jarayonini samarali kuzatish uchun mo'ljallangan barchasi birda unumdorlik platformasi.", ru: 'Многофункциональная платформа продуктивности для эффективного отслеживания задач, целей, привычек и ежедневного рабочего процесса.' },
     image_url: 'https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b?q=80&w=2072&auto=format&fit=crop',
-    github_url: 'https://github.com/Artikov-dev',
-    live_url: 'https://controllife.artikov.dev/auth/login',
+    github_url: 'https://github.com/Artikov-dev/controllife',
+    live_url: 'https://controllife.vercel.app',
     tech_stack: ['React', 'TypeScript', 'Tailwind CSS', 'Node.js', 'PostgreSQL']
   },
   {
     id: 'proj-1',
-    title: { en: 'Wedding Platform', uz: "To'y Platformasi", ru: 'Свадебная Платформа' },
-    description: { en: 'A platform to organize and manage weddings with ease.', uz: "To'ylarni osongina tashkil etish va boshqarish uchun platforma.", ru: 'Платформа для легкой организации и управления свадьбами.' },
-    image_url: 'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?q=80&w=2069&auto=format&fit=crop',
-    github_url: 'https://github.com/Artikov-dev/Wedding-Platforom',
-    live_url: 'https://wedding-platforom.vercel.app',
-    tech_stack: ['React', 'Node.js', 'Tailwind CSS']
+    title: { en: 'Taigo - Modern Web Platform', uz: 'Taigo - Zamonaviy Veb Platforma', ru: 'Taigo - Современная Веб-Платформа' },
+    description: { en: 'A modern and intuitive digital platform built with cutting-edge web technologies for seamless performance and user engagement.', uz: "Yuqori tezlik va qulay foydalanuvchi interfeysiga ega ilg'or veb texnologiyalari asosida yaratilgan zamonaviy platforma.", ru: 'Современная цифровая платформа, созданная на передовых веб-технологиях для высокой производительности и удобства.' },
+    image_url: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=2070&auto=format&fit=crop',
+    github_url: 'https://github.com/Artikov-dev/taigo',
+    live_url: 'https://taigo-seven.vercel.app',
+    tech_stack: ['React', 'TypeScript', 'Tailwind CSS', 'Next.js']
   },
   {
     id: 'proj-2',
