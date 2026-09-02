@@ -28,6 +28,16 @@ const translations = {
     hero_subtitle: 'I specialize in building responsive frontend interfaces and scalable backend systems using modern JavaScript technologies. My goal is to create clean, efficient, and impactful digital solutions.',
     explore_projects: 'Explore Projects',
     view_resume: 'View Resume',
+    download_cv: 'Download CV',
+    
+    // Blog & Modal
+    quick_read: 'Quick Read',
+    min_read: 'min read',
+    views: 'views',
+    share: 'Share',
+    copied: 'Link copied to clipboard!',
+    close: 'Close',
+    published_on: 'Published on',
     
     // About
     about_me: 'About Me',
@@ -107,6 +117,16 @@ const translations = {
     hero_subtitle: 'Men zamonaviy JavaScript texnologiyalaridan foydalangan holda moslashuvchan frontend interfeyslari va kengayishga moyil backend tizimlarini yaratishga ixtisoslashganman. Mening maqsadim — toza, samarali va ta\'sirchan raqamli yechimlar yaratishdir.',
     explore_projects: 'Loyihalarni Ko\'rish',
     view_resume: 'Rezyumeni Ko\'rish',
+    download_cv: 'CV Yuklab Olish',
+    
+    // Blog & Modal
+    quick_read: 'Tezkor O\'qish',
+    min_read: 'daqiqalik mutolaa',
+    views: 'ko\'rishlar',
+    share: 'Ulashish',
+    copied: 'Havola nusxalandi!',
+    close: 'Yopish',
+    published_on: 'Chop etilgan sana',
     
     // About
     about_me: 'Men Haqimda',
@@ -186,6 +206,16 @@ const translations = {
     hero_subtitle: 'Я специализируюсь на создании адаптивных frontend-интерфейсов и масштабируемых backend-систем с использованием современных JavaScript-технологий. Моя цель — создавать чистые, эффективные и впечатляющие цифровые решения.',
     explore_projects: 'Смотреть Проекты',
     view_resume: 'Смотреть Резюме',
+    download_cv: 'Скачать Резюме',
+    
+    // Blog & Modal
+    quick_read: 'Быстрое Чтение',
+    min_read: 'мин чтения',
+    views: 'просмотров',
+    share: 'Поделиться',
+    copied: 'Ссылка скопирована!',
+    close: 'Закрыть',
+    published_on: 'Опубликовано',
     
     // About
     about_me: 'Обо мне',

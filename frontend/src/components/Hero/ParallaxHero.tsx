@@ -4,6 +4,7 @@ import { useMousePosition } from '@/hooks/useMousePosition';
 import { useI18n } from '@/contexts/I18nContext';
 import { Button } from '@/components/ui/Button';
 import { Link } from 'react-router-dom';
+import { Download, ArrowRight, FileText } from 'lucide-react';
 import { FluidBackground } from './FluidBackground';
 import { Starfield } from './Starfield';
 import { TextReveal } from '@/components/ui/TextReveal';
@@ -12,7 +13,7 @@ import { Typewriter } from '@/components/ui/Typewriter';
 
 export const ParallaxHero = () => {
   const { x, y } = useMousePosition();
-  const { t } = useI18n();
+  const { t, language } = useI18n();
 
   // Safe checks for SSR or initial load
   const winWidth = typeof window !== 'undefined' ? window.innerWidth : 1000;
@@ -98,25 +99,44 @@ export const ParallaxHero = () => {
           </div>
 
           <motion.div 
-            className="flex flex-col sm:flex-row items-center justify-center gap-4"
+            className="flex flex-wrap items-center justify-center gap-3 sm:gap-4"
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 1.5, duration: 0.5 }}
           >
             <Link to="/projects">
               <Magnetic>
-                <Button variant="solid" className="w-full sm:w-auto px-8 py-3 text-lg backdrop-blur-md bg-primary/80 hover:bg-primary pointer-events-auto">
+                <Button variant="solid" className="w-full sm:w-auto px-7 py-3 text-base sm:text-lg backdrop-blur-md bg-primary/90 hover:bg-primary pointer-events-auto shadow-lg shadow-primary/25 hover:shadow-primary/40 transition-all">
                   {t('explore_projects')}
                 </Button>
               </Magnetic>
             </Link>
+            
             <Link to="/resume">
               <Magnetic>
-                <Button variant="outline" className="w-full sm:w-auto px-8 py-3 text-lg backdrop-blur-md dark:border-white/20 border-slate-900/20 text-slate-900 dark:text-white dark:hover:bg-white/10 hover:bg-slate-900/10 pointer-events-auto">
+                <Button variant="outline" className="w-full sm:w-auto px-6 py-3 text-base sm:text-lg backdrop-blur-md dark:border-white/20 border-slate-900/20 text-slate-900 dark:text-white dark:hover:bg-white/10 hover:bg-slate-900/10 pointer-events-auto flex items-center justify-center gap-2">
+                  <FileText className="w-4 h-4 text-primary" />
                   {t('view_resume')}
                 </Button>
               </Magnetic>
             </Link>
+
+            <a 
+              href={`/resume-${language}.pdf`} 
+              download={`Rozimuhammad_Artikov_Resume_${language.toUpperCase()}.pdf`}
+              className="w-full sm:w-auto"
+            >
+              <Magnetic>
+                <Button 
+                  variant="ghost" 
+                  className="w-full sm:w-auto px-6 py-3 text-base sm:text-lg glass border border-primary/30 dark:border-primary/40 text-primary dark:text-primary-foreground hover:bg-primary/10 hover:border-primary transition-all duration-300 pointer-events-auto flex items-center justify-center gap-2 group"
+                >
+                  <Download className="w-4 h-4 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-transform" />
+                  <span>{t('download_cv')}</span>
+                  <span className="text-xs uppercase px-1.5 py-0.5 rounded bg-primary/20 text-primary font-mono font-bold">PDF</span>
+                </Button>
+              </Magnetic>
+            </a>
           </motion.div>
         </motion.div>
       </motion.div>
