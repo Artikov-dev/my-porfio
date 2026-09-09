@@ -1,27 +1,82 @@
 @import "tailwindcss";
 
 @theme {
+  --font-sans: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-poppins: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
   --color-background: var(--bg);
   --color-foreground: var(--fg);
   --color-primary: var(--primary);
   --color-border: var(--border);
+  --color-surface: var(--color-surface);
+  --color-surface-hover: var(--color-surface-hover);
+  --color-border-subtle: var(--color-border-subtle);
+  --color-accent: var(--color-accent);
+  --color-accent-hover: var(--color-accent-hover);
+  --color-accent-subtle: var(--color-accent-subtle);
+  --color-accent-contrast: var(--color-accent-contrast);
+  --color-text-primary: var(--color-text-primary);
+  --color-text-secondary: var(--color-text-secondary);
+  --color-text-tertiary: var(--color-text-tertiary);
+  --color-text-ghost: var(--color-text-ghost);
 }
 
 @custom-variant dark (&:is(.dark *));
 
 @layer base {
-  :root {
-    --bg: #FAFAFA;
-    --fg: #0F172A;
-    --primary: #0D9488;
-    --border: #E2E8F0;
+  :root, [data-theme="light"] {
+    --bg: #faf8f5;
+    --fg: #181716;
+    --primary: #1a365d;
+    --border: #e3ded5;
+
+    --color-bg: #faf8f5;
+    --color-surface: #f3efe8;
+    --color-surface-hover: #ece7de;
+    --color-border: #e3ded5;
+    --color-border-subtle: #eeeae3;
+    --color-text-primary: #181716;
+    --color-text-secondary: #595650;
+    --color-text-tertiary: #87837b;
+    --color-accent: #1a365d;
+    --color-accent-hover: #10233d;
+    --color-accent-subtle: #1a365d14;
+    --color-text-ghost: #18171638;
+    --color-accent-contrast: #ffffff;
+    --color-success: #226e47;
+    --color-warning: #9e5a13;
+    --color-error: #b92b27;
+
+    color-scheme: light;
   }
 
-  .dark {
-    --bg: #0B0F19;
-    --fg: #F8FAFC;
-    --primary: #14B8A6;
-    --border: #1E293B;
+  [data-theme="dark"], .dark {
+    --bg: #151312;
+    --fg: #edeae4;
+    --primary: #5e8ecb;
+    --border: #2e2b28;
+
+    --color-bg: #151312;
+    --color-surface: #1e1c1a;
+    --color-surface-hover: #262422;
+    --color-border: #2e2b28;
+    --color-border-subtle: #24221f;
+    --color-text-primary: #edeae4;
+    --color-text-secondary: #99948c;
+    --color-text-tertiary: #6b665f;
+    --color-accent: #5e8ecb;
+    --color-accent-hover: #7ba6dc;
+    --color-accent-subtle: #5e8ecb1f;
+    --color-text-ghost: #edeae438;
+    --color-accent-contrast: #0d1520;
+    --color-success: #4ea87d;
+    --color-warning: #d99a4e;
+    --color-error: #df6961;
+
+    color-scheme: dark;
+  }
+
+  html, body {
+    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
   }
 
   body {
