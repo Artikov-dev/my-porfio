@@ -109,7 +109,7 @@ export const WebResume = () => {
             
             <div className="space-y-8">
               <div className="relative pl-6 border-l-2 border-slate-200 dark:border-slate-800">
-                <div className="absolute w-3 h-3 bg-primary rounded-full -left-[7px] top-1.5 shadow-[0_0_10px_rgba(20,184,166,0.8)]"></div>
+                <div className="absolute w-3 h-3 bg-primary rounded-full -left-[7px] top-1.5 shadow-[0_0_10px_rgba(94,142,203,0.8)]"></div>
                 <h3 className="text-lg font-bold text-slate-800 dark:text-white">Frontend Developer</h3>
                 <div className="text-primary text-sm font-medium mb-2">MohirLab Inc. <span className="text-slate-500 font-normal">| Dec 2025 – Apr 2026</span></div>
                 <ul className="list-disc list-inside text-sm text-slate-600 dark:text-slate-400 space-y-1">
@@ -121,7 +121,7 @@ export const WebResume = () => {
               </div>
 
               <div className="relative pl-6 border-l-2 border-slate-200 dark:border-slate-800">
-                <div className="absolute w-3 h-3 bg-primary rounded-full -left-[7px] top-1.5 shadow-[0_0_10px_rgba(20,184,166,0.8)]"></div>
+                <div className="absolute w-3 h-3 bg-primary rounded-full -left-[7px] top-1.5 shadow-[0_0_10px_rgba(94,142,203,0.8)]"></div>
                 <h3 className="text-lg font-bold text-slate-800 dark:text-white">Frontend Mentor (Instructor)</h3>
                 <div className="text-primary text-sm font-medium mb-2">PDP Junior <span className="text-slate-500 font-normal">| Jul 2025 – Sep 2025</span></div>
                 <ul className="list-disc list-inside text-sm text-slate-600 dark:text-slate-400 space-y-1">

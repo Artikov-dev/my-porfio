@@ -44,7 +44,7 @@ export const ParallaxHero = () => {
         transition={{ type: 'spring', stiffness: 100, damping: 20 }}
       >
         <motion.div
-          className="absolute top-1/4 left-[10%] md:left-[20%] px-4 py-2 rounded-xl dark:bg-white/5 bg-slate-900/5 border dark:border-white/10 border-slate-900/10 backdrop-blur-md text-cyan-500 dark:text-cyan-400 font-mono text-sm md:text-base font-bold shadow-[0_0_20px_rgba(34,211,238,0.2)]"
+          className="absolute top-1/4 left-[10%] md:left-[20%] px-4 py-2 rounded-xl dark:bg-white/5 bg-slate-900/5 border dark:border-white/10 border-slate-900/10 backdrop-blur-md text-primary font-mono text-sm md:text-base font-bold shadow-[0_0_20px_rgba(94,142,203,0.25)]"
           animate={{ y: [0, -15, 0], rotate: [0, -5, 0] }}
           transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
         >
@@ -81,7 +81,7 @@ export const ParallaxHero = () => {
         >
           <h1 className="text-4xl sm:text-5xl md:text-7xl font-bold text-slate-900 dark:text-white tracking-tight mb-4 md:mb-6 leading-tight flex flex-col items-center gap-2">
             <TextReveal text={t('hero_title1')} />
-            <TextReveal text={t('hero_title2')} className="text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-primary" delay={0.5} />
+            <TextReveal text={t('hero_title2')} className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent-hover" delay={0.5} />
           </h1>
           <div className="max-w-2xl mx-auto text-base md:text-xl text-slate-600 dark:text-slate-300 mb-8 md:mb-10 font-medium h-[60px] flex items-center justify-center">
             <Typewriter 

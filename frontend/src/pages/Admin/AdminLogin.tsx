@@ -104,7 +104,7 @@ export const AdminLogin = () => {
             <button 
               type="submit"
               disabled={status === 'loading'}
-              className="w-full bg-primary text-white font-medium py-3 rounded-xl hover:bg-teal-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_0_20px_rgba(20,184,166,0.2)] cursor-pointer"
+              className="w-full bg-primary text-white font-medium py-3 rounded-xl hover:bg-accent-hover transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_0_20px_rgba(94,142,203,0.3)] cursor-pointer"
             >
               {status === 'loading' ? 'Authenticating...' : 'Initialize Uplink'}
             </button>

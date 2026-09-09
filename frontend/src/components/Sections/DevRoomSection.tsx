@@ -29,7 +29,7 @@ import {
 import toast from 'react-hot-toast';
 
 const RGB_PALETTE = [
-  { name: 'Teal Emerald', color: '#14b8a6' },
+  { name: 'Steel Blue', color: '#5e8ecb' },
   { name: 'Cyber Magenta', color: '#ec4899' },
   { name: 'Matrix Green', color: '#22c55e' },
   { name: 'Electric Blue', color: '#3b82f6' },
@@ -289,8 +289,8 @@ export const DevRoomSection: React.FC = () => {
 
           {/* Smart Interactive Object Hover Tooltip */}
           {hoveredObject && (
-            <div className="absolute top-20 left-1/2 -translate-x-1/2 z-30 pointer-events-none px-4 py-2 rounded-full bg-slate-950/90 backdrop-blur-xl border border-cyan-500/50 text-cyan-300 text-xs sm:text-sm font-medium shadow-[0_0_25px_rgba(6,182,212,0.4)] flex items-center gap-2 transition-all">
-              <Sparkles className="w-4 h-4 text-cyan-400 animate-spin" />
+            <div className="absolute top-20 left-1/2 -translate-x-1/2 z-30 pointer-events-none px-4 py-2 rounded-full bg-surface/90 backdrop-blur-xl border border-primary/50 text-primary text-xs sm:text-sm font-medium shadow-[0_0_25px_rgba(94,142,203,0.35)] flex items-center gap-2 transition-all">
+              <Sparkles className="w-4 h-4 text-primary animate-spin" />
               <span>{hoveredObject}</span>
             </div>
           )}
@@ -542,7 +542,7 @@ export const DevRoomSection: React.FC = () => {
               </button>
               <button 
                 onClick={handleHologramClick}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl glass border border-white/10 backdrop-blur-md cursor-pointer hover:border-cyan-400/50 transition-colors shadow-md text-cyan-400 whitespace-nowrap"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl glass border border-white/10 backdrop-blur-md cursor-pointer hover:border-primary/50 transition-colors shadow-md text-primary whitespace-nowrap"
                 title="Project 3D Floating Tech Hologram"
               >
                 <Atom size={14} /> <span>Holo</span>
@@ -556,10 +556,10 @@ export const DevRoomSection: React.FC = () => {
               </button>
               <button 
                 onClick={handlePhoneClick}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl glass border border-white/10 backdrop-blur-md cursor-pointer hover:border-cyan-400/50 transition-colors shadow-md whitespace-nowrap"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl glass border border-white/10 backdrop-blur-md cursor-pointer hover:border-primary/50 transition-colors shadow-md whitespace-nowrap"
                 title="Check SmartPhone Notifications"
               >
-                <Smartphone size={14} className="text-cyan-400" /> <span className="hidden md:inline">Phone</span>
+                <Smartphone size={14} className="text-primary" /> <span className="hidden md:inline">Phone</span>
               </button>
               <button 
                 onClick={handleChairClick}

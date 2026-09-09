@@ -65,17 +65,17 @@ export const BlogModal: React.FC<BlogModalProps> = ({ blog, onClose }) => {
         } else {
           inCodeBlock = false;
           elements.push(
-            <div key={`code-${index}`} className="my-6 rounded-2xl overflow-hidden border border-border/80 bg-slate-950 shadow-xl font-mono text-sm">
-              <div className="flex items-center justify-between px-4 py-2.5 bg-slate-900 border-b border-slate-800 text-xs text-slate-400">
+            <div key={`code-${index}`} className="my-6 rounded-2xl overflow-hidden border border-border/80 bg-[#151312] shadow-xl font-mono text-sm">
+              <div className="flex items-center justify-between px-4 py-2.5 bg-[#1e1c1a] border-b border-border text-xs text-foreground/60">
                 <span className="flex items-center gap-2">
                   <span className="w-2.5 h-2.5 rounded-full bg-red-500/80 inline-block"></span>
                   <span className="w-2.5 h-2.5 rounded-full bg-yellow-500/80 inline-block"></span>
                   <span className="w-2.5 h-2.5 rounded-full bg-green-500/80 inline-block"></span>
-                  <span className="ml-2 font-semibold text-slate-300 uppercase">{codeLanguage}</span>
+                  <span className="ml-2 font-semibold text-foreground/80 uppercase">{codeLanguage}</span>
                 </span>
-                <span className="text-slate-500 text-[11px]">snippet</span>
+                <span className="text-foreground/40 text-[11px]">snippet</span>
               </div>
-              <pre className="p-4 md:p-5 overflow-x-auto text-cyan-300 leading-relaxed font-mono">
+              <pre className="p-4 md:p-5 overflow-x-auto text-primary leading-relaxed font-mono">
                 <code>{codeLines.join('\n')}</code>
               </pre>
             </div>

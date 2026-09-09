@@ -37,7 +37,7 @@ export const Starfield = () => {
             size={10} 
             speed={1} 
             opacity={1}
-            color="#2dd4bf" // Teal glowing stars
+            color="#7ba6dc" // Steel blue glowing stars
             noise={2}
           />
         </Suspense>

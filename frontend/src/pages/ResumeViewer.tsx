@@ -79,7 +79,7 @@ export const ResumeViewer = () => {
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.8, delay: 0.2 }}
-          className="w-full h-[70vh] md:h-[80vh] glass border border-white/20 dark:border-white/10 rounded-3xl overflow-hidden shadow-[0_0_50px_rgba(20,184,166,0.15)] hover:shadow-[0_0_60px_rgba(20,184,166,0.25)] transition-shadow duration-500 relative flex flex-col group"
+          className="w-full h-[70vh] md:h-[80vh] glass border border-white/20 dark:border-white/10 rounded-3xl overflow-hidden shadow-[0_0_50px_rgba(94,142,203,0.18)] hover:shadow-[0_0_60px_rgba(94,142,203,0.3)] transition-shadow duration-500 relative flex flex-col group"
         >
           {/* We use an object tag for better PDF rendering and hide native toolbars */}
           <div className="flex-1 w-full relative flex items-center justify-center bg-white/50 dark:bg-black/20 overflow-hidden">
@@ -121,7 +121,7 @@ export const ResumeViewer = () => {
               </Button>
             </a>
             <a href={pdfUrl} download className="w-full sm:w-auto">
-              <Button variant="solid" className="w-full flex items-center justify-center gap-2 px-8 py-6 rounded-xl shadow-[0_0_20px_rgba(20,184,166,0.4)] hover:shadow-[0_0_30px_rgba(20,184,166,0.6)] transition-all">
+              <Button variant="solid" className="w-full flex items-center justify-center gap-2 px-8 py-6 rounded-xl shadow-[0_0_20px_rgba(94,142,203,0.4)] hover:shadow-[0_0_30px_rgba(94,142,203,0.6)] transition-all">
                 <Download className="w-5 h-5" /> Download PDF
               </Button>
             </a>

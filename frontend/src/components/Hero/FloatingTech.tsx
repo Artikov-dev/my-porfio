@@ -36,12 +36,12 @@ export const FloatingTech = () => {
       >
         <icosahedronGeometry args={[1.5, 1]} />
         <meshStandardMaterial 
-          color={isDark ? (hovered ? "#2dd4bf" : "#14b8a6") : (hovered ? "#0e7490" : "#155e75")} 
+          color={isDark ? (hovered ? "#7ba6dc" : "#5e8ecb") : (hovered ? "#2b4c7e" : "#1a365d")} 
           wireframe={true}
-          emissive={isDark ? "#14b8a6" : "#155e75"}
-          emissiveIntensity={hovered ? 0.8 : 0.2}
+          emissive={isDark ? "#5e8ecb" : "#1a365d"}
+          emissiveIntensity={hovered ? 0.8 : 0.25}
           transparent
-          opacity={0.8}
+          opacity={0.85}
         />
       </mesh>
 
@@ -49,11 +49,11 @@ export const FloatingTech = () => {
       <mesh>
         <sphereGeometry args={[0.5, 32, 32]} />
         <meshStandardMaterial 
-          color={isDark ? "#0f766e" : "#164e63"}
-          emissive={isDark ? "#0f766e" : "#164e63"}
+          color={isDark ? "#4a78b5" : "#10233d"}
+          emissive={isDark ? "#4a78b5" : "#10233d"}
           emissiveIntensity={1}
           transparent
-          opacity={isDark ? 0.9 : 0.7}
+          opacity={isDark ? 0.9 : 0.75}
         />
       </mesh>
     </Float>

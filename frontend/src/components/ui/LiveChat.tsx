@@ -133,7 +133,7 @@ export const LiveChat = () => {
                 </div>
                 <button 
                   type="submit"
-                  className="w-full bg-primary hover:bg-teal-500 text-white font-medium py-2 rounded-lg transition-colors"
+                  className="w-full bg-primary hover:bg-accent-hover text-white font-medium py-2 rounded-lg transition-colors"
                 >
                   Start Chatting
                 </button>
@@ -176,7 +176,7 @@ export const LiveChat = () => {
                   <button 
                     type="submit"
                     disabled={!input.trim()}
-                    className="p-2 bg-primary text-white rounded-full hover:bg-teal-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="p-2 bg-primary text-white rounded-full hover:bg-accent-hover transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <Send className="w-4 h-4" />
                   </button>
@@ -190,7 +190,7 @@ export const LiveChat = () => {
       {/* Floating Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-12 h-12 md:w-14 md:h-14 bg-primary text-white rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(20,184,166,0.3)] hover:scale-105 hover:shadow-[0_0_30px_rgba(20,184,166,0.5)] transition-all duration-300"
+        className="w-12 h-12 md:w-14 md:h-14 bg-primary text-white rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(94,142,203,0.35)] hover:scale-105 hover:shadow-[0_0_30px_rgba(94,142,203,0.55)] transition-all duration-300"
       >
         {isOpen ? <X className="w-5 h-5 md:w-6 md:h-6" /> : <MessageCircle className="w-5 h-5 md:w-6 md:h-6" />}
       </button>

@@ -178,7 +178,7 @@ export const SnakeGame = ({ onGameOver, onExit }: { onGameOver?: (score: number)
             setScore(0);
             setIsGameOver(false);
           }}
-          className="mt-4 px-4 py-1 text-xs bg-primary text-white rounded hover:bg-teal-500"
+          className="mt-4 px-4 py-1 text-xs bg-primary text-white rounded hover:bg-accent-hover transition-colors"
         >
           RESTART
         </button>

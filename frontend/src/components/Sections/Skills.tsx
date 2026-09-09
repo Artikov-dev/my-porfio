@@ -61,7 +61,7 @@ export const SkillsSection = () => {
                     </div>
                     <div className="w-full h-2 bg-foreground/10 rounded-full overflow-hidden">
                       <div 
-                        className="h-full bg-gradient-to-r from-primary to-teal-400 rounded-full transition-all duration-1000 ease-out"
+                        className="h-full bg-gradient-to-r from-primary to-accent-hover rounded-full transition-all duration-1000 ease-out"
                         style={{ width: `${skill.percent}%` }}
                       ></div>
                     </div>

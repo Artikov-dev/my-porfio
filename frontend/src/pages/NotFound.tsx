@@ -24,7 +24,7 @@ export const NotFound = () => {
         className="text-center relative z-10"
       >
         <motion.h1 
-          className="text-8xl md:text-[150px] font-bold text-transparent bg-clip-text bg-gradient-to-r from-primary to-teal-400 mb-4"
+          className="text-8xl md:text-[150px] font-bold text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent-hover mb-4"
           initial={{ scale: 0.8 }}
           animate={{ scale: 1 }}
           transition={{ type: 'spring', stiffness: 100, damping: 20 }}

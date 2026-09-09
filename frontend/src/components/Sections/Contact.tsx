@@ -71,7 +71,7 @@ export const ContactSection = () => {
       name: 'Email',
       icon: <MailIcon className="w-8 h-8" />,
       href: 'mailto:artikovrozik52@gmail.com',
-      color: 'hover:text-teal-400 hover:border-teal-400/50 hover:bg-teal-400/10'
+      color: 'hover:text-primary hover:border-primary/50 hover:bg-primary/10'
     }
   ];
 

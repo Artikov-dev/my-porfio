@@ -118,7 +118,7 @@ export const AdminBlogs = () => {
         </h2>
         <button
           onClick={() => openModal()}
-          className="bg-primary hover:bg-teal-500 text-white px-4 py-2 rounded-xl flex items-center gap-2 font-medium transition-colors"
+          className="bg-primary hover:bg-accent-hover text-white px-4 py-2 rounded-xl flex items-center gap-2 font-medium transition-colors"
         >
           <Plus className="w-5 h-5" /> New Blog
         </button>
@@ -231,7 +231,7 @@ export const AdminBlogs = () => {
                 <button type="button" onClick={() => setIsModalOpen(false)} className="px-6 py-2.5 rounded-xl text-foreground/70 hover:bg-foreground/5 hover:text-foreground dark:text-white transition-colors">
                   Cancel
                 </button>
-                <button type="submit" className="bg-primary hover:bg-teal-500 text-white px-8 py-2.5 rounded-xl flex items-center gap-2 font-medium transition-colors shadow-lg shadow-primary/20">
+                <button type="submit" className="bg-primary hover:bg-accent-hover text-white px-8 py-2.5 rounded-xl flex items-center gap-2 font-medium transition-colors shadow-lg shadow-primary/20">
                   <Save className="w-5 h-5" /> Save Blog
                 </button>
               </div>

@@ -163,7 +163,7 @@ export const AdminMessages = () => {
                   <button 
                     type="submit"
                     disabled={!replyText[sessionId]}
-                    className="bg-primary hover:bg-teal-500 disabled:opacity-50 disabled:hover:bg-primary text-white p-3 rounded-xl transition-colors"
+                    className="bg-primary hover:bg-accent-hover disabled:opacity-50 disabled:hover:bg-primary text-white p-3 rounded-xl transition-colors"
                   >
                     <Send className="w-4 h-4" />
                   </button>
