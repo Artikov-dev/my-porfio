@@ -4,34 +4,24 @@ import { api } from '@/lib/api';
 
 export const ProtectedRoute = () => {
   const [isVerifying, setIsVerifying] = useState(true);
-  const [isAuthenticated, setIsAuthenticated] = useState(() => {
-    return localStorage.getItem('isAdmin') === 'true';
-  });
+  // Access is granted only after the server confirms the session — never from localStorage
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
     const checkAuth = async () => {
-      const hasLocalAdmin = localStorage.getItem('isAdmin') === 'true';
-
       try {
-        await api.get('/auth/me', { timeout: 5000 });
-        
+        // Default 30s timeout leaves room for a Render cold start
+        await api.get('/auth/me');
+
         if (isMounted) {
           setIsAuthenticated(true);
           localStorage.setItem('isAdmin', 'true');
         }
-      } catch (err: any) {
-        // If server returns explicit 403 or 401, revoke access
-        if (err?.response?.status === 403 || err?.response?.status === 401) {
-          if (isMounted) {
-            setIsAuthenticated(false);
-            localStorage.removeItem('isAdmin');
-          }
-        } else {
-          // If network error / timeout, maintain session if already authenticated
-          if (isMounted && hasLocalAdmin) {
-            setIsAuthenticated(true);
-          }
+      } catch {
+        if (isMounted) {
+          setIsAuthenticated(false);
+          localStorage.removeItem('isAdmin');
         }
       } finally {
         if (isMounted) {

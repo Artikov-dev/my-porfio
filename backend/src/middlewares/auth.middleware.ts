@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
-import jwt from 'jsonwebtoken';
 import { CustomError } from './error.middleware';
+import { AuthService } from '../services/auth.service';
 
 export const requireAuth = (
   req: Request,
@@ -23,8 +23,8 @@ export const requireAuth = (
       throw new CustomError('Not authorized, no token', 401);
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET as string);
-    (req as any).user = decoded;
+    // Rejects expired tokens, wrong algorithms and non-admin (e.g. 2FA pre-auth) tokens
+    (req as any).user = AuthService.verifyAccessToken(token);
 
     next();
   } catch (error) {

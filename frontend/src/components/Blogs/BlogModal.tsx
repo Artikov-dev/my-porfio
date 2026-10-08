@@ -5,6 +5,7 @@ import { useI18n } from '@/contexts/I18nContext';
 import { Button } from '@/components/ui/Button';
 import { toast } from 'react-hot-toast';
 import { BlogItem } from '@/lib/mockBlogs';
+import { optimizeImage } from '@/lib/utils';
 
 interface BlogModalProps {
   blog: BlogItem | null;
@@ -206,7 +207,7 @@ export const BlogModal: React.FC<BlogModalProps> = ({ blog, onClose }) => {
             <div className="relative h-64 sm:h-80 md:h-96 w-full overflow-hidden">
               <div 
                 className="absolute inset-0 bg-cover bg-center" 
-                style={{ backgroundImage: `url(${blog.image_url})` }}
+                style={{ backgroundImage: `url(${optimizeImage(blog.image_url, 1400)})` }}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-background dark:from-slate-900 via-background/60 dark:via-slate-900/60 to-transparent" />
               
@@ -251,8 +252,11 @@ export const BlogModal: React.FC<BlogModalProps> = ({ blog, onClose }) => {
               {/* Author Info Card */}
               <div className="flex items-center gap-4 p-4 rounded-2xl bg-foreground/5 border border-border/60 mb-8">
                 <img
-                  src="/imRA.jpg"
+                  src="/imRA.webp"
                   alt="Roma Artikov"
+                  width={48}
+                  height={48}
+                  loading="lazy"
                   className="w-12 h-12 rounded-full object-cover ring-2 ring-primary/40"
                   onError={(e) => {
                     // Fallback if image not found

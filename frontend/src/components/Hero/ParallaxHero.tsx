@@ -1,35 +1,45 @@
-import React from 'react';
-import { motion } from 'framer-motion';
+import React, { Suspense } from 'react';
+import { motion, useSpring, useTransform } from 'framer-motion';
 import { useMousePosition } from '@/hooks/useMousePosition';
+import { useIdle } from '@/hooks/useIdle';
 import { useI18n } from '@/contexts/I18nContext';
+import { useTheme } from '@/contexts/ThemeContext';
 import { Button } from '@/components/ui/Button';
 import { Link } from 'react-router-dom';
 import { Download, ArrowRight, FileText } from 'lucide-react';
 import { FluidBackground } from './FluidBackground';
-import { Starfield } from './Starfield';
 import { TextReveal } from '@/components/ui/TextReveal';
 import { Magnetic } from '@/components/ui/Magnetic';
 import { Typewriter } from '@/components/ui/Typewriter';
 
+// Starfield pulls in three.js + R3F (~280KB gzip); load it after first paint
+const Starfield = React.lazy(() => import('./Starfield').then(m => ({ default: m.Starfield })));
+
 export const ParallaxHero = () => {
   const { x, y } = useMousePosition();
   const { t, language } = useI18n();
+  const { theme } = useTheme();
+  const idle = useIdle();
 
-  // Safe checks for SSR or initial load
-  const winWidth = typeof window !== 'undefined' ? window.innerWidth : 1000;
-  const winHeight = typeof window !== 'undefined' ? window.innerHeight : 1000;
-
-  // Calculate parallax offsets
-  const xOffset = (x - winWidth / 2) / 40;
-  const yOffset = (y - winHeight / 2) / 40;
+  // Parallax offsets as MotionValues — no React re-render on mouse move
+  const xOffset = useTransform(x, (v) => (v - window.innerWidth / 2) / 40);
+  const yOffset = useTransform(y, (v) => (v - window.innerHeight / 2) / 40);
+  const badgesX = useSpring(useTransform(xOffset, (v) => -v * 0.8), { stiffness: 100, damping: 20 });
+  const badgesY = useSpring(useTransform(yOffset, (v) => -v * 0.8), { stiffness: 100, damping: 20 });
+  const contentX = useSpring(useTransform(xOffset, (v) => -v * 0.5), { stiffness: 150, damping: 15, mass: 0.1 });
+  const contentY = useSpring(useTransform(yOffset, (v) => -v * 0.5), { stiffness: 150, damping: 15, mass: 0.1 });
 
   return (
     <div className="relative min-h-screen flex items-center justify-center overflow-hidden bg-slate-50 dark:bg-black transition-colors duration-300">
       {/* 3D WebGL Fluid Background Scene */}
       <FluidBackground />
-      
-      {/* Brilliant Stars Overlay */}
-      <Starfield />
+
+      {/* Brilliant Stars Overlay (dark mode only — it's hidden in light mode anyway) */}
+      {idle && theme === 'dark' && (
+        <Suspense fallback={null}>
+          <Starfield />
+        </Suspense>
+      )}
 
       {/* Background Glow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/20 rounded-full blur-[120px] pointer-events-none" />
@@ -40,8 +50,7 @@ export const ParallaxHero = () => {
       {/* Test: Floating Tech Badges (can be removed if requested) */}
       <motion.div 
         className="absolute inset-0 pointer-events-none z-0 overflow-hidden"
-        animate={{ x: -xOffset * 0.8, y: -yOffset * 0.8 }}
-        transition={{ type: 'spring', stiffness: 100, damping: 20 }}
+        style={{ x: badgesX, y: badgesY }}
       >
         <motion.div
           className="absolute top-1/4 left-[10%] md:left-[20%] px-4 py-2 rounded-xl dark:bg-white/5 bg-slate-900/5 border dark:border-white/10 border-slate-900/10 backdrop-blur-md text-primary font-mono text-sm md:text-base font-bold shadow-[0_0_20px_rgba(94,142,203,0.25)]"
@@ -70,8 +79,7 @@ export const ParallaxHero = () => {
 
       <motion.div 
         className="relative z-10 text-center px-4 pointer-events-none"
-        animate={{ x: -xOffset * 0.5, y: -yOffset * 0.5 }}
-        transition={{ type: 'spring', stiffness: 150, damping: 15, mass: 0.1 }}
+        style={{ x: contentX, y: contentY }}
       >
         <motion.div
           initial={{ opacity: 0, y: 20 }}

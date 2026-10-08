@@ -49,8 +49,18 @@ app.use((0, morgan_1.default)('combined', {
     stream: { write: (message) => logger_1.logger.info(message.trim()) },
 }));
 app.use(rateLimiter_1.globalLimiter);
-app.use(express_1.default.json());
-app.use(express_1.default.urlencoded({ extended: true }));
+// CSRF protection: auth cookies are SameSite=None, so reject state-changing requests
+// that come from a browser page on another origin. (Requests without an Origin header,
+// e.g. curl or server-to-server, are not sent with a victim's cookies by a browser.)
+app.use((req, res, next) => {
+    const origin = req.headers.origin;
+    if (req.method !== 'GET' && req.method !== 'HEAD' && req.method !== 'OPTIONS' && origin && !allowedOrigins.includes(origin)) {
+        return res.status(403).json({ status: 'error', message: 'Origin not allowed' });
+    }
+    next();
+});
+// JSON only — no urlencoded parser, so cross-site HTML form posts can't populate req.body
+app.use(express_1.default.json({ limit: '1mb' }));
 app.use((0, cookie_parser_1.default)());
 // Routes
 app.use('/api/auth', auth_routes_1.default);
@@ -60,8 +70,10 @@ app.use('/api/contact', contact_routes_1.default);
 app.use('/api/seo', seo_routes_1.default);
 app.use('/api/analytics', analytics_routes_1.default);
 app.use('/api/system', system_routes_1.default);
-// API Documentation
-(0, swagger_1.setupSwagger)(app);
+// API Documentation — local/dev only; in production it would publish every (admin) endpoint
+if (process.env.NODE_ENV !== 'production') {
+    (0, swagger_1.setupSwagger)(app);
+}
 // Health check endpoint
 app.get('/health', (req, res) => {
     res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });

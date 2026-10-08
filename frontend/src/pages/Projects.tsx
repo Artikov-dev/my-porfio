@@ -71,6 +71,7 @@ const TiltCard = ({ children, className }: { children: React.ReactNode, classNam
 import { SEO } from '@/components/SEO/SEO';
 
 import { DEFAULT_PROJECTS } from '@/lib/mockProjects';
+import { optimizeImage } from '@/lib/utils';
 
 export const Projects = () => {
   const { t, language } = useI18n();
@@ -141,7 +142,7 @@ export const Projects = () => {
                   <div className="absolute inset-0 bg-black/20 group-hover/card:bg-transparent transition-colors z-10" />
                   <div 
                     className="absolute inset-0 bg-cover bg-center group-hover/card:scale-110 transition-transform duration-700" 
-                    style={{ backgroundImage: `url(${project.image_url})` }}
+                    style={{ backgroundImage: `url(${optimizeImage(project.image_url, 800)})` }}
                   />
                 </div>
                 

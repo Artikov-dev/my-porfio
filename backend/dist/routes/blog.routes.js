@@ -5,10 +5,11 @@ const blog_controller_js_1 = require("../controllers/blog.controller.js");
 const auth_middleware_js_1 = require("../middlewares/auth.middleware.js");
 const validate_middleware_js_1 = require("../middlewares/validate.middleware.js");
 const blog_schema_js_1 = require("../schemas/blog.schema.js");
+const rateLimiter_js_1 = require("../middlewares/rateLimiter.js");
 const router = (0, express_1.Router)();
 router.get('/', blog_controller_js_1.getAllBlogs);
 router.get('/:id', blog_controller_js_1.getBlog);
-router.post('/:id/view', async (req, res) => {
+router.post('/:id/view', rateLimiter_js_1.viewLimiter, async (req, res) => {
     try {
         const { id } = req.params;
         const { db } = await import('../config/database.js');

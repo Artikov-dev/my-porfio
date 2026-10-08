@@ -10,12 +10,13 @@ import {
 import { requireAuth } from '../middlewares/auth.middleware';
 import { validate } from '../middlewares/validate.middleware';
 import { projectSchema } from '../schemas/project.schema';
+import { viewLimiter } from '../middlewares/rateLimiter';
 
 const router = Router();
 
 router.get('/', getAllProjects);
 router.get('/:id', getProject);
-router.post('/:id/view', async (req, res) => {
+router.post('/:id/view', viewLimiter, async (req, res) => {
   try {
     const { id } = req.params;
     const { db } = await import('../config/database.js');

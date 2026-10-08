@@ -9,6 +9,7 @@ import { useQuery } from '@tanstack/react-query';
 import { api } from '@/lib/api';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { DEFAULT_PROJECTS } from '@/lib/mockProjects';
+import { optimizeImage } from '@/lib/utils';
 
 export const ProjectsPreviewSection = () => {
   const { t, language } = useI18n();
@@ -61,7 +62,7 @@ export const ProjectsPreviewSection = () => {
                     <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors z-10" />
                     <div 
                       className="absolute inset-0 bg-cover bg-center group-hover:scale-110 transition-transform duration-700" 
-                      style={{ backgroundImage: `url(${project.image_url})` }}
+                      style={{ backgroundImage: `url(${optimizeImage(project.image_url, 800)})` }}
                     />
                   </div>
                   

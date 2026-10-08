@@ -1,11 +1,8 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.requireAuth = void 0;
-const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const error_middleware_1 = require("./error.middleware");
+const auth_service_1 = require("../services/auth.service");
 const requireAuth = (req, res, next) => {
     try {
         let token;
@@ -19,8 +16,8 @@ const requireAuth = (req, res, next) => {
         if (!token) {
             throw new error_middleware_1.CustomError('Not authorized, no token', 401);
         }
-        const decoded = jsonwebtoken_1.default.verify(token, process.env.JWT_SECRET);
-        req.user = decoded;
+        // Rejects expired tokens, wrong algorithms and non-admin (e.g. 2FA pre-auth) tokens
+        req.user = auth_service_1.AuthService.verifyAccessToken(token);
         next();
     }
     catch (error) {

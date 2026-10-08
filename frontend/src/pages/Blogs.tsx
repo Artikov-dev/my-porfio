@@ -7,6 +7,7 @@ import { PageWrapper } from '@/components/Layout/PageWrapper';
 import { SEO } from '@/components/SEO/SEO';
 import { DEFAULT_BLOGS, BlogItem } from '@/lib/mockBlogs';
 import { BlogModal } from '@/components/Blogs/BlogModal';
+import { optimizeImage } from '@/lib/utils';
 import { Clock, Eye, ArrowRight, BookOpen, Sparkles } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -101,7 +102,7 @@ export const Blogs = () => {
                     <div className="relative w-full h-48 sm:w-56 sm:h-40 rounded-xl overflow-hidden flex-shrink-0 bg-foreground/5">
                       <div 
                         className="w-full h-full bg-cover bg-center group-hover:scale-105 transition-transform duration-500" 
-                        style={{ backgroundImage: `url(${blog.image_url})`}} 
+                        style={{ backgroundImage: `url(${optimizeImage(blog.image_url, 600)})`}}
                       />
                       <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors" />
                       <span className="absolute bottom-3 left-3 px-2.5 py-1 text-[11px] font-semibold bg-background/80 backdrop-blur-md rounded-lg text-foreground border border-border flex items-center gap-1">

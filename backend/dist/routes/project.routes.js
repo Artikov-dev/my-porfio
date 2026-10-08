@@ -5,10 +5,11 @@ const project_controller_1 = require("../controllers/project.controller");
 const auth_middleware_1 = require("../middlewares/auth.middleware");
 const validate_middleware_1 = require("../middlewares/validate.middleware");
 const project_schema_1 = require("../schemas/project.schema");
+const rateLimiter_1 = require("../middlewares/rateLimiter");
 const router = (0, express_1.Router)();
 router.get('/', project_controller_1.getAllProjects);
 router.get('/:id', project_controller_1.getProject);
-router.post('/:id/view', async (req, res) => {
+router.post('/:id/view', rateLimiter_1.viewLimiter, async (req, res) => {
     try {
         const { id } = req.params;
         const { db } = await import('../config/database.js');

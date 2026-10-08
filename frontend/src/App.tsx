@@ -2,13 +2,10 @@
 import React, { Suspense } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
-import { CommandPalette } from '@/components/CommandPalette';
 import { FloatingNav } from '@/components/Navigation/FloatingNav';
 import { LiveStatus } from '@/components/ui/LiveStatus';
-import { LiveChat } from '@/components/ui/LiveChat';
 import { Navbar } from '@/components/Navigation/Navbar';
 import { Footer } from '@/components/Navigation/Footer';
-import { TerminalOverlay } from '@/components/Terminal/TerminalOverlay';
 import { Spotlight } from '@/components/ui/Spotlight';
 import { MusicPlayer } from '@/components/ui/MusicPlayer';
 import { MobileFAB } from '@/components/ui/MobileFAB';
@@ -16,8 +13,15 @@ import { ScrollToTop } from '@/components/ui/ScrollToTop';
 
 // Layout & Core
 import { ProtectedRoute } from '@/components/Auth/ProtectedRoute';
-import { MatrixRain } from '@/components/Terminal/MatrixRain';
 import { useAnalytics } from '@/hooks/useAnalytics';
+import { useIdle } from '@/hooks/useIdle';
+
+// Overlays nobody needs for the first paint — mounted once the browser is idle.
+// (Terminal / CommandPalette register their own keyboard shortcuts on mount.)
+const CommandPalette = React.lazy(() => import('@/components/CommandPalette').then(m => ({ default: m.CommandPalette })));
+const TerminalOverlay = React.lazy(() => import('@/components/Terminal/TerminalOverlay').then(m => ({ default: m.TerminalOverlay })));
+const LiveChat = React.lazy(() => import('@/components/ui/LiveChat').then(m => ({ default: m.LiveChat })));
+const MatrixRain = React.lazy(() => import('@/components/Terminal/MatrixRain').then(m => ({ default: m.MatrixRain })));
 
 // Lazy loaded Pages
 const Home = React.lazy(() => import('@/pages/Home').then(m => ({ default: m.Home })));
@@ -45,6 +49,7 @@ const PageLoader = () => (
 
 function App() {
   useAnalytics();
+  const idle = useIdle();
   const [showMatrix, setShowMatrix] = React.useState(false);
   const location = useLocation();
 
@@ -77,9 +82,13 @@ function App() {
       <ScrollToTop />
       {!hidePublicUI && <FloatingNav />}
       {!hidePublicUI && <LiveStatus />}
-      {!hidePublicUI && <LiveChat />}
-      {!isAdminRoute && <CommandPalette />}
-      {!isAdminRoute && <TerminalOverlay />}
+      {idle && (
+        <Suspense fallback={null}>
+          {!hidePublicUI && <LiveChat />}
+          {!isAdminRoute && <CommandPalette />}
+          {!isAdminRoute && <TerminalOverlay />}
+        </Suspense>
+      )}
       {!hidePublicUI && <Spotlight />}
       {!hidePublicUI && <MusicPlayer />}
       {!hidePublicUI && <MobileFAB />}
@@ -121,7 +130,9 @@ function App() {
       
       {showMatrix && (
         <div className="fixed inset-0 z-[99999] pointer-events-none mix-blend-screen opacity-75">
-          <MatrixRain onComplete={() => setShowMatrix(false)} />
+          <Suspense fallback={null}>
+            <MatrixRain onComplete={() => setShowMatrix(false)} />
+          </Suspense>
         </div>
       )}
     </div>

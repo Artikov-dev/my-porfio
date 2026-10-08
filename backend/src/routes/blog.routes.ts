@@ -8,12 +8,13 @@ import {
 import { requireAuth } from '../middlewares/auth.middleware.js';
 import { validate } from '../middlewares/validate.middleware.js';
 import { blogSchema } from '../schemas/blog.schema.js';
+import { viewLimiter } from '../middlewares/rateLimiter.js';
 
 const router = Router();
 
 router.get('/', getAllBlogs);
 router.get('/:id', getBlog);
-router.post('/:id/view', async (req, res) => {
+router.post('/:id/view', viewLimiter, async (req, res) => {
   try {
     const { id } = req.params;
     const { db } = await import('../config/database.js');

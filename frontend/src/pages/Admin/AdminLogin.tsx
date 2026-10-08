@@ -1,14 +1,48 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '@/lib/api';
-import { Lock, Mail, Key } from 'lucide-react';
+import { useSocketContext } from '@/contexts/SocketContext';
+import { Lock, Mail, Key, ShieldCheck } from 'lucide-react';
+
+const getErrorMessage = (err: any) => {
+  if (!err?.response) return 'Server is not responding (it may be waking up). Please try again in a moment.';
+  if (err.response.status === 429) return 'Too many attempts. Please try again later.';
+  if (err.response.status === 503) return 'Admin login is not configured on the server.';
+  return err.response.data?.message || 'Access Denied. Invalid credentials.';
+};
 
 export const AdminLogin = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [otp, setOtp] = useState('');
+  const [step, setStep] = useState<'credentials' | 'otp'>('credentials');
   const [status, setStatus] = useState<'idle' | 'loading' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
   const navigate = useNavigate();
+  const { socket } = useSocketContext();
+
+  const onAuthenticated = () => {
+    localStorage.setItem('isAdmin', 'true'); // UI hint only — access is always verified by the server
+    // Reconnect so the socket handshake carries the new auth cookie (admin chat room)
+    socket?.disconnect().connect();
+    navigate('/admin/dashboard');
+  };
+
+  const handleVerifyOtp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setStatus('loading');
+    setErrorMessage('');
+    try {
+      await api.post('/auth/verify-2fa', { token: otp.trim() });
+      onAuthenticated();
+    } catch (err: any) {
+      setErrorMessage(getErrorMessage(err));
+      setStatus('error');
+      if (err?.response?.status === 401 && /expired/i.test(err.response.data?.message || '')) {
+        setStep('credentials');
+      }
+    }
+  };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,24 +59,17 @@ export const AdminLogin = () => {
     setErrorMessage('');
     
     try {
-      // 1. First attempt backend online authentication
-      await api.post('/auth/login', { email: cleanEmail, password: cleanPass });
-      localStorage.setItem('isAdmin', 'true');
-      navigate('/admin/dashboard');
-    } catch (err: any) {
-      console.warn('Backend authentication failed or timed out, evaluating fallback:', err);
-      
-      // 2. Resilient fallback: Allow instant entry if credentials match master admin
-      const isMasterEmail = cleanEmail === 'artikovrozik52@gmail.com' || cleanEmail === 'admin@antigravity.com';
-      const isMasterPass = cleanPass === 'antiparol';
-
-      if (isMasterEmail && isMasterPass) {
-        localStorage.setItem('isAdmin', 'true');
-        navigate('/admin/dashboard');
-      } else {
-        setErrorMessage('Access Denied. Invalid credentials.');
-        setStatus('error');
+      // Authentication is decided by the server only — there is no client-side fallback
+      const res = await api.post('/auth/login', { email: cleanEmail, password: cleanPass });
+      if (res.data?.data?.require2FA) {
+        setStep('otp');
+        setStatus('idle');
+        return;
       }
+      onAuthenticated();
+    } catch (err: any) {
+      setErrorMessage(getErrorMessage(err));
+      setStatus('error');
     }
   };
 
@@ -64,6 +91,42 @@ export const AdminLogin = () => {
             <p className="text-foreground/60 text-sm mt-2">Enter credentials to access the command center</p>
           </div>
 
+          {step === 'otp' ? (
+          <form onSubmit={handleVerifyOtp} className="space-y-6">
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-foreground/80 flex items-center gap-2">
+                <ShieldCheck className="w-4 h-4" /> Authenticator Code
+              </label>
+              <input
+                type="text"
+                inputMode="numeric"
+                pattern="[0-9]{6}"
+                maxLength={6}
+                required
+                autoFocus
+                autoComplete="one-time-code"
+                value={otp}
+                onChange={e => setOtp(e.target.value.replace(/\D/g, ''))}
+                className="w-full bg-background/50 border border-border rounded-xl px-4 py-3 text-foreground dark:text-white text-center text-2xl tracking-[0.5em] focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-all"
+                placeholder="000000"
+              />
+            </div>
+
+            {status === 'error' && (
+              <div className="text-red-400 text-sm text-center bg-red-400/10 py-2 rounded-lg border border-red-400/20">
+                {errorMessage}
+              </div>
+            )}
+
+            <button
+              type="submit"
+              disabled={status === 'loading' || otp.length !== 6}
+              className="w-full bg-primary text-white font-medium py-3 rounded-xl hover:bg-accent-hover transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_0_20px_rgba(94,142,203,0.3)] cursor-pointer"
+            >
+              {status === 'loading' ? 'Verifying...' : 'Verify'}
+            </button>
+          </form>
+          ) : (
           <form onSubmit={handleLogin} className="space-y-6">
             <div className="space-y-2">
               <label className="text-sm font-medium text-foreground/80 flex items-center gap-2">
@@ -76,7 +139,7 @@ export const AdminLogin = () => {
                 value={email}
                 onChange={e => setEmail(e.target.value)}
                 className="w-full bg-background/50 border border-border rounded-xl px-4 py-3 text-foreground dark:text-white focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-all"
-                placeholder="artikovrozik52@gmail.com"
+                placeholder="you@example.com"
               />
             </div>
             
@@ -109,6 +172,7 @@ export const AdminLogin = () => {
               {status === 'loading' ? 'Authenticating...' : 'Initialize Uplink'}
             </button>
           </form>
+          )}
         </div>
       </div>
     </div>

@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { TelegramService } from '../services/telegram.service';
 import { db } from '../config/database';
+import { ADMIN_ROOM } from '../config/socket';
 
 export const submitContact = async (
   req: Request,
@@ -35,10 +36,10 @@ export const submitContact = async (
       console.warn('Telegram notification failed:', teleErr);
     }
 
-    // 3. Emit Socket Event (assuming io is set on app)
+    // 3. Notify connected admins only (never broadcast visitor emails to everyone)
     const io = req.app.get('io');
     if (io) {
-      io.emit('new_contact_message', {
+      io.to(ADMIN_ROOM).emit('new_contact_message', {
         name,
         email,
         subject,

@@ -16,6 +16,7 @@ interface DevRoomSceneProps {
   hologramIndex: number;
   lampOn: boolean;
   keyboardFlashTrigger: number;
+  active?: boolean; // false pauses the render loop (e.g. when scrolled off-screen)
   onHoverObject?: (label: string | null) => void;
   onCoffeeClick: () => void;
   onPcClick: () => void;
@@ -215,6 +216,7 @@ export const DevRoomScene: React.FC<DevRoomSceneProps> = ({
   hologramIndex,
   lampOn,
   keyboardFlashTrigger,
+  active = true,
   onHoverObject,
   onCoffeeClick,
   onPcClick,
@@ -234,13 +236,18 @@ export const DevRoomScene: React.FC<DevRoomSceneProps> = ({
     matrix: '#4ade80',
   };
 
+  // Phones / small screens: skip shadow maps and MSAA, cap pixel ratio at 1
+  const isLowPower = typeof window !== 'undefined' &&
+    (window.matchMedia('(pointer: coarse)').matches || window.innerWidth < 768);
+
   return (
     <div className="w-full h-full relative cursor-grab active:cursor-grabbing select-none">
       <Canvas
-        shadows
+        shadows={!isLowPower}
         camera={{ position: [4.4, 3.8, 5.2], fov: 40 }}
-        gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
-        dpr={[1, 1.5]}
+        gl={{ antialias: !isLowPower, alpha: true, powerPreference: 'high-performance' }}
+        dpr={isLowPower ? 1 : [1, 1.5]}
+        frameloop={active ? 'always' : 'never'}
       >
         <Suspense fallback={null}>
           {/* Smooth Interpolating Cinematic Lighting */}

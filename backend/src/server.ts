@@ -54,8 +54,20 @@ app.use(
   }),
 );
 app.use(globalLimiter);
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+
+// CSRF protection: auth cookies are SameSite=None, so reject state-changing requests
+// that come from a browser page on another origin. (Requests without an Origin header,
+// e.g. curl or server-to-server, are not sent with a victim's cookies by a browser.)
+app.use((req: Request, res: Response, next) => {
+  const origin = req.headers.origin;
+  if (req.method !== 'GET' && req.method !== 'HEAD' && req.method !== 'OPTIONS' && origin && !allowedOrigins.includes(origin)) {
+    return res.status(403).json({ status: 'error', message: 'Origin not allowed' });
+  }
+  next();
+});
+
+// JSON only — no urlencoded parser, so cross-site HTML form posts can't populate req.body
+app.use(express.json({ limit: '1mb' }));
 app.use(cookieParser());
 
 // Routes
@@ -67,8 +79,10 @@ app.use('/api/seo', seoRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/system', systemRoutes);
 
-// API Documentation
-setupSwagger(app);
+// API Documentation — local/dev only; in production it would publish every (admin) endpoint
+if (process.env.NODE_ENV !== 'production') {
+  setupSwagger(app);
+}
 
 // Health check endpoint
 app.get('/health', (req: Request, res: Response) => {

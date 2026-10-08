@@ -1,13 +1,19 @@
-import React, { Suspense } from 'react';
+import React, { Suspense, useRef } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { Stars, Sparkles } from '@react-three/drei';
+import { useInView } from 'framer-motion';
 
 export const Starfield = () => {
+  const ref = useRef<HTMLDivElement>(null);
+  const inView = useInView(ref, { margin: '100px' });
+
   return (
-    <div className="absolute inset-0 z-0 pointer-events-none opacity-80 md:opacity-100 hidden dark:block">
+    <div ref={ref} className="absolute inset-0 z-0 pointer-events-none opacity-80 md:opacity-100 hidden dark:block">
       <Canvas
         camera={{ position: [0, 0, 1] }}
         gl={{ alpha: true, antialias: false }} // antialias false for performance since they are just stars
+        dpr={[1, 1.5]}
+        frameloop={inView ? 'always' : 'never'} // stop rendering once scrolled past the hero
         style={{ pointerEvents: 'none' }}
       >
         <Suspense fallback={null}>

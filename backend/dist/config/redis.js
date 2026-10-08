@@ -14,7 +14,10 @@ const redisClient = new ioredis_1.default(REDIS_URL, {
         // Exponential backoff capped at 5 seconds to ensure reconnection works
         return Math.min(times * 200, 5000);
     },
-    maxRetriesPerRequest: null,
+    // Fail fast instead of queueing commands forever while Redis is unreachable;
+    // every caller already falls back to the DB / memory when Redis errors.
+    maxRetriesPerRequest: 1,
+    enableOfflineQueue: false,
 });
 redisClient.on('connect', () => {
     logger_1.logger.info('📦 Connecting to Redis database...');

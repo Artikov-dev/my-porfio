@@ -30,7 +30,7 @@ const router = (0, express_1.Router)();
  */
 router.post('/login', rateLimiter_1.authLimiter, (0, validate_middleware_1.validate)(auth_schema_1.loginSchema), auth_controller_1.login);
 router.post('/verify-2fa', rateLimiter_1.authLimiter, (0, validate_middleware_1.validate)(auth_schema_1.verify2FASchema), auth_controller_1.verify2FA);
-router.get('/setup-2fa', auth_controller_1.setup2FA); // In production, secure this endpoint!
+router.get('/setup-2fa', auth_middleware_1.requireAuth, auth_controller_1.setup2FA);
 router.get('/me', auth_middleware_1.requireAuth, auth_controller_1.getMe);
 router.post('/refresh', auth_controller_1.refreshToken);
 router.post('/logout', auth_controller_1.logout);

@@ -1,23 +1,35 @@
-import React, { useState } from 'react';
+import React, { Suspense, useState } from 'react';
 import { Play, Pause, Volume2, VolumeX, Music } from 'lucide-react';
-import YouTube, { YouTubeEvent, YouTubePlayer } from 'react-youtube';
+import type { YouTubeEvent, YouTubePlayer } from 'react-youtube';
+
+// The YouTube iframe + API script is ~1MB; only load it once the user presses play
+const YouTube = React.lazy(() => import('react-youtube'));
 
 export const MusicPlayer = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [showControls, setShowControls] = useState(false);
   const [player, setPlayer] = useState<YouTubePlayer | null>(null);
+  const [activated, setActivated] = useState(false);
 
   // The YouTube Video ID the user provided
-  const videoId = "j8L6IvuYGOQ"; 
+  const videoId = "j8L6IvuYGOQ";
 
   const onReady = (event: YouTubeEvent) => {
     // Access to player in all event handlers via event.target
     setPlayer(event.target);
     event.target.setVolume(30); // 30% volume
+    if (isMuted) event.target.mute();
+    // Player is only created after the first play click, so start right away
+    event.target.playVideo();
   };
 
   const togglePlay = () => {
+    if (!activated) {
+      setActivated(true);
+      setIsPlaying(true);
+      return;
+    }
     if (player) {
       if (isPlaying) {
         player.pauseVideo();
@@ -35,8 +47,9 @@ export const MusicPlayer = () => {
       } else {
         player.mute();
       }
-      setIsMuted(!isMuted);
     }
+    // Before the player exists, the choice is applied in onReady
+    setIsMuted(!isMuted);
   };
 
   const onStateChange = (event: YouTubeEvent) => {
@@ -56,7 +69,9 @@ export const MusicPlayer = () => {
     >
       {/* Invisible YouTube Player */}
       <div className="hidden">
-        <YouTube 
+        {activated && (
+        <Suspense fallback={null}>
+        <YouTube
           videoId={videoId} 
           opts={{
             height: '0',
@@ -73,6 +88,8 @@ export const MusicPlayer = () => {
           onReady={onReady}
           onStateChange={onStateChange}
         />
+        </Suspense>
+        )}
       </div>
       
       <div 

@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { DevRoomScene, CameraPreset } from '../DevRoom/DevRoomScene';
+import React, { useState, useEffect, useRef, Suspense } from 'react';
+import { useInView } from 'framer-motion';
+import type { CameraPreset } from '../DevRoom/DevRoomScene';
 import { ScrollReveal } from '@/components/ui/ScrollReveal';
 import { useI18n } from '@/contexts/I18nContext';
 import { useSound } from '@/hooks/useSound';
@@ -27,6 +28,15 @@ import {
   Heart
 } from 'lucide-react';
 import toast from 'react-hot-toast';
+
+// three.js + the room scene are ~280KB gzip — only fetch them when the section is near the viewport
+const DevRoomScene = React.lazy(() => import('../DevRoom/DevRoomScene').then(m => ({ default: m.DevRoomScene })));
+
+const SceneLoader = () => (
+  <div className="absolute inset-0 flex items-center justify-center">
+    <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+  </div>
+);
 
 const RGB_PALETTE = [
   { name: 'Steel Blue', color: '#5e8ecb' },
@@ -63,6 +73,10 @@ export const DevRoomSection: React.FC = () => {
     playGlitch,
     playNotification
   } = useSound();
+
+  const stageRef = useRef<HTMLDivElement>(null);
+  const isNear = useInView(stageRef, { once: true, margin: '600px 0px' }); // start downloading three.js early
+  const isVisible = useInView(stageRef, { margin: '100px 0px' }); // pause rendering when off-screen
 
   const [rgbIndex, setRgbIndex] = useState(0);
   const [lightingMood, setLightingMood] = useState<'neon' | 'night' | 'sunset' | 'matrix'>('neon');
@@ -263,9 +277,12 @@ export const DevRoomSection: React.FC = () => {
 
       {/* 3D Canvas Stage Container */}
       <ScrollReveal delay={0.2}>
-        <div className="relative w-full h-[580px] sm:h-[660px] md:h-[760px] rounded-3xl glass border border-white/10 overflow-hidden shadow-2xl bg-gradient-to-b from-background/40 to-background/95 group">
+        <div ref={stageRef} className="relative w-full h-[580px] sm:h-[660px] md:h-[760px] rounded-3xl glass border border-white/10 overflow-hidden shadow-2xl bg-gradient-to-b from-background/40 to-background/95 group">
           {/* 3D Scene */}
+          {isNear ? (
+          <Suspense fallback={<SceneLoader />}>
           <DevRoomScene
+            active={isVisible}
             rgbColor={activeRgb}
             lightingMood={lightingMood}
             cameraPreset={cameraPreset}
@@ -286,6 +303,10 @@ export const DevRoomSection: React.FC = () => {
             onCatClick={handleCatClick}
             onLampClick={handleLampToggle}
           />
+          </Suspense>
+          ) : (
+            <SceneLoader />
+          )}
 
           {/* Smart Interactive Object Hover Tooltip */}
           {hoveredObject && (

@@ -35,3 +35,20 @@ jobs:
 
     - name: Build Project
       run: npm run build
+
+    # Fails if the home page JS/CSS exceeds the gzip budget or if three.js /
+    # recharts / react-youtube end up in the initial bundle again
+    - name: Check bundle size
+      run: npm run check:size
+
+    # Reports Lighthouse scores (warn-only; see lighthouserc.json)
+    - name: Lighthouse CI
+      run: npx --yes @lhci/cli autorun
+
+    - name: Upload Lighthouse report
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: lighthouse-report
+        path: frontend/lhci-report
+        if-no-files-found: ignore

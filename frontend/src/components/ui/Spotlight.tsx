@@ -1,9 +1,11 @@
 import React from 'react';
-import { motion } from 'framer-motion';
+import { motion, useMotionTemplate, useTransform } from 'framer-motion';
 import { useMousePosition } from '@/hooks/useMousePosition';
 
 export const Spotlight = () => {
   const { x, y } = useMousePosition();
+  const background = useMotionTemplate`radial-gradient(600px circle at ${x}px ${y}px, rgba(170, 59, 255, 0.1), transparent 80%)`;
+  const opacity = useTransform(() => (x.get() === 0 && y.get() === 0 ? 0 : 1));
 
   // Only render on desktop to avoid weird mobile touch behaviors
   if (typeof window !== 'undefined' && window.matchMedia('(pointer: coarse)').matches) {
@@ -13,11 +15,7 @@ export const Spotlight = () => {
   return (
     <motion.div
       className="pointer-events-none fixed inset-0 z-0 transition-opacity duration-300"
-      animate={{
-        background: `radial-gradient(600px circle at ${x}px ${y}px, rgba(170, 59, 255, 0.1), transparent 80%)`,
-        opacity: x === 0 && y === 0 ? 0 : 1
-      }}
-      transition={{ type: 'tween', ease: 'linear', duration: 0 }}
+      style={{ background, opacity }}
     />
   );
 };

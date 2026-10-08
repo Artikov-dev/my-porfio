@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.getMessages = exports.submitContact = void 0;
 const telegram_service_1 = require("../services/telegram.service");
 const database_1 = require("../config/database");
+const socket_1 = require("../config/socket");
 const submitContact = async (req, res, next) => {
     try {
         const { name, email, subject, body, location } = req.body;
@@ -21,10 +22,10 @@ const submitContact = async (req, res, next) => {
         catch (teleErr) {
             console.warn('Telegram notification failed:', teleErr);
         }
-        // 3. Emit Socket Event (assuming io is set on app)
+        // 3. Notify connected admins only (never broadcast visitor emails to everyone)
         const io = req.app.get('io');
         if (io) {
-            io.emit('new_contact_message', {
+            io.to(socket_1.ADMIN_ROOM).emit('new_contact_message', {
                 name,
                 email,
                 subject,

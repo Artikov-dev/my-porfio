@@ -1,0 +1,14 @@
+# Dependencies
+node_modules/
+
+# Secrets — configure these in the Render / Vercel dashboards instead
+.env
+.env.*
+!.env.example
+
+# Logs
+backend/logs/
+*.log
+
+# Build output (backend/dist is still committed in case Render runs it without a build step)
+frontend/dist/

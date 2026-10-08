@@ -30,7 +30,7 @@ const router = Router();
  */
 router.post('/login', authLimiter, validate(loginSchema), login);
 router.post('/verify-2fa', authLimiter, validate(verify2FASchema), verify2FA);
-router.get('/setup-2fa', setup2FA); // In production, secure this endpoint!
+router.get('/setup-2fa', requireAuth, setup2FA);
 router.get('/me', requireAuth, getMe);
 router.post('/refresh', refreshToken);
 router.post('/logout', logout);

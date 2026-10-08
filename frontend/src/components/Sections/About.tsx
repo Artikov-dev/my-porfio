@@ -29,8 +29,12 @@ export const AboutSection = () => {
             <div className="absolute -inset-1 bg-gradient-to-r from-primary to-purple-600 rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
             <div className="relative glass aspect-square rounded-2xl overflow-hidden border border-border flex items-center justify-center bg-foreground/5">
               <img
-                src="/imRA.jpg"
+                src="/imRA.webp"
                 alt="Roma Artikov"
+                width={640}
+                height={640}
+                loading="lazy"
+                decoding="async"
                 className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
               />
             </div>

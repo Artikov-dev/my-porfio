@@ -21,7 +21,8 @@ export const LiveChat = () => {
   const getVisitorId = () => {
     let id = localStorage.getItem('visitor_id');
     if (!id) {
-      id = 'v_' + Math.random().toString(36).substring(2, 10);
+      // Unguessable: this id is the room that admin replies are delivered to
+      id = 'v_' + crypto.randomUUID();
       localStorage.setItem('visitor_id', id);
     }
     return id;

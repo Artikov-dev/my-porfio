@@ -1,0 +1,20 @@
+{
+  "ci": {
+    "collect": {
+      "staticDistDir": "./dist",
+      "url": ["http://localhost/"],
+      "numberOfRuns": 2
+    },
+    "assert": {
+      "assertions": {
+        "categories:performance": ["warn", { "minScore": 0.7 }],
+        "largest-contentful-paint": ["warn", { "maxNumericValue": 4000 }],
+        "total-blocking-time": ["warn", { "maxNumericValue": 600 }]
+      }
+    },
+    "upload": {
+      "target": "filesystem",
+      "outputDir": "./lhci-report"
+    }
+  }
+}

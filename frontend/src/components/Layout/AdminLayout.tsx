@@ -1,13 +1,24 @@
 import React from 'react';
 import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
 import { LayoutDashboard, MessageSquare, FolderGit2, BookOpen, LogOut, Search, Activity } from 'lucide-react';
+import { api } from '@/lib/api';
+import { useSocketContext } from '@/contexts/SocketContext';
 
 export const AdminLayout = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { socket } = useSocketContext();
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    try {
+      // Server clears the httpOnly auth cookies
+      await api.post('/auth/logout');
+    } catch {
+      // Still leave the admin area locally
+    }
     localStorage.removeItem('isAdmin');
+    // Drop the admin socket session
+    socket?.disconnect().connect();
     navigate('/');
   };
 

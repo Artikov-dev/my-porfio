@@ -47,19 +47,22 @@ if (process.env.NODE_ENV !== 'test' && process.env.TELEGRAM_BOT_TOKEN) {
     bot.launch();
     logger_1.logger.info('🤖 Telegram bot launched');
 }
+// Legacy Markdown mode: an unbalanced _ * ` or [ in user text makes Telegram reject the
+// whole message ("can't parse entities"), so the notification would be silently lost.
+const escapeMarkdown = (value) => String(value ?? '').replace(/([_*`\[])/g, '\\$1');
 exports.TelegramService = {
     async sendContactMessage(name, email, subject, body, ip, location) {
         const text = `
 📩 *New Contact Message* 📩
 
-👤 *Name:* ${name}
-✉️ *Email:* ${email}
-📌 *Subject:* ${subject}
-🌐 *IP Address:* ${ip}
-📍 *Location:* ${location}
+👤 *Name:* ${escapeMarkdown(name)}
+✉️ *Email:* ${escapeMarkdown(email)}
+📌 *Subject:* ${escapeMarkdown(subject)}
+🌐 *IP Address:* ${escapeMarkdown(ip)}
+📍 *Location:* ${escapeMarkdown(location)}
 
 📝 *Message:*
-${body}
+${escapeMarkdown(body)}
     `;
         try {
             await bot.telegram.sendMessage(ADMIN_CHAT_ID, text, {

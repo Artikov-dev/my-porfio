@@ -8,12 +8,16 @@ export const FluidBackground: React.FC = () => {
   const isDark = theme === 'dark';
 
   useEffect(() => {
-    if (canvasRef.current) {
-      webGLFluidEnhanced(canvasRef.current, {
+    const canvas = canvasRef.current;
+    if (canvas) {
+      // Touch devices can't hover-trigger the sim, so run it at a much lower resolution
+      const isLowPower = window.matchMedia('(pointer: coarse)').matches || window.innerWidth < 768;
+
+      webGLFluidEnhanced(canvas, {
         IMMEDIATE: true,
         TRIGGER: 'hover',
-        SIM_RESOLUTION: 128,
-        DYE_RESOLUTION: 1024,
+        SIM_RESOLUTION: isLowPower ? 64 : 128,
+        DYE_RESOLUTION: isLowPower ? 256 : 1024,
         CAPTURE_RESOLUTION: 512,
         DENSITY_DISSIPATION: 4,
         VELOCITY_DISSIPATION: 2,
@@ -22,7 +26,7 @@ export const FluidBackground: React.FC = () => {
         CURL: 30,
         SPLAT_RADIUS: 0.15,
         SPLAT_FORCE: 4000,
-        SHADING: true,
+        SHADING: !isLowPower,
         COLORFUL: true,
         COLOR_UPDATE_SPEED: 10,
         PAUSED: false,
@@ -39,6 +43,17 @@ export const FluidBackground: React.FC = () => {
         SUNRAYS_WEIGHT: 0.3,
       });
     }
+
+    // webgl-fluid has no destroy API and its rAF loop never stops. Release the GL
+    // context on unmount / theme change so old loops stop rendering to a detached canvas.
+    // Deferred + isConnected check: StrictMode re-runs effects on the same (still mounted) canvas.
+    return () => {
+      setTimeout(() => {
+        if (!canvas || canvas.isConnected) return;
+        const gl = (canvas.getContext('webgl2') || canvas.getContext('webgl')) as WebGLRenderingContext | null;
+        gl?.getExtension('WEBGL_lose_context')?.loseContext();
+      }, 0);
+    };
   }, [isDark]);
 
   return (

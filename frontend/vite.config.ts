@@ -12,27 +12,10 @@ export default defineConfig({
     },
   },
   build: {
+    // three.js chunk (lazy-loaded) is ~1MB raw; that's expected
     chunkSizeWarningLimit: 1200,
-    rollupOptions: {
-      output: {
-        manualChunks(id) {
-          if (id.includes('node_modules')) {
-            if (id.includes('three') || id.includes('@react-three')) {
-              return 'vendor-three';
-            }
-            if (id.includes('recharts') || id.includes('cobe') || id.includes('d3')) {
-              return 'vendor-charts';
-            }
-            if (id.includes('framer-motion')) {
-              return 'vendor-motion';
-            }
-            if (id.includes('react-router-dom') || id.includes('react-dom') || id.includes('react')) {
-              return 'vendor-react';
-            }
-          }
-        },
-      },
-    },
+    // No manualChunks: broad `id.includes('react')` matching pulled recharts into the
+    // initial bundle. Automatic splitting keeps heavy libs in their lazy route chunks.
   },
 })
 

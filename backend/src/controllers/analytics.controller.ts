@@ -28,7 +28,8 @@ export const getLocations = async (req: Request, res: Response) => {
   export const recordVisit = async (req: Request, res: Response) => {
     try {
       const { path } = req.body;
-      const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || '127.0.0.1';
+      // req.ip honours 'trust proxy' (only Render's proxy hop); the raw X-Forwarded-For header can be spoofed by clients
+      const ip = req.ip || req.socket.remoteAddress || '127.0.0.1';
       const userAgent = req.headers['user-agent'] || '';
   
       // Parse User Agent
