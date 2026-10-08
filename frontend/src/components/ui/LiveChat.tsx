@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { MessageCircle, X, Send, User } from 'lucide-react';
 import { useSocket } from '@/hooks/useSocket';
+import { useI18n } from '@/contexts/I18nContext';
+import toast from 'react-hot-toast';
 
 interface ChatMessage {
   id: string;
@@ -16,6 +18,7 @@ export const LiveChat = () => {
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const { socket } = useSocket();
+  const { t } = useI18n();
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const getVisitorId = () => {
@@ -30,7 +33,8 @@ export const LiveChat = () => {
 
   // Auto-scroll to bottom of chat
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    // 'nearest' keeps the page itself from jumping — only the chat list scrolls
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   };
 
   useEffect(() => {
@@ -40,8 +44,16 @@ export const LiveChat = () => {
   useEffect(() => {
     if (!socket) return;
 
-    const visitorId = getVisitorId();
-    socket.emit('join_room', visitorId);
+    // Re-join on every (re)connect — e.g. after the backend wakes from a cold start —
+    // otherwise admin replies sent to this visitor's room would be lost
+    const joinRoom = () => socket.emit('join_room', getVisitorId());
+    joinRoom();
+    socket.on('connect', joinRoom);
+
+    const handleError = (data: { message?: string }) => {
+      toast.error(data?.message || 'Message not sent');
+    };
+    socket.on('chat_error', handleError);
 
     const handleReply = (data: { text: string }) => {
       setMessages(prev => [...prev, {
@@ -56,6 +68,8 @@ export const LiveChat = () => {
 
     return () => {
       socket.off('chat_reply', handleReply);
+      socket.off('connect', joinRoom);
+      socket.off('chat_error', handleError);
     };
   }, [socket]);
 
@@ -66,7 +80,7 @@ export const LiveChat = () => {
       setMessages([{
         id: 'welcome',
         sender: 'bot',
-        text: `Hi ${name}! How can I help you today?`,
+        text: t('chat_welcome').replace('{name}', name.trim()),
         timestamp: new Date()
       }]);
     }
@@ -98,18 +112,24 @@ export const LiveChat = () => {
   return (
     <div className="fixed bottom-24 right-4 md:bottom-8 md:right-8 z-[60] flex flex-col items-end">
       {isOpen && (
-        <div className="mb-4 w-[calc(100vw-2rem)] sm:w-[350px] h-[450px] glass border border-border rounded-2xl flex flex-col overflow-hidden shadow-2xl origin-bottom-right animate-in zoom-in duration-300">
+        <div
+          role="dialog"
+          aria-label={t('chat_title')}
+          // max-h keeps the panel below the fixed navbar on short / landscape phones
+          className="mb-4 w-[calc(100vw-2rem)] sm:w-[350px] h-[450px] max-h-[calc(100dvh-12rem)] glass border border-border rounded-2xl flex flex-col overflow-hidden shadow-2xl origin-bottom-right animate-in zoom-in duration-300"
+        >
           {/* Header */}
           <div className="bg-primary/20 backdrop-blur-xl border-b border-white/5 p-4 flex justify-between items-center">
             <div>
-              <h3 className="font-semibold text-foreground dark:text-white">Live Chat</h3>
+              <h3 className="font-semibold text-foreground dark:text-white">{t('chat_title')}</h3>
               <p className="text-xs text-primary/80">
-                {hasStarted ? 'We typically reply in a few minutes' : 'Enter your name to start'}
+                {hasStarted ? t('chat_reply_time') : t('chat_enter_name')}
               </p>
             </div>
-            <button 
+            <button
               onClick={() => setIsOpen(false)}
-              className="text-foreground dark:text-white/60 hover:text-foreground dark:text-white transition-colors p-1"
+              aria-label={t('chat_close')}
+              className="text-foreground/60 dark:text-white/60 hover:text-foreground dark:hover:text-white transition-colors p-1"
             >
               <X className="w-5 h-5" />
             </button>
@@ -120,23 +140,27 @@ export const LiveChat = () => {
             <div className="flex-1 p-6 flex flex-col justify-center">
               <form onSubmit={handleStartChat} className="space-y-4">
                 <div className="space-y-2">
-                  <label className="text-sm text-foreground/70 flex items-center gap-2">
-                    <User className="w-4 h-4" /> Your Name
+                  <label htmlFor="livechat-name" className="text-sm text-foreground/70 flex items-center gap-2">
+                    <User className="w-4 h-4" /> {t('chat_your_name')}
                   </label>
-                  <input 
-                    type="text" 
+                  {/* text-base (16px) on mobile: smaller inputs make iOS Safari auto-zoom on focus */}
+                  <input
+                    id="livechat-name"
+                    type="text"
                     required
+                    maxLength={50}
+                    autoComplete="name"
                     value={name}
                     onChange={e => setName(e.target.value)}
                     placeholder="John Doe"
-                    className="w-full bg-background/50 border border-border rounded-lg px-4 py-2 text-foreground dark:text-white focus:border-primary focus:outline-none transition-colors"
+                    className="w-full bg-background/50 border border-border rounded-lg px-4 py-2 text-base sm:text-sm text-foreground dark:text-white focus:border-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 transition-colors"
                   />
                 </div>
-                <button 
+                <button
                   type="submit"
                   className="w-full bg-primary hover:bg-accent-hover text-white font-medium py-2 rounded-lg transition-colors"
                 >
-                  Start Chatting
+                  {t('chat_start')}
                 </button>
               </form>
             </div>
@@ -167,15 +191,18 @@ export const LiveChat = () => {
               </div>
               <div className="p-3 border-t border-border bg-background/50">
                 <form onSubmit={handleSendMessage} className="flex items-center gap-2">
-                  <input 
+                  <input
                     type="text"
                     value={input}
+                    maxLength={1000}
+                    aria-label={t('chat_placeholder')}
                     onChange={e => setInput(e.target.value)}
-                    placeholder="Type a message..."
-                    className="flex-1 bg-background/50 border border-border rounded-full px-4 py-2 text-sm text-foreground dark:text-white focus:border-primary focus:outline-none transition-colors"
+                    placeholder={t('chat_placeholder')}
+                    className="flex-1 bg-background/50 border border-border rounded-full px-4 py-2 text-base sm:text-sm text-foreground dark:text-white focus:border-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 transition-colors"
                   />
-                  <button 
+                  <button
                     type="submit"
+                    aria-label={t('chat_send')}
                     disabled={!input.trim()}
                     className="p-2 bg-primary text-white rounded-full hover:bg-accent-hover transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
@@ -191,6 +218,8 @@ export const LiveChat = () => {
       {/* Floating Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
+        aria-label={isOpen ? t('chat_close') : t('chat_open')}
+        aria-expanded={isOpen}
         className="w-12 h-12 md:w-14 md:h-14 bg-primary text-white rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(94,142,203,0.35)] hover:scale-105 hover:shadow-[0_0_30px_rgba(94,142,203,0.55)] transition-all duration-300"
       >
         {isOpen ? <X className="w-5 h-5 md:w-6 md:h-6" /> : <MessageCircle className="w-5 h-5 md:w-6 md:h-6" />}

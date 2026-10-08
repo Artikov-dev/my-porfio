@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, Suspense } from 'react';
-import { useInView } from 'framer-motion';
+import { useInView, useReducedMotion } from 'framer-motion';
 import type { CameraPreset } from '../DevRoom/DevRoomScene';
 import { ScrollReveal } from '@/components/ui/ScrollReveal';
 import { useI18n } from '@/contexts/I18nContext';
@@ -81,7 +81,9 @@ export const DevRoomSection: React.FC = () => {
   const [rgbIndex, setRgbIndex] = useState(0);
   const [lightingMood, setLightingMood] = useState<'neon' | 'night' | 'sunset' | 'matrix'>('neon');
   const [cameraPreset, setCameraPreset] = useState<CameraPreset>('orbit');
-  const [autoRotate, setAutoRotate] = useState(true);
+  const reduceMotion = useReducedMotion();
+  // Don't spin the camera by default for users who asked the OS to reduce motion
+  const [autoRotate, setAutoRotate] = useState(() => !reduceMotion);
   const [monitorMode, setMonitorMode] = useState<number>(0);
   const [hologramIndex, setHologramIndex] = useState<number>(0);
   const [lampOn, setLampOn] = useState<boolean>(true);

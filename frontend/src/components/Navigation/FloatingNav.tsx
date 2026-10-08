@@ -43,7 +43,7 @@ export const FloatingNav = () => {
       }
     };
 
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     handleScroll(); // Check initially
     return () => window.removeEventListener('scroll', handleScroll);
   }, [isHome]);
@@ -51,11 +51,8 @@ export const FloatingNav = () => {
   const handleNavClick = (id: string) => {
     playClick();
     if (!isHome) {
+      // ScrollToTop scrolls to the hash once the Home sections have rendered
       navigate('/#' + id);
-      setTimeout(() => {
-        const el = document.getElementById(id);
-        if (el) el.scrollIntoView({ behavior: 'smooth' });
-      }, 100);
     } else {
       const el = document.getElementById(id);
       if (el) {

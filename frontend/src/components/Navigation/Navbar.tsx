@@ -75,6 +75,8 @@ export const Navbar = () => {
                 key={lang}
                 onClick={() => { playClick(); setLanguage(lang as any); }}
                 onMouseEnter={playHover}
+                aria-pressed={language === lang}
+                aria-label={{ en: 'English', uz: "O'zbekcha", ru: 'Русский' }[lang]}
                 className={cn(
                   "px-3 py-1 text-xs font-semibold rounded-full uppercase transition-all",
                   language === lang 
@@ -98,9 +100,11 @@ export const Navbar = () => {
         </div>
 
         {/* Mobile Toggle */}
-        <button 
-          className="lg:hidden p-2 text-slate-900 dark:text-white opacity-100 hover:text-primary transition-colors focus:outline-none"
+        <button
+          className="lg:hidden p-2 text-slate-900 dark:text-white opacity-100 hover:text-primary transition-colors"
           onClick={() => { playClick(); setIsOpen(!isOpen); }}
+          aria-label={isOpen ? 'Close menu' : 'Open menu'}
+          aria-expanded={isOpen}
         >
           {isOpen ? <X className="w-8 h-8" /> : <Menu className="w-8 h-8" />}
         </button>

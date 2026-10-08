@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, ReactNode } from 'react';
+import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 
 type Language = 'en' | 'uz' | 'ru';
 
@@ -99,7 +99,23 @@ const translations = {
     workspace_badge: 'Interactive 3D Experience',
     workspace_title: 'Virtual Developer Workspace',
     workspace_desc: 'Explore my virtual high-performance coding setup in 3D. Click objects to interact, switch RGB lighting, and change room moods.',
-    workspace_nav: '3D Room'
+    workspace_nav: '3D Room',
+
+    // Live chat & music player
+    chat_title: 'Live Chat',
+    chat_welcome: 'Hi {name}! How can I help you today?',
+    chat_reply_time: 'I usually reply within a few minutes',
+    chat_enter_name: 'Enter your name to start',
+    chat_your_name: 'Your Name',
+    chat_start: 'Start Chatting',
+    chat_placeholder: 'Type a message...',
+    chat_open: 'Open live chat',
+    chat_close: 'Close live chat',
+    chat_send: 'Send message',
+    music_play: 'Play music',
+    music_pause: 'Pause music',
+    music_mute: 'Mute',
+    music_unmute: 'Unmute'
   },
   uz: {
     home: 'Asosiy',
@@ -188,7 +204,23 @@ const translations = {
     workspace_badge: 'Interaktiv 3D Tajriba',
     workspace_title: 'Virtual Dasturchi Xonasi',
     workspace_desc: 'Mening 3D virtual ish joyimni kashf eting. Obyektlarni bosib interaktiv boshqaring, RGB chiroqlarni va xona muhitini o\'zgartiring.',
-    workspace_nav: '3D Xona'
+    workspace_nav: '3D Xona',
+
+    // Live chat & music player
+    chat_title: 'Jonli chat',
+    chat_welcome: 'Salom, {name}! Sizga qanday yordam bera olaman?',
+    chat_reply_time: 'Odatda bir necha daqiqada javob beraman',
+    chat_enter_name: 'Boshlash uchun ismingizni kiriting',
+    chat_your_name: 'Ismingiz',
+    chat_start: 'Suhbatni boshlash',
+    chat_placeholder: 'Xabar yozing...',
+    chat_open: 'Jonli chatni ochish',
+    chat_close: 'Jonli chatni yopish',
+    chat_send: 'Xabarni yuborish',
+    music_play: 'Musiqani yoqish',
+    music_pause: "Musiqani to'xtatish",
+    music_mute: "Ovozni o'chirish",
+    music_unmute: 'Ovozni yoqish'
   },
   ru: {
     home: 'Главная',
@@ -277,12 +309,52 @@ const translations = {
     workspace_badge: 'Интерактивный 3D Опыт',
     workspace_title: 'Виртуальное Рабочее Пространство',
     workspace_desc: 'Исследуйте мое рабочее место в 3D. Нажимайте на объекты, меняйте RGB-подсветку и переключайте атмосферу комнаты.',
-    workspace_nav: '3D Комната'
+    workspace_nav: '3D Комната',
+
+    // Live chat & music player
+    chat_title: 'Онлайн-чат',
+    chat_welcome: 'Привет, {name}! Чем могу помочь?',
+    chat_reply_time: 'Обычно отвечаю в течение нескольких минут',
+    chat_enter_name: 'Введите имя, чтобы начать',
+    chat_your_name: 'Ваше имя',
+    chat_start: 'Начать чат',
+    chat_placeholder: 'Введите сообщение...',
+    chat_open: 'Открыть онлайн-чат',
+    chat_close: 'Закрыть онлайн-чат',
+    chat_send: 'Отправить сообщение',
+    music_play: 'Включить музыку',
+    music_pause: 'Поставить на паузу',
+    music_mute: 'Выключить звук',
+    music_unmute: 'Включить звук'
   }
 };
 
+const SUPPORTED: Language[] = ['en', 'uz', 'ru'];
+
+// Saved choice first, then the browser language, then English
+const getInitialLanguage = (): Language => {
+  try {
+    const saved = localStorage.getItem('language') as Language | null;
+    if (saved && SUPPORTED.includes(saved)) return saved;
+  } catch {
+    // storage blocked (private mode etc.)
+  }
+  const browser = (navigator.language || 'en').slice(0, 2).toLowerCase() as Language;
+  return SUPPORTED.includes(browser) ? browser : 'en';
+};
+
 export const I18nProvider = ({ children }: { children: ReactNode }) => {
-  const [language, setLanguage] = useState<Language>('en');
+  const [language, setLanguage] = useState<Language>(getInitialLanguage);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('language', language);
+    } catch {
+      // ignore
+    }
+    // Screen readers and browser translation rely on the page language
+    document.documentElement.lang = language;
+  }, [language]);
 
   const t = (key: string) => {
     // @ts-ignore

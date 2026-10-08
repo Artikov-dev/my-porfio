@@ -8,7 +8,6 @@ import { Navbar } from '@/components/Navigation/Navbar';
 import { Footer } from '@/components/Navigation/Footer';
 import { Spotlight } from '@/components/ui/Spotlight';
 import { MusicPlayer } from '@/components/ui/MusicPlayer';
-import { MobileFAB } from '@/components/ui/MobileFAB';
 import { ScrollToTop } from '@/components/ui/ScrollToTop';
 
 // Layout & Core
@@ -91,7 +90,8 @@ function App() {
       )}
       {!hidePublicUI && <Spotlight />}
       {!hidePublicUI && <MusicPlayer />}
-      {!hidePublicUI && <MobileFAB />}
+      {/* MobileFAB removed: it overlapped the bottom nav on phones and the LiveChat button on
+          tablets, and duplicated both (same icon as LiveChat, same target as the nav's Mail item). */}
       
       {!hidePublicUI && <Navbar />}
 

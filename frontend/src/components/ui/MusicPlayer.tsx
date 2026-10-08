@@ -1,6 +1,7 @@
 import React, { Suspense, useState } from 'react';
 import { Play, Pause, Volume2, VolumeX, Music } from 'lucide-react';
 import type { YouTubeEvent, YouTubePlayer } from 'react-youtube';
+import { useI18n } from '@/contexts/I18nContext';
 
 // The YouTube iframe + API script is ~1MB; only load it once the user presses play
 const YouTube = React.lazy(() => import('react-youtube'));
@@ -11,6 +12,7 @@ export const MusicPlayer = () => {
   const [showControls, setShowControls] = useState(false);
   const [player, setPlayer] = useState<YouTubePlayer | null>(null);
   const [activated, setActivated] = useState(false);
+  const { t } = useI18n();
 
   // The YouTube Video ID the user provided
   const videoId = "j8L6IvuYGOQ";
@@ -66,6 +68,10 @@ export const MusicPlayer = () => {
       className="fixed bottom-24 left-4 md:bottom-24 md:left-6 z-[90] flex items-end"
       onMouseEnter={() => setShowControls(true)}
       onMouseLeave={() => setShowControls(false)}
+      onFocus={() => setShowControls(true)}
+      onBlur={(e) => {
+        if (!e.currentTarget.contains(e.relatedTarget as Node)) setShowControls(false);
+      }}
     >
       {/* Invisible YouTube Player */}
       <div className="hidden">
@@ -103,7 +109,9 @@ export const MusicPlayer = () => {
         <button 
           onClick={toggleMute}
           className="p-3 text-slate-600 dark:text-slate-400 hover:text-primary transition-colors"
-          title={isMuted ? "Ovozni yoqish" : "Ovozni o'chirish"}
+          title={isMuted ? t('music_unmute') : t('music_mute')}
+          aria-label={isMuted ? t('music_unmute') : t('music_mute')}
+          tabIndex={showControls ? 0 : -1}
         >
           {isMuted ? <VolumeX size={18} /> : <Volume2 size={18} />}
         </button>
@@ -111,7 +119,9 @@ export const MusicPlayer = () => {
         <button 
           onClick={togglePlay}
           className="p-3 text-slate-600 dark:text-slate-400 hover:text-primary transition-colors"
-          title={isPlaying ? "To'xtatish" : "O'ynash"}
+          title={isPlaying ? t('music_pause') : t('music_play')}
+          aria-label={isPlaying ? t('music_pause') : t('music_play')}
+          tabIndex={showControls ? 0 : -1}
         >
           {isPlaying ? <Pause size={18} /> : <Play size={18} />}
         </button>
@@ -119,6 +129,8 @@ export const MusicPlayer = () => {
 
       <button
         onClick={togglePlay}
+        aria-label={isPlaying ? t('music_pause') : t('music_play')}
+        aria-pressed={isPlaying}
         className={`
           relative flex items-center justify-center w-10 h-10 md:w-12 md:h-12 rounded-full 
           shadow-lg backdrop-blur-md border border-slate-200 dark:border-slate-800

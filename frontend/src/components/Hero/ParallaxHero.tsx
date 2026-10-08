@@ -1,5 +1,5 @@
 import React, { Suspense } from 'react';
-import { motion, useSpring, useTransform } from 'framer-motion';
+import { motion, useReducedMotion, useSpring, useTransform } from 'framer-motion';
 import { useMousePosition } from '@/hooks/useMousePosition';
 import { useIdle } from '@/hooks/useIdle';
 import { useI18n } from '@/contexts/I18nContext';
@@ -20,6 +20,7 @@ export const ParallaxHero = () => {
   const { t, language } = useI18n();
   const { theme } = useTheme();
   const idle = useIdle();
+  const reduceMotion = useReducedMotion();
 
   // Parallax offsets as MotionValues — no React re-render on mouse move
   const xOffset = useTransform(x, (v) => (v - window.innerWidth / 2) / 40);
@@ -32,10 +33,10 @@ export const ParallaxHero = () => {
   return (
     <div className="relative min-h-screen flex items-center justify-center overflow-hidden bg-slate-50 dark:bg-black transition-colors duration-300">
       {/* 3D WebGL Fluid Background Scene */}
-      <FluidBackground />
+      {!reduceMotion && <FluidBackground />}
 
       {/* Brilliant Stars Overlay (dark mode only — it's hidden in light mode anyway) */}
-      {idle && theme === 'dark' && (
+      {idle && theme === 'dark' && !reduceMotion && (
         <Suspense fallback={null}>
           <Starfield />
         </Suspense>

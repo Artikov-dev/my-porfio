@@ -14,6 +14,8 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { BrowserRouter } from 'react-router-dom'
 import { HelmetProvider } from 'react-helmet-async'
 import { ErrorBoundary } from '@/components/ErrorBoundary'
+import { Toaster } from 'react-hot-toast'
+import { MotionConfig } from 'framer-motion'
 
 import { SocketProvider } from '@/contexts/SocketContext'
 
@@ -50,7 +52,21 @@ createRoot(document.getElementById('root')!).render(
             <I18nProvider>
               <SocketProvider>
                 <ErrorBoundary>
-                  <App />
+                  {/* "user": honour the OS "reduce motion" setting for all framer-motion animations */}
+                  <MotionConfig reducedMotion="user">
+                    <App />
+                  </MotionConfig>
+                  {/* Without this, every toast() call in the app rendered nothing */}
+                  <Toaster
+                    position="top-center"
+                    toastOptions={{
+                      style: {
+                        background: 'var(--bg)',
+                        color: 'var(--fg)',
+                        border: '1px solid var(--border)',
+                      },
+                    }}
+                  />
                 </ErrorBoundary>
               </SocketProvider>
             </I18nProvider>
