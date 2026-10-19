@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { login, verify2FA, setup2FA, getMe, refreshToken, logout } from '../controllers/auth.controller';
-import { authLimiter } from '../middlewares/rateLimiter';
+import { authLimiter, twoFactorLimiter } from '../middlewares/rateLimiter';
 import { validate } from '../middlewares/validate.middleware';
 import { loginSchema, verify2FASchema } from '../schemas/auth.schema';
 import { requireAuth } from '../middlewares/auth.middleware';
@@ -29,7 +29,7 @@ const router = Router();
  *         description: Pre-auth token for 2FA
  */
 router.post('/login', authLimiter, validate(loginSchema), login);
-router.post('/verify-2fa', authLimiter, validate(verify2FASchema), verify2FA);
+router.post('/verify-2fa', twoFactorLimiter, validate(verify2FASchema), verify2FA);
 router.get('/setup-2fa', requireAuth, setup2FA);
 router.get('/me', requireAuth, getMe);
 router.post('/refresh', refreshToken);

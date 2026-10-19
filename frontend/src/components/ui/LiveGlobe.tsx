@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, useMemo } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, Sphere, useTexture } from '@react-three/drei';
 import * as THREE from 'three';
@@ -90,11 +90,11 @@ export const LiveGlobe = () => {
     const fetchLocations = async () => {
       try {
         const res = await api.get('/analytics/locations', { timeout: 6000 });
-        if (res.data?.success && Array.isArray(res.data.data) && res.data.data.length > 0) {
+        if (res.data?.success && Array.isArray(res.data.data)) {
           setLocations(res.data.data);
         }
-      } catch (err) {
-        // Use default globe locations
+      } catch {
+        // Globe stays empty if the API is unavailable
       }
     };
     fetchLocations();
@@ -117,13 +117,8 @@ export const LiveGlobe = () => {
     };
   }, [socket]);
 
-  // Use a fallback location for demo purposes if list is empty
-  const displayLocations = locations.length > 0 ? locations : [
-    { lat: 41.2995, lng: 69.2401, country: 'Uzbekistan' }, // Tashkent
-    { lat: 40.7128, lng: -74.0060, country: 'United States' }, // NY
-    { lat: 51.5074, lng: -0.1278, country: 'UK' }, // London
-    { lat: 35.6762, lng: 139.6503, country: 'Japan' }, // Tokyo
-  ];
+  // Real visitor locations only — no demo markers that look like real visitors
+  const displayLocations = locations;
 
   return (
     <div className="w-full max-w-[400px] md:max-w-[500px] aspect-square mx-auto relative flex items-center justify-center cursor-grab active:cursor-grabbing rounded-full overflow-hidden">

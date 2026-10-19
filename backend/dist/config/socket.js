@@ -1,12 +1,8 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.setupSocket = exports.ADMIN_ROOM = void 0;
 const socket_io_1 = require("socket.io");
 const logger_1 = require("./logger");
-const redis_1 = __importDefault(require("./redis"));
 const database_1 = require("./database");
 const auth_service_1 = require("../services/auth.service");
 // Private room that only authenticated admin sockets join.
@@ -57,41 +53,19 @@ const setupSocket = (server) => {
         pingInterval: 25000,
         maxHttpBufferSize: 16 * 1024, // chat messages are tiny; reject huge payloads
     });
-    // In-memory fallback if Redis is down
-    let memoryActiveUsers = 0;
+    // Live count of open connections. A Redis counter used to be kept here, but it survived
+    // server restarts (connections dropped without a disconnect event) and drifted upwards.
+    const broadcastActiveUsers = () => io.emit('active_users_update', io.of('/').sockets.size);
     io.on('connection', async (socket) => {
         logger_1.logger.info(`🔌 Socket connected: ${socket.id}`);
         socket.data.isAdmin = authenticateSocket(socket);
         if (socket.data.isAdmin) {
             socket.join(exports.ADMIN_ROOM);
         }
-        // Increment active users
-        memoryActiveUsers++;
-        let activeUsers = memoryActiveUsers;
-        try {
-            if (redis_1.default.isConnected) {
-                await redis_1.default.incr('active_users');
-                activeUsers = parseInt((await redis_1.default.get('active_users')) || '0', 10);
-            }
-        }
-        catch (e) {
-            // fallback to memory
-        }
-        io.emit('active_users_update', activeUsers);
-        socket.on('disconnect', async () => {
+        broadcastActiveUsers();
+        socket.on('disconnect', () => {
             logger_1.logger.info(`🔌 Socket disconnected: ${socket.id}`);
-            memoryActiveUsers = Math.max(0, memoryActiveUsers - 1);
-            let updatedActiveUsers = memoryActiveUsers;
-            try {
-                if (redis_1.default.isConnected) {
-                    await redis_1.default.decr('active_users');
-                    updatedActiveUsers = parseInt((await redis_1.default.get('active_users')) || '0', 10);
-                }
-            }
-            catch (e) {
-                // fallback to memory
-            }
-            io.emit('active_users_update', Math.max(0, updatedActiveUsers));
+            broadcastActiveUsers();
         });
         // A visitor joins their own chat session room to receive admin replies
         socket.on('join_room', (roomId) => {

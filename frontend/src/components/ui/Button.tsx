@@ -2,26 +2,33 @@ import React, { ButtonHTMLAttributes, forwardRef } from 'react';
 import { cn } from '@/lib/utils';
 import { useSound } from '@/hooks/useSound';
 
+type ButtonVariant = 'solid' | 'outline' | 'ghost';
+
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'solid' | 'outline' | 'ghost';
+  variant?: ButtonVariant;
   isLoading?: boolean;
 }
+
+const baseStyles = 'inline-flex items-center justify-center px-4 py-2 text-sm font-medium transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none rounded-md cursor-pointer';
+
+const variants: Record<ButtonVariant, string> = {
+  solid: 'bg-primary text-white hover:bg-primary/90 focus:ring-primary shadow-lg shadow-primary/30',
+  outline: 'border border-border text-foreground dark:text-white hover:bg-foreground/5 focus:ring-white/20',
+  ghost: 'text-foreground dark:text-white hover:bg-foreground/10 focus:ring-white/20'
+};
+
+// Button look for things that aren't <button>s — e.g. content inside an <a> / <Link>,
+// where a real <button> would be invalid nested interactive content.
+export const buttonClassName = (variant: ButtonVariant = 'solid', className?: string) =>
+  cn(baseStyles, variants[variant], className);
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant = 'solid', isLoading, children, disabled, onMouseEnter, onClick, ...props }, ref) => {
     const { playHover, playClick } = useSound();
-    const baseStyles = 'inline-flex items-center justify-center px-4 py-2 text-sm font-medium transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none rounded-md cursor-pointer';
-    
-    const variants = {
-      solid: 'bg-primary text-white hover:bg-primary/90 focus:ring-primary shadow-lg shadow-primary/30',
-      outline: 'border border-border text-foreground dark:text-white hover:bg-foreground/5 focus:ring-white/20',
-      ghost: 'text-foreground dark:text-white hover:bg-foreground/10 focus:ring-white/20'
-    };
-
     return (
       <button
         ref={ref}
-        className={cn(baseStyles, variants[variant], className)}
+        className={buttonClassName(variant, className)}
         disabled={isLoading || disabled}
         onMouseEnter={(e) => {
           if (!disabled && !isLoading) playHover();

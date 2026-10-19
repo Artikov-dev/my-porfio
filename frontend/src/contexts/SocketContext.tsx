@@ -41,10 +41,6 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       setActiveUsers(users);
     });
 
-    socketInstance.on('new_contact_message', (data: any) => {
-      // New contact message
-    });
-
     setSocket(socketInstance);
 
     return () => {

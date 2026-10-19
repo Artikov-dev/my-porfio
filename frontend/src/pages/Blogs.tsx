@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useCallback, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { api } from '@/lib/api';
 import { Skeleton } from '@/components/ui/Skeleton';
@@ -13,7 +14,9 @@ import { motion } from 'framer-motion';
 
 export const Blogs = () => {
   const { t, language } = useI18n();
-  const [selectedBlog, setSelectedBlog] = useState<BlogItem | null>(null);
+  // The open post lives in the URL (?post=<id>) so it can be shared, bookmarked and reopened on reload
+  const [searchParams, setSearchParams] = useSearchParams();
+  const postId = searchParams.get('post');
 
   const { data, isLoading } = useQuery({
     queryKey: ['blogs'],
@@ -24,7 +27,7 @@ export const Blogs = () => {
           return res.data.data;
         }
         return DEFAULT_BLOGS;
-      } catch (err) {
+      } catch {
         return DEFAULT_BLOGS;
       }
     },
@@ -33,24 +36,36 @@ export const Blogs = () => {
 
   const displayBlogs: BlogItem[] = (data && data.length > 0) ? data : DEFAULT_BLOGS;
 
-  const handleOpenBlog = (blog: BlogItem) => {
-    setSelectedBlog(blog);
-    if (!sessionStorage.getItem(`viewed_blog_${blog.id}`)) {
-      sessionStorage.setItem(`viewed_blog_${blog.id}`, 'true');
-      api.post(`/blogs/${blog.id}/view`).catch(() => {});
+  const selectedBlog = postId ? displayBlogs.find((b) => String(b.id) === postId) ?? null : null;
+
+  // Count a view whenever a post is opened — by click or via a shared link
+  useEffect(() => {
+    if (!selectedBlog) return;
+    const key = `viewed_blog_${selectedBlog.id}`;
+    if (!sessionStorage.getItem(key)) {
+      sessionStorage.setItem(key, 'true');
+      api.post(`/blogs/${selectedBlog.id}/view`).catch(() => {});
     }
+  }, [selectedBlog]);
+
+  const handleOpenBlog = (blog: BlogItem) => {
+    setSearchParams({ post: String(blog.id) });
   };
+
+  const handleCloseBlog = useCallback(() => {
+    setSearchParams({}, { replace: true });
+  }, [setSearchParams]);
 
   return (
     <PageWrapper>
       <div className="min-h-screen bg-background pt-24 md:pt-32 pb-20 px-4 md:px-6">
-        <SEO title={t('blog')} />
+        <SEO title={selectedBlog ? (selectedBlog.title[language] || selectedBlog.title.en) : t('blog')} />
         <div className="max-w-5xl mx-auto">
           {/* Header Section */}
           <div className="text-center mb-12 md:mb-16">
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-semibold uppercase tracking-wider mb-4">
               <Sparkles className="w-3.5 h-3.5" />
-              <span>Engineering & Architecture</span>
+              <span>{t('blog_badge')}</span>
             </div>
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-foreground tracking-tight mb-4">
               {t('blog')}
@@ -87,7 +102,7 @@ export const Blogs = () => {
               {displayBlogs.map((blog: BlogItem, index: number) => {
                 const title = blog.title[language] || blog.title.en || '';
                 const content = blog.content[language] || blog.content.en || '';
-                const cleanSnippet = content.replace(/[#`*\-]/g, '').slice(0, 160) + '...';
+                const cleanSnippet = content.replace(/[#`*-]/g, '').slice(0, 160) + '...';
 
                 return (
                   <motion.div 
@@ -165,7 +180,7 @@ export const Blogs = () => {
       {/* Interactive Quick Read Modal */}
       <BlogModal
         blog={selectedBlog}
-        onClose={() => setSelectedBlog(null)}
+        onClose={handleCloseBlog}
       />
     </PageWrapper>
   );

@@ -90,7 +90,7 @@ const seedProjects = async () => {
                 },
                 image_url: 'https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?q=80&w=2070&auto=format&fit=crop',
                 github_url: 'https://github.com/Artikov-dev/Fashion',
-                live_url: 'https://github.com/Artikov-dev/Fashion',
+                live_url: null, // no live demo; the GitHub button covers the repo
                 tech_stack: ['React', 'CSS', 'JavaScript'],
             },
         ];

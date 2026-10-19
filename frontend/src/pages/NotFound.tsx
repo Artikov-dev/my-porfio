@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { Button } from '@/components/ui/Button';
+import { buttonClassName } from '@/components/ui/Button';
 import { useI18n } from '@/contexts/I18nContext';
 import { Home } from 'lucide-react';
 
@@ -39,10 +39,10 @@ export const NotFound = () => {
         </p>
         
         <Link to="/">
-          <Button variant="solid" className="px-8 py-4 text-lg rounded-full flex items-center justify-center gap-2 mx-auto">
+          <span className={buttonClassName('solid', 'px-8 py-4 text-lg rounded-full flex items-center justify-center gap-2 mx-auto')}>
             <Home className="w-5 h-5" />
             {backHome}
-          </Button>
+          </span>
         </Link>
       </motion.div>
     </div>

@@ -8,17 +8,21 @@ const telegraf_1 = require("telegraf");
 const logger_1 = require("../config/logger");
 const dotenv_1 = __importDefault(require("dotenv"));
 const database_1 = require("../config/database");
-const redis_1 = __importDefault(require("../config/redis"));
 dotenv_1.default.config();
-const bot = new telegraf_1.Telegraf(process.env.TELEGRAM_BOT_TOKEN || 'mock_token');
-const ADMIN_CHAT_ID = process.env.TELEGRAM_ADMIN_CHAT_ID || '123456789';
+const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
+// TELEGRAM_CHAT_ID is the older variable name; accept both so existing deploys keep working
+const ADMIN_CHAT_ID = process.env.TELEGRAM_ADMIN_CHAT_ID || process.env.TELEGRAM_CHAT_ID;
+const isConfigured = Boolean(BOT_TOKEN && ADMIN_CHAT_ID);
+if (!isConfigured) {
+    logger_1.logger.warn('⚠️ TELEGRAM_BOT_TOKEN / TELEGRAM_ADMIN_CHAT_ID are not set — contact notifications are disabled.');
+}
+const bot = new telegraf_1.Telegraf(BOT_TOKEN || 'disabled');
 // Setup Admin command /stats
 bot.command('stats', async (ctx) => {
     if (ctx.chat.id.toString() !== ADMIN_CHAT_ID)
         return;
     try {
-        const activeUsers = (await redis_1.default.get('active_users')) || 0;
-        let projectCount = 4;
+        let projectCount = 0;
         let contactCount = 0;
         try {
             const projRes = await database_1.db.query('SELECT COUNT(*) FROM projects');
@@ -32,7 +36,6 @@ bot.command('stats', async (ctx) => {
         const message = `
 📊 *Roma Artikov Portfolio Stats* 📊
 
-*Active Users Online:* ${activeUsers}
 *Total Projects:* ${projectCount}
 *Total Contact Messages:* ${contactCount}
     `;
@@ -43,7 +46,7 @@ bot.command('stats', async (ctx) => {
         ctx.reply('Failed to fetch stats.');
     }
 });
-if (process.env.NODE_ENV !== 'test' && process.env.TELEGRAM_BOT_TOKEN) {
+if (process.env.NODE_ENV !== 'test' && isConfigured) {
     bot.launch();
     logger_1.logger.info('🤖 Telegram bot launched');
 }
@@ -64,6 +67,8 @@ exports.TelegramService = {
 📝 *Message:*
 ${escapeMarkdown(body)}
     `;
+        if (!isConfigured)
+            return;
         try {
             await bot.telegram.sendMessage(ADMIN_CHAT_ID, text, {
                 parse_mode: 'Markdown',

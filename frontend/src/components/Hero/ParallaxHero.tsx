@@ -4,9 +4,9 @@ import { useMousePosition } from '@/hooks/useMousePosition';
 import { useIdle } from '@/hooks/useIdle';
 import { useI18n } from '@/contexts/I18nContext';
 import { useTheme } from '@/contexts/ThemeContext';
-import { Button } from '@/components/ui/Button';
+import { buttonClassName } from '@/components/ui/Button';
 import { Link } from 'react-router-dom';
-import { Download, ArrowRight, FileText } from 'lucide-react';
+import { Download, FileText } from 'lucide-react';
 import { FluidBackground } from './FluidBackground';
 import { TextReveal } from '@/components/ui/TextReveal';
 import { Magnetic } from '@/components/ui/Magnetic';
@@ -96,9 +96,9 @@ export const ParallaxHero = () => {
             <Typewriter 
               words={[
                 t('hero_subtitle'), 
-                'I build high-performance Web Systems',
-                'I specialize in React & Node.js',
-                'Let\'s build something amazing'
+                t('hero_tw1'),
+                t('hero_tw2'),
+                t('hero_tw3')
               ]} 
               typingSpeed={80}
               deletingSpeed={40}
@@ -115,18 +115,18 @@ export const ParallaxHero = () => {
           >
             <Link to="/projects">
               <Magnetic>
-                <Button variant="solid" className="w-full sm:w-auto px-7 py-3 text-base sm:text-lg backdrop-blur-md bg-primary/90 hover:bg-primary pointer-events-auto shadow-lg shadow-primary/25 hover:shadow-primary/40 transition-all">
+                <span className={buttonClassName('solid', 'w-full sm:w-auto px-7 py-3 text-base sm:text-lg backdrop-blur-md bg-primary/90 hover:bg-primary pointer-events-auto shadow-lg shadow-primary/25 hover:shadow-primary/40 transition-all')}>
                   {t('explore_projects')}
-                </Button>
+                </span>
               </Magnetic>
             </Link>
             
             <Link to="/resume">
               <Magnetic>
-                <Button variant="outline" className="w-full sm:w-auto px-6 py-3 text-base sm:text-lg backdrop-blur-md dark:border-white/20 border-slate-900/20 text-slate-900 dark:text-white dark:hover:bg-white/10 hover:bg-slate-900/10 pointer-events-auto flex items-center justify-center gap-2">
+                <span className={buttonClassName('outline', 'w-full sm:w-auto px-6 py-3 text-base sm:text-lg backdrop-blur-md dark:border-white/20 border-slate-900/20 text-slate-900 dark:text-white dark:hover:bg-white/10 hover:bg-slate-900/10 pointer-events-auto flex items-center justify-center gap-2')}>
                   <FileText className="w-4 h-4 text-primary" />
                   {t('view_resume')}
-                </Button>
+                </span>
               </Magnetic>
             </Link>
 
@@ -136,14 +136,11 @@ export const ParallaxHero = () => {
               className="w-full sm:w-auto"
             >
               <Magnetic>
-                <Button 
-                  variant="ghost" 
-                  className="w-full sm:w-auto px-6 py-3 text-base sm:text-lg glass border border-primary/30 dark:border-primary/40 text-primary dark:text-primary-foreground hover:bg-primary/10 hover:border-primary transition-all duration-300 pointer-events-auto flex items-center justify-center gap-2 group"
-                >
+                <span className={buttonClassName('ghost', 'w-full sm:w-auto px-6 py-3 text-base sm:text-lg glass border border-primary/30 dark:border-primary/40 text-primary dark:text-primary-foreground hover:bg-primary/10 hover:border-primary transition-all duration-300 pointer-events-auto flex items-center justify-center gap-2 group')}>
                   <Download className="w-4 h-4 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-transform" />
                   <span>{t('download_cv')}</span>
                   <span className="text-xs uppercase px-1.5 py-0.5 rounded bg-primary/20 text-primary font-mono font-bold">PDF</span>
-                </Button>
+                </span>
               </Magnetic>
             </a>
           </motion.div>

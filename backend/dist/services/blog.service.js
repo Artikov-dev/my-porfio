@@ -105,6 +105,21 @@ exports.BlogService = {
         catch (e) { }
         return result.rows[0];
     },
+    async updateBlog(id, data) {
+        const reading_time = Math.ceil((data.content?.en?.split(' ').length || 200) / 200);
+        const result = await database_1.db.query(`UPDATE blogs
+       SET title = $1, content = $2, image_url = $3, tags = $4, reading_time = $5
+       WHERE id = $6
+       RETURNING *;`, [data.title, data.content, data.image_url, data.tags, reading_time, id]);
+        if (result.rows.length === 0) {
+            throw new error_middleware_1.CustomError('Blog not found', 404);
+        }
+        try {
+            await redis_1.default.del('blogs');
+        }
+        catch (e) { }
+        return result.rows[0];
+    },
     async deleteBlog(id) {
         const result = await database_1.db.query('DELETE FROM blogs WHERE id = $1 RETURNING id', [id]);
         if (result.rows.length === 0) {

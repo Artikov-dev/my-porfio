@@ -2,21 +2,26 @@ import { Telegraf } from 'telegraf';
 import { logger } from '../config/logger';
 import dotenv from 'dotenv';
 import { db } from '../config/database';
-import redisClient from '../config/redis';
 
 dotenv.config();
 
-const bot = new Telegraf(process.env.TELEGRAM_BOT_TOKEN || 'mock_token');
-const ADMIN_CHAT_ID = process.env.TELEGRAM_ADMIN_CHAT_ID || '123456789';
+const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
+// TELEGRAM_CHAT_ID is the older variable name; accept both so existing deploys keep working
+const ADMIN_CHAT_ID = process.env.TELEGRAM_ADMIN_CHAT_ID || process.env.TELEGRAM_CHAT_ID;
+const isConfigured = Boolean(BOT_TOKEN && ADMIN_CHAT_ID);
+
+if (!isConfigured) {
+  logger.warn('⚠️ TELEGRAM_BOT_TOKEN / TELEGRAM_ADMIN_CHAT_ID are not set — contact notifications are disabled.');
+}
+
+const bot = new Telegraf(BOT_TOKEN || 'disabled');
 
 // Setup Admin command /stats
 bot.command('stats', async (ctx) => {
   if (ctx.chat.id.toString() !== ADMIN_CHAT_ID) return;
 
   try {
-    const activeUsers = (await redisClient.get('active_users')) || 0;
-
-    let projectCount = 4;
+    let projectCount = 0;
     let contactCount = 0;
     try {
       const projRes = await db.query('SELECT COUNT(*) FROM projects');
@@ -29,7 +34,6 @@ bot.command('stats', async (ctx) => {
     const message = `
 📊 *Roma Artikov Portfolio Stats* 📊
 
-*Active Users Online:* ${activeUsers}
 *Total Projects:* ${projectCount}
 *Total Contact Messages:* ${contactCount}
     `;
@@ -41,7 +45,7 @@ bot.command('stats', async (ctx) => {
   }
 });
 
-if (process.env.NODE_ENV !== 'test' && process.env.TELEGRAM_BOT_TOKEN) {
+if (process.env.NODE_ENV !== 'test' && isConfigured) {
   bot.launch();
   logger.info('🤖 Telegram bot launched');
 }
@@ -72,8 +76,10 @@ export const TelegramService = {
 ${escapeMarkdown(body)}
     `;
 
+    if (!isConfigured) return;
+
     try {
-      await bot.telegram.sendMessage(ADMIN_CHAT_ID, text, {
+      await bot.telegram.sendMessage(ADMIN_CHAT_ID as string, text, {
         parse_mode: 'Markdown',
       });
       logger.info('Telegram notification sent successfully');

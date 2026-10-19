@@ -28,8 +28,7 @@ const DEFAULT_SEO: SEOSettings = {
     'PostgreSQL',
     'Uzbekistan',
   ],
-  og_image:
-    'https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&q=80&w=1200',
+  og_image: 'https://artikov.dev/og_banner.jpg',
 };
 
 export class SEOService {
@@ -72,22 +71,20 @@ export class SEOService {
     }
   }
 
+  // Errors propagate so the admin sees "failed" instead of a fake "saved"
   static async updateSettings(data: SEOSettings) {
-    try {
-      const result = await db.query(
-        `
-        UPDATE seo_settings 
-        SET title = $1, description = $2, keywords = $3, og_image = $4, updated_at = CURRENT_TIMESTAMP
-        WHERE id = 1
-        RETURNING *;
-      `,
-        [data.title, data.description, data.keywords, data.og_image],
-      );
+    const result = await db.query(
+      `
+      INSERT INTO seo_settings (id, title, description, keywords, og_image)
+      VALUES (1, $1, $2, $3, $4)
+      ON CONFLICT (id) DO UPDATE
+      SET title = EXCLUDED.title, description = EXCLUDED.description, keywords = EXCLUDED.keywords,
+          og_image = EXCLUDED.og_image, updated_at = CURRENT_TIMESTAMP
+      RETURNING *;
+    `,
+      [data.title, data.description, data.keywords, data.og_image],
+    );
 
-      return result.rows[0] || data;
-    } catch (err) {
-      return data;
-    }
+    return result.rows[0];
   }
 }
-

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Clock, Eye, Calendar, Share2, Check, ArrowLeft, Bookmark, Sparkles } from 'lucide-react';
+import { X, Clock, Eye, Calendar, Share2, Check, ArrowLeft, Sparkles } from 'lucide-react';
 import { useI18n } from '@/contexts/I18nContext';
 import { Button } from '@/components/ui/Button';
 import { toast } from 'react-hot-toast';

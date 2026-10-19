@@ -1,36 +1,18 @@
 import React from 'react';
 import { ScrollReveal } from '@/components/ui/ScrollReveal';
 import { Link } from 'react-router-dom';
-import { Button } from '@/components/ui/Button';
+import { buttonClassName } from '@/components/ui/Button';
 import { TiltCard } from '@/components/ui/TiltCard';
 import { Code2, ExternalLink } from 'lucide-react';
 import { useI18n } from '@/contexts/I18nContext';
-import { useQuery } from '@tanstack/react-query';
-import { api } from '@/lib/api';
 import { Skeleton } from '@/components/ui/Skeleton';
-import { DEFAULT_PROJECTS } from '@/lib/mockProjects';
+import { useProjects } from '@/hooks/useProjects';
 import { optimizeImage } from '@/lib/utils';
 
 export const ProjectsPreviewSection = () => {
   const { t, language } = useI18n();
 
-  const { data: projects, isLoading } = useQuery({
-    queryKey: ['projects'],
-    queryFn: async () => {
-      try {
-        const res = await api.get('/projects', { timeout: 6000 });
-        if (res?.data?.data && Array.isArray(res.data.data) && res.data.data.length > 0) {
-          return res.data.data;
-        }
-        return DEFAULT_PROJECTS;
-      } catch (err) {
-        return DEFAULT_PROJECTS;
-      }
-    },
-    staleTime: 1000 * 60 * 5,
-  });
-
-  const displayProjects = (projects && projects.length > 0) ? projects : DEFAULT_PROJECTS;
+  const { projects: displayProjects, isLoading } = useProjects();
 
   return (
     <section id="projects" className="py-20 md:py-32 px-4 md:px-6 relative max-w-6xl mx-auto text-center">
@@ -56,7 +38,7 @@ export const ProjectsPreviewSection = () => {
           {displayProjects.slice(0, 3).map((project: any, index: number) => (
             <ScrollReveal key={project.id} delay={0.2 + (index * 0.1)} className="w-[85vw] shrink-0 snap-center md:w-auto h-full">
               <TiltCard className="h-full">
-                <div className="glass rounded-2xl flex flex-col overflow-hidden group cursor-pointer border border-border hover:border-primary/50 transition-all duration-300 h-full active:scale-[0.98]">
+                <div className="glass rounded-2xl flex flex-col overflow-hidden group border border-border hover:border-primary/50 transition-all duration-300 h-full">
                   {/* Image Container */}
                   <div className="relative h-48 w-full overflow-hidden">
                     <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors z-10" />
@@ -91,18 +73,18 @@ export const ProjectsPreviewSection = () => {
                     <div className="flex flex-col sm:flex-row items-center gap-3 pt-4 border-t border-border">
                       {project.live_url && (
                         <a href={project.live_url} target="_blank" rel="noopener noreferrer" className="flex-1 w-full" onClick={(e) => e.stopPropagation()}>
-                          <Button variant="solid" className="w-full flex items-center justify-center gap-2">
+                          <span className={buttonClassName('solid', 'w-full flex items-center justify-center gap-2')}>
                             <ExternalLink size={16} />
                             {t('view_online')}
-                          </Button>
+                          </span>
                         </a>
                       )}
                       {project.github_url && (
                         <a href={project.github_url} target="_blank" rel="noopener noreferrer" className="flex-1 w-full" onClick={(e) => e.stopPropagation()}>
-                          <Button variant="outline" className="w-full flex items-center justify-center gap-2">
+                          <span className={buttonClassName('outline', 'w-full flex items-center justify-center gap-2')}>
                             <Code2 size={16} />
                             {t('view_github')}
-                          </Button>
+                          </span>
                         </a>
                       )}
                     </div>
@@ -116,9 +98,9 @@ export const ProjectsPreviewSection = () => {
 
       <ScrollReveal delay={0.6}>
         <Link to="/projects">
-          <Button variant="solid" className="px-8 py-4 text-lg rounded-full">
+          <span className={buttonClassName('solid', 'px-8 py-4 text-lg rounded-full')}>
             {t('view_all_projects')}
-          </Button>
+          </span>
         </Link>
       </ScrollReveal>
     </section>

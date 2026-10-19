@@ -1,6 +1,6 @@
 import React from 'react';
 import { useSocket } from '@/hooks/useSocket';
-import { Users, Eye, MessageSquare, Briefcase } from 'lucide-react';
+import { Users, Eye, Briefcase } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell, Legend } from 'recharts';
 import { useQuery } from '@tanstack/react-query';
 import { api } from '@/lib/api';
@@ -8,53 +8,15 @@ import { Skeleton } from '@/components/ui/Skeleton';
 import { LiveGlobe } from '@/components/ui/LiveGlobe';
 import { Globe as GlobeIcon } from 'lucide-react';
 
-const FALLBACK_ADMIN_ANALYTICS = {
-  overview: {
-    total_projects: 4,
-    total_project_views: 1240,
-    total_blogs: 2,
-    total_blog_views: 240,
-    total_visitors: 520,
-  },
-  top_projects: [
-    { name: 'ControlLife - Task & Life Management System', views: 480 },
-    { name: 'Wedding Platform', views: 320 },
-    { name: 'Clinic Management System', views: 260 },
-    { name: 'Fashion E-Commerce', views: 180 },
-  ],
-  top_blogs: [
-    { name: 'Building High Performance Modern Web Apps', views: 142 },
-    { name: 'Mastering Real-time Communication with WebSockets', views: 98 },
-  ],
-  visitors_over_time: Array.from({ length: 14 }, (_, i) => {
-    const d = new Date();
-    d.setDate(d.getDate() - (13 - i));
-    return {
-      date: d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-      visitors: 20 + Math.floor(Math.sin(i) * 10) + (i % 3) * 5,
-    };
-  }),
-  visitors_by_country: [
-    { name: 'Uzbekistan', value: 340 },
-    { name: 'United States', value: 95 },
-    { name: 'Germany', value: 45 },
-    { name: 'Russia', value: 25 },
-    { name: 'Other', value: 15 },
-  ],
-};
-
 export const AdminDashboard = () => {
   const { activeUsers } = useSocket();
 
-  const { data: analytics, isLoading: analyticsLoading } = useQuery({
+  // No fake fallback numbers: if the API fails, say so instead of showing made-up stats
+  const { data: analytics, isLoading: analyticsLoading, isError: analyticsError } = useQuery({
     queryKey: ['analytics'],
     queryFn: async () => {
-      try {
-        const res = await api.get('/analytics');
-        return res?.data?.data || FALLBACK_ADMIN_ANALYTICS;
-      } catch (err) {
-        return FALLBACK_ADMIN_ANALYTICS;
-      }
+      const res = await api.get('/analytics');
+      return res.data.data;
     },
     staleTime: 1000 * 60 * 2,
     retry: 1,
@@ -66,7 +28,7 @@ export const AdminDashboard = () => {
       try {
         const res = await api.get('/projects');
         return res?.data?.data || [];
-      } catch (err) {
+      } catch {
         return [];
       }
     },
@@ -79,7 +41,7 @@ export const AdminDashboard = () => {
       try {
         const res = await api.get('/blogs');
         return res?.data?.data || [];
-      } catch (err) {
+      } catch {
         return [];
       }
     },
@@ -126,6 +88,11 @@ export const AdminDashboard = () => {
 
   return (
     <div className="space-y-6">
+      {analyticsError && (
+        <div role="alert" className="p-4 rounded-2xl border border-red-500/30 bg-red-500/10 text-red-500 text-sm">
+          Analytics could not be loaded (database or API unavailable). The numbers below are incomplete.
+        </div>
+      )}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {stats.map(stat => (
           <div key={stat.label} className={`p-6 rounded-2xl border ${stat.color} flex items-center justify-between`}>

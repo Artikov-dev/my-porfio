@@ -3,7 +3,7 @@ import { GitHubCalendar } from 'react-github-calendar';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useI18n } from '@/contexts/I18nContext';
 import { ScrollReveal } from '@/components/ui/ScrollReveal';
-import { ExternalLink, GitCommit, GitPullRequest, Star, GitBranch } from 'lucide-react';
+import { ExternalLink, GitCommit, GitBranch } from 'lucide-react';
 
 export const GithubActivity = () => {
   const { theme } = useTheme();

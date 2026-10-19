@@ -46,8 +46,7 @@ const DEFAULT_BACKEND_PROJECTS = [
     description: { en: 'An online fashion store with a stylish interface and seamless shopping experience.', uz: "Zamonaviy interfeys va qulay xarid tajribasiga ega onlayn moda do'koni.", ru: 'Онлайн-магазин модной одежды со стильным интерфейсом и удобным процессом покупок.' },
     image_url: 'https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?q=80&w=2070&auto=format&fit=crop',
     github_url: 'https://github.com/Artikov-dev/Fashion',
-    live_url: 'https://github.com/Artikov-dev/Fashion',
-    tech_stack: ['React', 'CSS', 'JavaScript']
+        tech_stack: ['React', 'CSS', 'JavaScript']
   }
 ];
 

@@ -19,7 +19,14 @@ export const AboutSection = () => {
         <ScrollReveal delay={0.2}>
           <div className="space-y-6 text-foreground/60 text-lg leading-relaxed">
             <p>{t('about_p1')}</p>
-            <p dangerouslySetInnerHTML={{ __html: t('about_p2').replace('Clean Architecture', '<strong>Clean Architecture</strong>') }}></p>
+            <p>
+              {t('about_p2').split('Clean Architecture').map((part, i, parts) => (
+                <React.Fragment key={i}>
+                  {part}
+                  {i < parts.length - 1 && <strong>Clean Architecture</strong>}
+                </React.Fragment>
+              ))}
+            </p>
             <p>{t('about_p3')}</p>
           </div>
         </ScrollReveal>

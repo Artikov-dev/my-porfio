@@ -1,5 +1,9 @@
+import React, { useState } from 'react';
+import toast from 'react-hot-toast';
 import { ScrollReveal } from '@/components/ui/ScrollReveal';
+import { Button } from '@/components/ui/Button';
 import { useI18n } from '@/contexts/I18nContext';
+import { api } from '@/lib/api';
 
 // Custom SVG Icons
 const GithubIcon = ({ className }: { className?: string }) => (
@@ -38,6 +42,67 @@ const TelegramIcon = ({ className }: { className?: string }) => (
     <path d="M22 2 11 13" />
   </svg>
 );
+
+const EMPTY_FORM = { name: '', email: '', subject: '', body: '' };
+
+const inputClass =
+  'w-full bg-background/50 border border-border rounded-xl px-4 py-3 text-base sm:text-sm text-foreground placeholder:text-foreground/40 focus:border-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 transition-colors';
+
+// Posts to /api/contact — saved in the DB, shown in the admin "Messages" page and sent to Telegram
+const ContactForm = () => {
+  const { t } = useI18n();
+  const [form, setForm] = useState(EMPTY_FORM);
+  const [sending, setSending] = useState(false);
+
+  const update = (field: keyof typeof EMPTY_FORM) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
+    setForm((prev) => ({ ...prev, [field]: e.target.value }));
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSending(true);
+    try {
+      await api.post('/contact', {
+        name: form.name.trim(),
+        email: form.email.trim(),
+        subject: form.subject.trim() || null,
+        body: form.body.trim(),
+      });
+      toast.success(t('form_success'));
+      setForm(EMPTY_FORM);
+    } catch (err: any) {
+      toast.error(err?.response?.status === 429 ? t('form_rate_limited') : t('form_error'));
+    } finally {
+      setSending(false);
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="glass border border-border rounded-2xl p-6 md:p-8 space-y-4 text-left">
+      <h3 className="text-xl md:text-2xl font-bold text-foreground mb-2">{t('form_title')}</h3>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <label htmlFor="contact-name" className="text-sm text-foreground/70">{t('form_name')}</label>
+          <input id="contact-name" required minLength={2} maxLength={100} autoComplete="name" value={form.name} onChange={update('name')} className={inputClass} />
+        </div>
+        <div className="space-y-2">
+          <label htmlFor="contact-email" className="text-sm text-foreground/70">{t('form_email')}</label>
+          <input id="contact-email" type="email" required autoComplete="email" value={form.email} onChange={update('email')} className={inputClass} />
+        </div>
+      </div>
+      <div className="space-y-2">
+        <label htmlFor="contact-subject" className="text-sm text-foreground/70">{t('form_subject')}</label>
+        <input id="contact-subject" maxLength={200} value={form.subject} onChange={update('subject')} className={inputClass} />
+      </div>
+      <div className="space-y-2">
+        <label htmlFor="contact-body" className="text-sm text-foreground/70">{t('form_message')}</label>
+        <textarea id="contact-body" required minLength={10} maxLength={2000} rows={5} value={form.body} onChange={update('body')} className={`${inputClass} resize-y`} />
+      </div>
+      <Button type="submit" variant="solid" isLoading={sending} className="w-full md:w-auto px-8 py-3 text-base rounded-xl">
+        {t('form_send')}
+      </Button>
+    </form>
+  );
+};
 
 export const ContactSection = () => {
   const { t } = useI18n();
@@ -103,6 +168,10 @@ export const ContactSection = () => {
             </a>
           ))}
         </div>
+      </ScrollReveal>
+
+      <ScrollReveal delay={0.2} className="mt-12">
+        <ContactForm />
       </ScrollReveal>
     </section>
   );

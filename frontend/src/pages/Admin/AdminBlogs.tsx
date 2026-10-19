@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { api } from '@/lib/api';
 import { DEFAULT_BLOGS } from '@/lib/mockBlogs';
-import { Plus, Trash2, Save, X, RefreshCw, FileText } from 'lucide-react';
+import { Plus, Trash2, Save, X, RefreshCw, FileText, Edit2 } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 interface LocalizedString {
   en: string;
@@ -26,6 +27,7 @@ export const AdminBlogs = () => {
 
   // Modal state
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
 
   // Form state
   const [title, setTitle] = useState<LocalizedString>({ en: '', uz: '', ru: '' });
@@ -42,7 +44,7 @@ export const AdminBlogs = () => {
       } else {
         setBlogs(DEFAULT_BLOGS as any);
       }
-    } catch (err) {
+    } catch {
       setBlogs(DEFAULT_BLOGS as any);
     } finally {
       setLoading(false);
@@ -53,11 +55,12 @@ export const AdminBlogs = () => {
     fetchBlogs();
   }, []);
 
-  const openModal = () => {
-    setTitle({ en: '', uz: '', ru: '' });
-    setContent({ en: '', uz: '', ru: '' });
-    setImageUrl('');
-    setTags('');
+  const openModal = (blog?: Blog) => {
+    setEditingId(blog?.id ?? null);
+    setTitle(blog ? { ...blog.title } : { en: '', uz: '', ru: '' });
+    setContent(blog ? { ...blog.content } : { en: '', uz: '', ru: '' });
+    setImageUrl(blog?.image_url ?? '');
+    setTags(blog ? (blog.tags || []).join(', ') : '');
     setIsModalOpen(true);
   };
 
@@ -71,12 +74,18 @@ export const AdminBlogs = () => {
     };
 
     try {
-      await api.post('/blogs', payload);
+      if (editingId) {
+        await api.put(`/blogs/${editingId}`, payload);
+      } else {
+        await api.post('/blogs', payload);
+      }
+      toast.success(editingId ? 'Blog updated' : 'Blog created');
       setIsModalOpen(false);
       fetchBlogs();
-    } catch (err) {
+    } catch (err: any) {
       console.error('Failed to save blog', err);
-      alert('Error saving blog.');
+      const details = err?.response?.data?.errors?.map((e: { message: string }) => e.message).join(', ');
+      toast.error(details || err?.response?.data?.message || 'Error saving blog.');
     }
   };
 
@@ -87,6 +96,7 @@ export const AdminBlogs = () => {
         fetchBlogs();
       } catch (err) {
         console.error('Failed to delete blog', err);
+        toast.error('Failed to delete blog');
       }
     }
   };
@@ -102,7 +112,7 @@ export const AdminBlogs = () => {
       if (fieldType === 'content') setContent(prev => ({ ...prev, ...translated }));
     } catch (err) {
       console.error('Translation failed', err);
-      alert('Translation failed');
+      toast.error('Translation failed');
     } finally {
       setIsTranslating(false);
     }
@@ -129,8 +139,11 @@ export const AdminBlogs = () => {
           <div key={b.id} className="glass rounded-2xl border border-white/5 overflow-hidden flex flex-col">
             <div className="h-48 overflow-hidden relative group">
               <div className="w-full h-full bg-cover bg-center transition-transform duration-500 group-hover:scale-110" style={{ backgroundImage: `url(${b.image_url})`}} />
-              <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
-                <button onClick={() => handleDelete(b.id)} className="bg-foreground/10 hover:bg-red-500 p-3 rounded-full text-white backdrop-blur-md transition-colors">
+              <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity flex items-center justify-center gap-3">
+                <button onClick={() => openModal(b)} aria-label="Edit blog" className="bg-foreground/10 hover:bg-primary p-3 rounded-full text-white backdrop-blur-md transition-colors">
+                  <Edit2 className="w-5 h-5" />
+                </button>
+                <button onClick={() => handleDelete(b.id)} aria-label="Delete blog" className="bg-foreground/10 hover:bg-red-500 p-3 rounded-full text-white backdrop-blur-md transition-colors">
                   <Trash2 className="w-5 h-5" />
                 </button>
               </div>
@@ -160,7 +173,7 @@ export const AdminBlogs = () => {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
           <div className="bg-background border border-border rounded-3xl w-full max-w-4xl max-h-[90vh] overflow-y-auto flex flex-col shadow-2xl">
             <div className="sticky top-0 bg-background/90 backdrop-blur-md p-6 border-b border-border flex justify-between items-center z-10">
-              <h2 className="text-2xl font-bold text-foreground dark:text-white">Create New Blog</h2>
+              <h2 className="text-2xl font-bold text-foreground dark:text-white">{editingId ? 'Edit Blog' : 'Create New Blog'}</h2>
               <button onClick={() => setIsModalOpen(false)} className="text-foreground/50 hover:text-foreground dark:text-white p-2">
                 <X className="w-6 h-6" />
               </button>
@@ -189,7 +202,7 @@ export const AdminBlogs = () => {
                     <div key={`title-${lang}`} className="space-y-2">
                       <label className="text-xs font-mono uppercase text-foreground/50">Title ({lang})</label>
                       <input
-                        required={lang === 'en'}
+                        required
                         value={title[lang as keyof LocalizedString]}
                         onChange={e => setTitle(prev => ({ ...prev, [lang]: e.target.value }))}
                         className="w-full bg-black/30 border border-border rounded-xl px-4 py-2.5 text-foreground dark:text-white text-sm focus:border-primary focus:outline-none"
@@ -203,7 +216,7 @@ export const AdminBlogs = () => {
                     <div key={`content-${lang}`} className="space-y-2">
                       <label className="text-xs font-mono uppercase text-foreground/50">Content ({lang})</label>
                       <textarea
-                        required={lang === 'en'} rows={8}
+                        required rows={8}
                         value={content[lang as keyof LocalizedString]}
                         onChange={e => setContent(prev => ({ ...prev, [lang]: e.target.value }))}
                         className="w-full bg-black/30 border border-border rounded-xl px-4 py-2.5 text-foreground dark:text-white text-sm focus:border-primary focus:outline-none resize-none font-mono"

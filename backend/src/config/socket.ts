@@ -1,7 +1,6 @@
 import { Server as HttpServer } from 'http';
 import { Server, Socket } from 'socket.io';
 import { logger } from './logger';
-import redisClient from './redis';
 import { db } from './database';
 import { AuthService } from '../services/auth.service';
 
@@ -60,8 +59,9 @@ export const setupSocket = (server: HttpServer) => {
     maxHttpBufferSize: 16 * 1024, // chat messages are tiny; reject huge payloads
   });
 
-  // In-memory fallback if Redis is down
-  let memoryActiveUsers = 0;
+  // Live count of open connections. A Redis counter used to be kept here, but it survived
+  // server restarts (connections dropped without a disconnect event) and drifted upwards.
+  const broadcastActiveUsers = () => io.emit('active_users_update', io.of('/').sockets.size);
 
   io.on('connection', async (socket) => {
     logger.info(`🔌 Socket connected: ${socket.id}`);
@@ -71,43 +71,11 @@ export const setupSocket = (server: HttpServer) => {
       socket.join(ADMIN_ROOM);
     }
 
-    // Increment active users
-    memoryActiveUsers++;
-    let activeUsers = memoryActiveUsers;
+    broadcastActiveUsers();
 
-    try {
-      if (redisClient.isConnected) {
-        await redisClient.incr('active_users');
-        activeUsers = parseInt(
-          (await redisClient.get('active_users')) || '0',
-          10,
-        );
-      }
-    } catch (e) {
-      // fallback to memory
-    }
-
-    io.emit('active_users_update', activeUsers);
-
-    socket.on('disconnect', async () => {
+    socket.on('disconnect', () => {
       logger.info(`🔌 Socket disconnected: ${socket.id}`);
-
-      memoryActiveUsers = Math.max(0, memoryActiveUsers - 1);
-      let updatedActiveUsers = memoryActiveUsers;
-
-      try {
-        if (redisClient.isConnected) {
-          await redisClient.decr('active_users');
-          updatedActiveUsers = parseInt(
-            (await redisClient.get('active_users')) || '0',
-            10,
-          );
-        }
-      } catch (e) {
-        // fallback to memory
-      }
-
-      io.emit('active_users_update', Math.max(0, updatedActiveUsers));
+      broadcastActiveUsers();
     });
 
     // A visitor joins their own chat session room to receive admin replies

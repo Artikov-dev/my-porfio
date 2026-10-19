@@ -1,5 +1,6 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
+import { useLocation } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { api } from '@/lib/api';
 import { useI18n } from '@/contexts/I18nContext';
@@ -13,6 +14,8 @@ interface SEOProps {
 
 export const SEO = ({ title, description, keywords, ogImage }: SEOProps) => {
   const { language } = useI18n();
+  const { pathname } = useLocation();
+  const canonicalUrl = `https://artikov.dev${pathname === '/' ? '/' : pathname}`;
 
   const { data: seoSettings } = useQuery({
     queryKey: ['seoSettings'],
@@ -26,7 +29,7 @@ export const SEO = ({ title, description, keywords, ogImage }: SEOProps) => {
   const baseTitle = seoSettings?.title?.[language] || seoSettings?.title?.en || 'Roma Artikov | Portfolio';
   const baseDescription = seoSettings?.description?.[language] || seoSettings?.description?.en || 'Full Stack Engineer based in Uzbekistan';
   const baseKeywords = seoSettings?.keywords?.join(', ') || 'Roma Artikov, Full Stack, Developer, Uzbekistan';
-  const baseOgImage = seoSettings?.og_image || 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&q=80&w=1200';
+  const baseOgImage = seoSettings?.og_image || 'https://artikov.dev/og_banner.jpg';
 
   const finalTitle = title ? `${title} | ${baseTitle.split('|')[0].trim()}` : baseTitle;
   const finalDescription = description || baseDescription;
@@ -38,12 +41,15 @@ export const SEO = ({ title, description, keywords, ogImage }: SEOProps) => {
       <title>{finalTitle}</title>
       <meta name="description" content={finalDescription} />
       <meta name="keywords" content={finalKeywords} />
+      <link rel="canonical" href={canonicalUrl} />
+      <meta property="og:url" content={canonicalUrl} />
       
       {/* Open Graph / Facebook */}
       <meta property="og:type" content="website" />
       <meta property="og:title" content={finalTitle} />
       <meta property="og:description" content={finalDescription} />
       <meta property="og:image" content={finalOgImage} />
+      <meta property="og:locale" content={language === 'uz' ? 'uz_UZ' : language === 'ru' ? 'ru_RU' : 'en_US'} />
 
       {/* Twitter */}
       <meta property="twitter:card" content="summary_large_image" />

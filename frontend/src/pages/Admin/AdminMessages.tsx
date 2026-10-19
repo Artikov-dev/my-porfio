@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { api } from '@/lib/api';
 import { Mail, MessageCircle, Send, User } from 'lucide-react';
 import { useSocket } from '@/hooks/useSocket';

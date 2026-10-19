@@ -16,7 +16,7 @@ export const Home = () => {
   return (
     <PageWrapper>
       <main className="bg-background min-h-screen relative pb-32 overflow-x-hidden w-full">
-        <SEO title={t('welcome') || 'Full-Stack Engineer'} />
+        <SEO title={t('home_seo_title')} />
         <div id="home">
           <ParallaxHero />
         </div>

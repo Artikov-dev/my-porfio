@@ -1,10 +1,8 @@
 import React from 'react';
-import { useQuery } from '@tanstack/react-query';
 import { api } from '@/lib/api';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { useI18n } from '@/contexts/I18nContext';
-import { Helmet } from 'react-helmet-async';
-import { Button } from '@/components/ui/Button';
+import { buttonClassName } from '@/components/ui/Button';
 import { Code2, ExternalLink } from 'lucide-react';
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { PageWrapper } from '@/components/Layout/PageWrapper';
@@ -70,34 +68,18 @@ const TiltCard = ({ children, className }: { children: React.ReactNode, classNam
 
 import { SEO } from '@/components/SEO/SEO';
 
-import { DEFAULT_PROJECTS } from '@/lib/mockProjects';
+import { useProjects } from '@/hooks/useProjects';
 import { optimizeImage } from '@/lib/utils';
 
 export const Projects = () => {
   const { t, language } = useI18n();
-  const { data, isLoading } = useQuery({
-    queryKey: ['projects'],
-    queryFn: async () => {
-      try {
-        const res = await api.get('/projects', { timeout: 6000 });
-        if (res?.data?.data && Array.isArray(res.data.data) && res.data.data.length > 0) {
-          return res.data.data;
-        }
-        return DEFAULT_PROJECTS;
-      } catch (err) {
-        return DEFAULT_PROJECTS;
-      }
-    },
-    staleTime: 1000 * 60 * 5,
-  });
-
-  const displayProjects = (data && data.length > 0) ? data : DEFAULT_PROJECTS;
+  const { projects: displayProjects, isLoading } = useProjects();
 
   const trackProjectView = (id: string) => {
     // Prevent duplicate counting in same session
     if (sessionStorage.getItem(`viewed_proj_${id}`)) return;
     sessionStorage.setItem(`viewed_proj_${id}`, 'true');
-    api.post(`/projects/${id}/view`).catch(console.error);
+    api.post(`/projects/${id}/view`).catch(() => {});
   };
 
   return (
@@ -171,18 +153,18 @@ export const Projects = () => {
                   <div className="flex flex-col sm:flex-row items-center gap-3 pt-4 border-t border-border mt-auto">
                     {project.live_url && (
                       <a href={project.live_url} target="_blank" rel="noopener noreferrer" className="flex-1 w-full" onClick={() => trackProjectView(project.id)}>
-                        <Button variant="solid" className="w-full flex items-center justify-center gap-2">
+                        <span className={buttonClassName('solid', 'w-full flex items-center justify-center gap-2')}>
                           <ExternalLink size={16} />
                           {t('view_online')}
-                        </Button>
+                        </span>
                       </a>
                     )}
                     {project.github_url && (
                       <a href={project.github_url} target="_blank" rel="noopener noreferrer" className="flex-1 w-full" onClick={() => trackProjectView(project.id)}>
-                        <Button variant="outline" className="w-full flex items-center justify-center gap-2">
+                        <span className={buttonClassName('outline', 'w-full flex items-center justify-center gap-2')}>
                           <Code2 size={16} />
                           {t('view_github')}
-                        </Button>
+                        </span>
                       </a>
                     )}
                   </div>

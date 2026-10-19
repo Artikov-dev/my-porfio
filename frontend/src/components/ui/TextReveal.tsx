@@ -1,6 +1,5 @@
 import React from 'react';
 import { motion, Variants } from 'framer-motion';
-import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
 interface TextRevealProps {

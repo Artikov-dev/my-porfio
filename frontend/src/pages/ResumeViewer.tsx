@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useI18n } from '@/contexts/I18nContext';
-import { Button } from '@/components/ui/Button';
+import { buttonClassName } from '@/components/ui/Button';
 import { Download, ArrowLeft, FileText, ExternalLink } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { PageWrapper } from '@/components/Layout/PageWrapper';
@@ -49,9 +49,9 @@ export const ResumeViewer = () => {
         >
           <div className="flex flex-col items-center md:items-start">
             <Link to="/">
-              <Button variant="ghost" className="flex items-center gap-2 text-foreground/60 hover:text-primary mb-2 -ml-4">
+              <span className={buttonClassName('ghost', 'flex items-center gap-2 text-foreground/60 hover:text-primary mb-2 -ml-4')}>
                 <ArrowLeft className="w-4 h-4" /> Back to Portfolio
-              </Button>
+              </span>
             </Link>
             <h1 className="text-3xl md:text-5xl font-bold text-foreground tracking-tight">
               {t('cv_title1')} <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-purple-500">{t('cv_title2')}</span>
@@ -116,14 +116,14 @@ export const ResumeViewer = () => {
           {/* Custom Actions Footer - Floating style inside the glass container */}
           <div className="absolute bottom-6 left-1/2 -translate-x-1/2 w-[90%] md:w-auto bg-background/80 backdrop-blur-xl border border-white/20 dark:border-white/10 rounded-2xl shadow-2xl flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 p-4 translate-y-0 opacity-100 transition-all duration-300">
             <a href={pdfUrl} target="_blank" rel="noopener noreferrer" className="w-full sm:w-auto">
-              <Button variant="outline" className="w-full flex items-center justify-center gap-2 px-8 py-6 rounded-xl hover:bg-primary/10 hover:text-primary transition-colors border-foreground/10">
+              <span className={buttonClassName('outline', 'w-full flex items-center justify-center gap-2 px-8 py-6 rounded-xl hover:bg-primary/10 hover:text-primary transition-colors border-foreground/10')}>
                 <ExternalLink className="w-5 h-5" /> Open in New Tab
-              </Button>
+              </span>
             </a>
             <a href={pdfUrl} download className="w-full sm:w-auto">
-              <Button variant="solid" className="w-full flex items-center justify-center gap-2 px-8 py-6 rounded-xl shadow-[0_0_20px_rgba(94,142,203,0.4)] hover:shadow-[0_0_30px_rgba(94,142,203,0.6)] transition-all">
+              <span className={buttonClassName('solid', 'w-full flex items-center justify-center gap-2 px-8 py-6 rounded-xl shadow-[0_0_20px_rgba(94,142,203,0.4)] hover:shadow-[0_0_30px_rgba(94,142,203,0.6)] transition-all')}>
                 <Download className="w-5 h-5" /> Download PDF
-              </Button>
+              </span>
             </a>
           </div>
         </motion.div>

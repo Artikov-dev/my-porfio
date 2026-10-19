@@ -40,6 +40,19 @@ export const createBlog = async (
   }
 };
 
+export const updateBlog = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const blog = await BlogService.updateBlog(req.params.id as string, req.body);
+    res.status(200).json({ status: 'success', data: blog });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const deleteBlog = async (
   req: Request,
   res: Response,
