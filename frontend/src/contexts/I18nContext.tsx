@@ -29,6 +29,8 @@ const translations = {
     explore_projects: 'Explore Projects',
     view_resume: 'View Resume',
     download_cv: 'Download CV',
+    resume_no_preview: 'The preview isn’t available in this browser. Open or download the PDF to view the resume.',
+    resume_open: 'Open PDF',
     
     // Blog & Modal
     quick_read: 'Quick Read',
@@ -150,6 +152,8 @@ const translations = {
     explore_projects: 'Loyihalarni Ko\'rish',
     view_resume: 'Rezyumeni Ko\'rish',
     download_cv: 'CV Yuklab Olish',
+    resume_no_preview: 'Bu brauzerda oldindan ko‘rish imkoni yo‘q. Rezyumeni ko‘rish uchun PDF faylni oching yoki yuklab oling.',
+    resume_open: 'PDF ni ochish',
     
     // Blog & Modal
     quick_read: 'Tezkor O\'qish',
@@ -271,6 +275,8 @@ const translations = {
     explore_projects: 'Смотреть Проекты',
     view_resume: 'Смотреть Резюме',
     download_cv: 'Скачать Резюме',
+    resume_no_preview: 'Предпросмотр недоступен в этом браузере. Откройте или скачайте PDF, чтобы посмотреть резюме.',
+    resume_open: 'Открыть PDF',
     
     // Blog & Modal
     quick_read: 'Быстрое Чтение',

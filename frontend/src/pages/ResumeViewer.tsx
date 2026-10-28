@@ -8,6 +8,31 @@ import { motion } from 'framer-motion';
 import { SEO } from '@/components/SEO/SEO';
 import { getResume } from '@/lib/resume';
 
+// Most phone browsers (Android Chrome, Samsung Internet…) can't show a PDF inside the page;
+// <object> would just render its fallback there, so go straight to the open/download card.
+const canPreviewPdf = typeof navigator === 'undefined' || navigator.pdfViewerEnabled !== false;
+
+const NoPreview = ({ pdfUrl, fileName }: { pdfUrl: string; fileName: string }) => {
+  const { t } = useI18n();
+  return (
+    <div className="flex flex-col items-center justify-center p-8 text-center h-full max-w-md mx-auto">
+      <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mb-6">
+        <FileText className="w-10 h-10 text-primary" />
+      </div>
+      <p className="text-sm text-foreground/50 mb-2 break-all">{fileName}</p>
+      <p className="text-foreground/70 mb-6 leading-relaxed">{t('resume_no_preview')}</p>
+      <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+        <a href={pdfUrl} target="_blank" rel="noopener noreferrer" className={buttonClassName('solid', 'flex items-center justify-center gap-2 px-6 py-3 rounded-xl')}>
+          <ExternalLink className="w-5 h-5" /> {t('resume_open')}
+        </a>
+        <a href={pdfUrl} download={fileName} className={buttonClassName('outline', 'flex items-center justify-center gap-2 px-6 py-3 rounded-xl')}>
+          <Download className="w-5 h-5" /> {t('download_cv')}
+        </a>
+      </div>
+    </div>
+  );
+};
+
 export const ResumeViewer = () => {
   const { language, setLanguage, t } = useI18n();
   const [pdfExists, setPdfExists] = useState<boolean | null>(null);
@@ -88,18 +113,18 @@ export const ResumeViewer = () => {
               <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4"></div>
               <p className="text-foreground/60">Loading document...</p>
             </div>
-          ) : pdfExists ? (
+          ) : pdfExists && canPreviewPdf ? (
             <div className="absolute inset-0 w-[calc(100%+20px)] h-[calc(100%+20px)] -mr-[20px] -mb-[20px]">
               <object 
                 data={`${pdfUrl}#toolbar=0&navpanes=0&scrollbar=0&view=FitH`} 
                 type="application/pdf" 
                 className="w-full h-full"
               >
-                <div className="flex flex-col items-center justify-center p-8 text-center h-full">
-                  <p className="text-foreground/70">Your browser doesn't support built-in PDF viewing.</p>
-                </div>
+                <NoPreview pdfUrl={pdfUrl} fileName={fileName} />
               </object>
             </div>
+          ) : pdfExists ? (
+            <NoPreview pdfUrl={pdfUrl} fileName={fileName} />
           ) : (
             <div className="flex flex-col items-center justify-center p-8 text-center h-full max-w-md">
               <div className="w-20 h-20 bg-foreground/5 rounded-full flex items-center justify-center mb-6">
@@ -113,7 +138,9 @@ export const ResumeViewer = () => {
           )}
         </div>
 
-          {/* Custom Actions Footer - Floating style inside the glass container */}
+          {/* Custom Actions Footer - Floating style inside the glass container.
+              Only over the embedded preview; the no-preview card has its own buttons. */}
+          {pdfExists && canPreviewPdf && (
           <div className="absolute bottom-6 left-1/2 -translate-x-1/2 w-[90%] md:w-auto bg-background/80 backdrop-blur-xl border border-white/20 dark:border-white/10 rounded-2xl shadow-2xl flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 p-4 translate-y-0 opacity-100 transition-all duration-300">
             <a href={pdfUrl} target="_blank" rel="noopener noreferrer" className="w-full sm:w-auto">
               <span className={buttonClassName('outline', 'w-full flex items-center justify-center gap-2 px-8 py-6 rounded-xl hover:bg-primary/10 hover:text-primary transition-colors border-foreground/10')}>
@@ -126,6 +153,7 @@ export const ResumeViewer = () => {
               </span>
             </a>
           </div>
+          )}
         </motion.div>
 
     </div>
