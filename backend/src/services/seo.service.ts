@@ -31,20 +31,25 @@ const DEFAULT_SEO: SEOSettings = {
   og_image: 'https://artikov.dev/og_banner.jpg',
 };
 
+let seoTableReady = false;
+
 export class SEOService {
   static async getSettings() {
     try {
-      // Ensure table exists
-      await db.query(`
-        CREATE TABLE IF NOT EXISTS seo_settings (
-          id INTEGER PRIMARY KEY DEFAULT 1,
-          title JSONB NOT NULL,
-          description JSONB NOT NULL,
-          keywords TEXT[] NOT NULL DEFAULT '{}',
-          og_image TEXT NOT NULL,
-          updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-        );
-      `);
+      // Ensure table exists — once per process, not on every public page load
+      if (!seoTableReady) {
+        await db.query(`
+          CREATE TABLE IF NOT EXISTS seo_settings (
+            id INTEGER PRIMARY KEY DEFAULT 1,
+            title JSONB NOT NULL,
+            description JSONB NOT NULL,
+            keywords TEXT[] NOT NULL DEFAULT '{}',
+            og_image TEXT NOT NULL,
+            updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+          );
+        `);
+        seoTableReady = true;
+      }
 
       let result = await db.query('SELECT * FROM seo_settings WHERE id = 1');
 

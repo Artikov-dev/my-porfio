@@ -120,7 +120,7 @@ export const ResumeViewer = () => {
                 <ExternalLink className="w-5 h-5" /> Open in New Tab
               </span>
             </a>
-            <a href={pdfUrl} download className="w-full sm:w-auto">
+            <a href={pdfUrl} download={`Rozimuhammad_Artikov_CV_${language.toUpperCase()}.pdf`} className="w-full sm:w-auto">
               <span className={buttonClassName('solid', 'w-full flex items-center justify-center gap-2 px-8 py-6 rounded-xl shadow-[0_0_20px_rgba(94,142,203,0.4)] hover:shadow-[0_0_30px_rgba(94,142,203,0.6)] transition-all')}>
                 <Download className="w-5 h-5" /> Download PDF
               </span>

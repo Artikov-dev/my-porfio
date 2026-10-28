@@ -51,16 +51,17 @@ Navigate to the backend directory and install dependencies:
 cd backend
 npm install
 ```
-Create a `.env` file in the `backend` folder and configure your PostgreSQL database:
+Copy `backend/.env.example` to `backend/.env` and fill it in. The main variables:
 ```env
 PORT=5000
-DB_USER=postgres
-DB_PASSWORD=your_password
-DB_HOST=localhost
-DB_PORT=5432
-DB_NAME=portfolio_db
-CORS_ORIGIN=http://localhost:5173
+DATABASE_URL=postgresql://user:password@localhost:5432/portfolio_db
+CLIENT_URL=http://localhost:5173
+JWT_SECRET=...            # long random string
+REFRESH_TOKEN_SECRET=...  # a different long random string
+ADMIN_EMAIL=you@example.com
+ADMIN_PASSWORD_HASH=...   # npm run hash-password -- "your-password"
 ```
+Redis and Telegram are optional — see `.env.example`.
 Run the backend server:
 ```bash
 npm run dev

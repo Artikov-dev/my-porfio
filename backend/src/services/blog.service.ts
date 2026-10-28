@@ -76,9 +76,8 @@ export const BlogService = {
   async getBlogById(id: string) {
     try {
       const result = await db.query('SELECT * FROM blogs WHERE id = $1', [id]);
+      // Views are counted only by POST /blogs/:id/view (rate-limited per IP); counting here too doubled them
       if (result.rows.length > 0) {
-        // Increment view counter asynchronously
-        db.query('UPDATE blogs SET views = views + 1 WHERE id = $1', [id]).catch(() => {});
         return result.rows[0];
       }
     } catch (e) {}

@@ -29,8 +29,10 @@ exports.logger = winston_1.default.createLogger({
         }),
     ],
 });
-if (process.env.NODE_ENV !== 'production') {
-    exports.logger.add(new winston_1.default.transports.Console({
-        format: combine(colorize(), align(), logFormat),
-    }));
-}
+// Always log to stdout: on Render the disk is ephemeral and only stdout reaches the dashboard,
+// so production errors used to be invisible. Colors only locally.
+exports.logger.add(new winston_1.default.transports.Console({
+    format: process.env.NODE_ENV === 'production'
+        ? logFormat
+        : combine(colorize(), align(), logFormat),
+}));

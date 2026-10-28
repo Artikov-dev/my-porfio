@@ -90,4 +90,7 @@ const startServer = async () => {
         logger_1.logger.info(`🚀 Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
     });
 };
-startServer();
+startServer().catch((err) => {
+    logger_1.logger.error(`❌ Server failed to start: ${err?.stack || err}`);
+    process.exit(1);
+});

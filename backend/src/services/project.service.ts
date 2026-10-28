@@ -81,9 +81,8 @@ export const ProjectService = {
   async getProjectById(id: string) {
     try {
       const result = await db.query('SELECT * FROM projects WHERE id = $1', [id]);
+      // Views are counted only by POST /projects/:id/view (rate-limited per IP); counting here too doubled them
       if (result.rows.length > 0) {
-        // Increment views asynchronously
-        db.query('UPDATE projects SET views = COALESCE(views, 0) + 1 WHERE id = $1', [id]).catch(() => {});
         return result.rows[0];
       }
     } catch (e) {}

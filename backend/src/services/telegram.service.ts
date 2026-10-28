@@ -46,7 +46,11 @@ bot.command('stats', async (ctx) => {
 });
 
 if (process.env.NODE_ENV !== 'test' && isConfigured) {
-  bot.launch();
+  // launch() rejects on a bad token or a 409 Conflict (two instances polling during a Render
+  // deploy). Unhandled, that rejection crashed the whole API; notifications still work without it.
+  bot.launch().catch((err) => {
+    logger.error(`Telegram bot polling stopped: ${err?.message || err}`);
+  });
   logger.info('🤖 Telegram bot launched');
 }
 
@@ -76,15 +80,17 @@ export const TelegramService = {
 ${escapeMarkdown(body)}
     `;
 
-    if (!isConfigured) return;
+    if (!isConfigured) return false;
 
     try {
       await bot.telegram.sendMessage(ADMIN_CHAT_ID as string, text, {
         parse_mode: 'Markdown',
       });
       logger.info('Telegram notification sent successfully');
+      return true;
     } catch (error) {
       logger.error('Failed to send Telegram notification', error);
+      return false;
     }
   },
 };

@@ -3,6 +3,7 @@ import { X, Terminal as TerminalIcon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { MatrixRain } from './MatrixRain';
 import { SnakeGame } from './SnakeGame';
+import { isTypingTarget } from '@/lib/utils';
 
 interface CommandOutput {
   id: string;
@@ -27,7 +28,9 @@ export const TerminalOverlay = () => {
   // Listen for `~` key to toggle terminal
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Toggle on `~` or `\`` (backtick)
+      // Toggle on `~` or `\`` (backtick) — but not while typing in a form field,
+      // except the terminal's own input (so the same key closes it again)
+      if (isTypingTarget(e.target) && e.target !== inputRef.current) return;
       if (e.key === '`' || e.key === '~') {
         e.preventDefault();
         setIsOpen(prev => !prev);

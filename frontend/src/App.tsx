@@ -14,6 +14,7 @@ import { ScrollToTop } from '@/components/ui/ScrollToTop';
 import { ProtectedRoute } from '@/components/Auth/ProtectedRoute';
 import { useAnalytics } from '@/hooks/useAnalytics';
 import { useIdle } from '@/hooks/useIdle';
+import { isTypingTarget } from '@/lib/utils';
 
 // Overlays nobody needs for the first paint — mounted once the browser is idle.
 // (Terminal / CommandPalette register their own keyboard shortcuts on mount.)
@@ -57,8 +58,8 @@ function App() {
     const target = 'matrix';
     
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (!e.key) return;
-      typed += e.key.toLowerCase();
+      if (!e.key || isTypingTarget(e.target)) return;
+      typed +=e.key.toLowerCase();
       if (typed.length > target.length) {
         typed = typed.slice(typed.length - target.length);
       }

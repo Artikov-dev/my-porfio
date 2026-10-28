@@ -2,6 +2,8 @@ import { Request, Response, NextFunction } from 'express';
 import { TelegramService } from '../services/telegram.service';
 import { db } from '../config/database';
 import { ADMIN_ROOM } from '../config/socket';
+import { logger } from '../config/logger';
+import { CustomError } from '../middlewares/error.middleware';
 
 export const submitContact = async (
   req: Request,
@@ -13,18 +15,21 @@ export const submitContact = async (
     const ip = req.ip || req.connection?.remoteAddress || 'Unknown IP';
 
     // 1. Save to Database (safely)
+    let saved = false;
     try {
       await db.query(
         'INSERT INTO contacts (name, email, subject, body, location, ip_address) VALUES ($1, $2, $3, $4, $5, $6)',
         [name, email, subject, body, location || 'Unknown', ip],
       );
+      saved = true;
     } catch (dbErr) {
-      console.warn('Could not save contact message to DB, proceeding with notification:', dbErr);
+      logger.warn(`Could not save contact message to DB, proceeding with notification: ${dbErr}`);
     }
 
     // 2. Send Telegram Notification
+    let notified = false;
     try {
-      await TelegramService.sendContactMessage(
+      notified = await TelegramService.sendContactMessage(
         name,
         email,
         subject,
@@ -33,7 +38,12 @@ export const submitContact = async (
         location || 'Unknown',
       );
     } catch (teleErr) {
-      console.warn('Telegram notification failed:', teleErr);
+      logger.warn(`Telegram notification failed: ${teleErr}`);
+    }
+
+    // Neither stored nor delivered: tell the visitor, instead of a "sent" toast for a lost message
+    if (!saved && !notified) {
+      throw new CustomError('Message could not be delivered, please try again later', 503);
     }
 
     // 3. Notify connected admins only (never broadcast visitor emails to everyone)

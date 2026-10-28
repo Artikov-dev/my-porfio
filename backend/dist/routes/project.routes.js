@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
+const database_1 = require("../config/database");
 const project_controller_1 = require("../controllers/project.controller");
 const auth_middleware_1 = require("../middlewares/auth.middleware");
 const validate_middleware_1 = require("../middlewares/validate.middleware");
@@ -16,8 +17,7 @@ router.post('/:id/view', rateLimiter_1.viewLimiter, async (req, res) => {
         // Built-in fallback items ('proj-0', 'blog-1') aren't DB rows; a non-UUID id used to make Postgres throw → 500
         if (!UUID_PATTERN.test(String(id)))
             return res.json({ success: true, counted: false });
-        const { db } = await import('../config/database.js');
-        await db.query('UPDATE projects SET views = COALESCE(views, 0) + 1 WHERE id = $1', [id]);
+        await database_1.db.query('UPDATE projects SET views = COALESCE(views, 0) + 1 WHERE id = $1', [id]);
         res.json({ success: true });
     }
     catch (e) {

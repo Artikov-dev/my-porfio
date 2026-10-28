@@ -107,4 +107,7 @@ const startServer = async () => {
   });
 };
 
-startServer();
+startServer().catch((err) => {
+  logger.error(`❌ Server failed to start: ${err?.stack || err}`);
+  process.exit(1);
+});

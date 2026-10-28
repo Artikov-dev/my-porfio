@@ -28,6 +28,12 @@ import {
   Heart
 } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { isTypingTarget } from '@/lib/utils';
+
+const NAVIGATION_KEYS = new Set([
+  ' ', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight',
+  'PageUp', 'PageDown', 'Home', 'End', 'Tab', 'Escape',
+]);
 
 // three.js + the room scene are ~280KB gzip — only fetch them when the section is near the viewport
 const DevRoomScene = React.lazy(() => import('../DevRoom/DevRoomScene').then(m => ({ default: m.DevRoomScene })));
@@ -98,8 +104,10 @@ export const DevRoomSection: React.FC = () => {
   useEffect(() => {
     const handleGlobalKeyDown = (e: KeyboardEvent) => {
       // Don't trigger if user is actively writing in input or textarea
-      const tag = (e.target as HTMLElement)?.tagName?.toLowerCase();
-      if (tag === 'input' || tag === 'textarea') return;
+      if (isTypingTarget(e.target)) return;
+      // Page navigation (Space / arrows / PageDown…) and shortcuts aren't "typing" — clicking on
+      // every scroll key, anywhere on the page, was noisy
+      if (NAVIGATION_KEYS.has(e.key) || e.ctrlKey || e.metaKey || e.altKey) return;
 
       if (soundEnabled) playMechanicalClick();
       setKeyboardFlashTrigger(Date.now());
