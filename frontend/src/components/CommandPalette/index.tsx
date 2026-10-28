@@ -22,6 +22,7 @@ import { useNavigate } from 'react-router-dom';
 import { useI18n } from '@/contexts/I18nContext';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useSound } from '@/hooks/useSound';
+import { getResume } from '@/lib/resume';
 
 // Custom Social Icons
 const GithubIcon = ({ className }: { className?: string }) => (
@@ -236,14 +237,15 @@ export const CommandPalette = () => {
       id: 'act-download-cv',
       category: 'actions',
       title: 'Download Resume (PDF)',
-      subtitle: `Direct download: resume-${language}.pdf`,
+      subtitle: `Direct download: ${getResume(language).fileName}`,
       icon: Download,
       keywords: ['download', 'cv', 'pdf', 'resume', 'yuklab olish', 'скачать'],
       action: () => {
         playClick();
         const link = document.createElement('a');
-        link.href = `/resume-${language}.pdf`;
-        link.download = `Roma_Artikov_Resume_${language.toUpperCase()}.pdf`;
+        const resume = getResume(language);
+        link.href = resume.url;
+        link.download = resume.fileName;
         link.click();
         closePalette();
       },

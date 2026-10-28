@@ -6,14 +6,14 @@ import { Link } from 'react-router-dom';
 import { PageWrapper } from '@/components/Layout/PageWrapper';
 import { motion } from 'framer-motion';
 import { SEO } from '@/components/SEO/SEO';
+import { getResume } from '@/lib/resume';
 
 export const ResumeViewer = () => {
   const { language, setLanguage, t } = useI18n();
   const [pdfExists, setPdfExists] = useState<boolean | null>(null);
   
-  // Construct the PDF file name based on the current language
-  // e.g., resume-en.pdf, resume-uz.pdf, resume-ru.pdf
-  const pdfUrl = `/resume-${language}.pdf`;
+  // PDF for the current language (see lib/resume.ts)
+  const { url: pdfUrl, fileName } = getResume(language);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -120,7 +120,7 @@ export const ResumeViewer = () => {
                 <ExternalLink className="w-5 h-5" /> Open in New Tab
               </span>
             </a>
-            <a href={pdfUrl} download={`Rozimuhammad_Artikov_CV_${language.toUpperCase()}.pdf`} className="w-full sm:w-auto">
+            <a href={pdfUrl} download={fileName} className="w-full sm:w-auto">
               <span className={buttonClassName('solid', 'w-full flex items-center justify-center gap-2 px-8 py-6 rounded-xl shadow-[0_0_20px_rgba(94,142,203,0.4)] hover:shadow-[0_0_30px_rgba(94,142,203,0.6)] transition-all')}>
                 <Download className="w-5 h-5" /> Download PDF
               </span>

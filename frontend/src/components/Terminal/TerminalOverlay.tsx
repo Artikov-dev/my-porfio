@@ -4,6 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import { MatrixRain } from './MatrixRain';
 import { SnakeGame } from './SnakeGame';
 import { isTypingTarget } from '@/lib/utils';
+import { getResume } from '@/lib/resume';
+import { useI18n } from '@/contexts/I18nContext';
 
 interface CommandOutput {
   id: string;
@@ -24,6 +26,7 @@ export const TerminalOverlay = () => {
   const inputRef = useRef<HTMLInputElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
+  const { language } = useI18n();
 
   // Listen for `~` key to toggle terminal
   useEffect(() => {
@@ -124,7 +127,7 @@ export const TerminalOverlay = () => {
             </div>
             
             <div className="text-center mt-2">
-              <a href="/resume.pdf" download className="inline-block mt-2 px-4 py-1.5 bg-green-500/10 text-green-400 border border-green-500/30 rounded hover:bg-green-500 hover:text-white transition-colors text-xs font-bold uppercase tracking-wider shadow-lg hover:shadow-green-500/20">
+              <a href={getResume(language).url} download={getResume(language).fileName} className="inline-block mt-2 px-4 py-1.5 bg-green-500/10 text-green-400 border border-green-500/30 rounded hover:bg-green-500 hover:text-white transition-colors text-xs font-bold uppercase tracking-wider shadow-lg hover:shadow-green-500/20">
                 [ Download PDF version ]
               </a>
             </div>

@@ -3,6 +3,7 @@ import { motion, useReducedMotion, useSpring, useTransform } from 'framer-motion
 import { useMousePosition } from '@/hooks/useMousePosition';
 import { useIdle } from '@/hooks/useIdle';
 import { useI18n } from '@/contexts/I18nContext';
+import { getResume } from '@/lib/resume';
 import { useTheme } from '@/contexts/ThemeContext';
 import { buttonClassName } from '@/components/ui/Button';
 import { Link } from 'react-router-dom';
@@ -131,8 +132,8 @@ export const ParallaxHero = () => {
             </Link>
 
             <a 
-              href={`/resume-${language}.pdf`} 
-              download={`Rozimuhammad_Artikov_Resume_${language.toUpperCase()}.pdf`}
+              href={getResume(language).url}
+              download={getResume(language).fileName}
               className="w-full sm:w-auto"
             >
               <Magnetic>
