@@ -31,6 +31,11 @@ const translations = {
     download_cv: 'Download CV',
     resume_no_preview: 'The preview isn’t available in this browser. Open or download the PDF to view the resume.',
     resume_open: 'Open PDF',
+    resume_back: 'Back to portfolio',
+    resume_language: 'CV language',
+    resume_contacts: 'Contacts',
+    resume_loading: 'Loading CV…',
+    resume_page: 'CV page {n}',
     
     // Blog & Modal
     quick_read: 'Quick Read',
@@ -154,6 +159,11 @@ const translations = {
     download_cv: 'CV Yuklab Olish',
     resume_no_preview: 'Bu brauzerda oldindan ko‘rish imkoni yo‘q. Rezyumeni ko‘rish uchun PDF faylni oching yoki yuklab oling.',
     resume_open: 'PDF ni ochish',
+    resume_back: 'Portfolioga qaytish',
+    resume_language: 'CV tili',
+    resume_contacts: 'Kontaktlar',
+    resume_loading: 'CV yuklanmoqda…',
+    resume_page: 'CV, {n}-sahifa',
     
     // Blog & Modal
     quick_read: 'Tezkor O\'qish',
@@ -277,6 +287,11 @@ const translations = {
     download_cv: 'Скачать Резюме',
     resume_no_preview: 'Предпросмотр недоступен в этом браузере. Откройте или скачайте PDF, чтобы посмотреть резюме.',
     resume_open: 'Открыть PDF',
+    resume_back: 'Назад к портфолио',
+    resume_language: 'Язык резюме',
+    resume_contacts: 'Контакты',
+    resume_loading: 'Загрузка резюме…',
+    resume_page: 'Резюме, страница {n}',
     
     // Blog & Modal
     quick_read: 'Быстрое Чтение',

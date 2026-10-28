@@ -7,17 +7,30 @@ import { PageWrapper } from '@/components/Layout/PageWrapper';
 import { motion } from 'framer-motion';
 import { SEO } from '@/components/SEO/SEO';
 import { getResume } from '@/lib/resume';
+import { cn } from '@/lib/utils';
+import { PdfPages, PdfStatus } from '@/components/Resume/PdfPages';
+import { GithubIcon, LinkedinIcon, MailIcon, TelegramIcon } from '@/components/ui/SocialIcons';
 
-// Most phone browsers (Android Chrome, Samsung Internet…) can't show a PDF inside the page;
-// <object> would just render its fallback there, so go straight to the open/download card.
-const canPreviewPdf = typeof navigator === 'undefined' || navigator.pdfViewerEnabled !== false;
+const LANGUAGES = [
+  { code: 'en', label: 'English' },
+  { code: 'uz', label: "O'zbekcha" },
+  { code: 'ru', label: 'Русский' },
+] as const;
 
+const CONTACTS = [
+  { name: 'Telegram', value: '@artikov_06_tt', href: 'https://t.me/artikov_06_tt', Icon: TelegramIcon },
+  { name: 'LinkedIn', value: 'in/artikovdev', href: 'https://www.linkedin.com/in/artikovdev/', Icon: LinkedinIcon },
+  { name: 'GitHub', value: 'Artikov-dev', href: 'https://github.com/Artikov-dev', Icon: GithubIcon },
+  { name: 'Email', value: 'artikovrozik52@gmail.com', href: 'mailto:artikovrozik52@gmail.com', Icon: MailIcon },
+];
+
+// Shown when the PDF can't be loaded or rendered
 const NoPreview = ({ pdfUrl, fileName }: { pdfUrl: string; fileName: string }) => {
   const { t } = useI18n();
   return (
-    <div className="flex flex-col items-center justify-center p-8 text-center h-full max-w-md mx-auto">
-      <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mb-6">
-        <FileText className="w-10 h-10 text-primary" />
+    <div className="flex flex-col items-center justify-center py-16 px-6 text-center max-w-md mx-auto">
+      <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-5">
+        <FileText className="w-8 h-8 text-primary" />
       </div>
       <p className="text-sm text-foreground/50 mb-2 break-all">{fileName}</p>
       <p className="text-foreground/70 mb-6 leading-relaxed">{t('resume_no_preview')}</p>
@@ -35,128 +48,122 @@ const NoPreview = ({ pdfUrl, fileName }: { pdfUrl: string; fileName: string }) =
 
 export const ResumeViewer = () => {
   const { language, setLanguage, t } = useI18n();
-  const [pdfExists, setPdfExists] = useState<boolean | null>(null);
-  
-  // PDF for the current language (see lib/resume.ts)
+  const [status, setStatus] = useState<PdfStatus>('loading');
   const { url: pdfUrl, fileName } = getResume(language);
+  const pageLabel = React.useCallback((n: number) => t('resume_page').replace('{n}', String(n)), [t]);
 
   useEffect(() => {
     window.scrollTo(0, 0);
-    
-    // Check if the PDF actually exists (prevent Vite from returning index.html)
-    fetch(pdfUrl, { method: 'HEAD' })
-      .then(res => {
-        const contentType = res.headers.get('content-type');
-        if (contentType && contentType.includes('application/pdf')) {
-          setPdfExists(true);
-        } else {
-          setPdfExists(false);
-        }
-      })
-      .catch(() => setPdfExists(false));
-  }, [pdfUrl]);
+  }, []);
 
   return (
     <PageWrapper>
-      <div className="min-h-screen pt-24 md:pt-32 pb-16 px-4 md:px-6 max-w-6xl mx-auto flex flex-col items-center relative">
-        <SEO title={t('resume')} />
-        {/* Animated Background Orbs */}
-        <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none -z-10">
-          <div className="absolute top-[10%] left-[5%] w-[300px] md:w-[500px] h-[300px] md:h-[500px] bg-primary/20 rounded-full blur-[100px] md:blur-[120px] animate-pulse"></div>
-          <div className="absolute bottom-[10%] right-[5%] w-[300px] md:w-[500px] h-[300px] md:h-[500px] bg-purple-500/20 rounded-full blur-[100px] md:blur-[120px] animate-pulse" style={{ animationDelay: '2s' }}></div>
-        </div>
-
-        <motion.div 
-          initial={{ opacity: 0, y: -20 }}
+      <SEO title={t('resume')} />
+      <div className="min-h-screen max-w-6xl mx-auto px-4 md:px-6 pt-6 md:pt-10 pb-16 grid gap-6 lg:gap-10 lg:grid-cols-[300px_minmax(0,1fr)]">
+        {/* Sidebar: who, which language, get the file, how to reach me */}
+        <motion.aside
+          initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="w-full flex flex-col md:flex-row justify-between items-center mb-8 md:mb-12 gap-6"
+          transition={{ duration: 0.4 }}
+          className="lg:sticky lg:top-8 self-start flex flex-col gap-4"
         >
-          <div className="flex flex-col items-center md:items-start">
-            <Link to="/">
-              <span className={buttonClassName('ghost', 'flex items-center gap-2 text-foreground/60 hover:text-primary mb-2 -ml-4')}>
-                <ArrowLeft className="w-4 h-4" /> Back to Portfolio
-              </span>
-            </Link>
-            <h1 className="text-3xl md:text-5xl font-bold text-foreground tracking-tight">
-              {t('cv_title1')} <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-purple-500">{t('cv_title2')}</span>
-            </h1>
-          </div>
-          
-          <div className="flex items-center gap-2 glass p-1 rounded-2xl md:rounded-full border border-border shadow-lg">
-            {(['en', 'ru', 'uz'] as const).map(lang => (
-              <button
-                key={lang}
-                onClick={() => setLanguage(lang)}
-                className={`w-12 h-10 rounded-xl md:rounded-full flex items-center justify-center text-xs font-bold uppercase transition-all duration-300 ${
-                  language === lang 
-                  ? 'bg-primary text-white shadow-md' 
-                  : 'hover:bg-foreground/5 text-foreground/70'
-                }`}
-              >
-                {lang}
-              </button>
-            ))}
-          </div>
-        </motion.div>
+          <Link
+            to="/"
+            className="inline-flex items-center gap-2 text-sm text-foreground/60 hover:text-primary transition-colors w-fit rounded-md focus-visible:outline-2 focus-visible:outline-primary"
+          >
+            <ArrowLeft className="w-4 h-4" /> {t('resume_back')}
+          </Link>
 
-        <motion.div 
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
-          className="w-full h-[70vh] md:h-[80vh] glass border border-white/20 dark:border-white/10 rounded-3xl overflow-hidden shadow-[0_0_50px_rgba(94,142,203,0.18)] hover:shadow-[0_0_60px_rgba(94,142,203,0.3)] transition-shadow duration-500 relative flex flex-col group"
-        >
-          {/* We use an object tag for better PDF rendering and hide native toolbars */}
-          <div className="flex-1 w-full relative flex items-center justify-center bg-white/50 dark:bg-black/20 overflow-hidden">
-          {pdfExists === null ? (
-            <div className="animate-pulse flex flex-col items-center">
-              <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4"></div>
-              <p className="text-foreground/60">Loading document...</p>
-            </div>
-          ) : pdfExists && canPreviewPdf ? (
-            <div className="absolute inset-0 w-[calc(100%+20px)] h-[calc(100%+20px)] -mr-[20px] -mb-[20px]">
-              <object 
-                data={`${pdfUrl}#toolbar=0&navpanes=0&scrollbar=0&view=FitH`} 
-                type="application/pdf" 
-                className="w-full h-full"
-              >
-                <NoPreview pdfUrl={pdfUrl} fileName={fileName} />
-              </object>
-            </div>
-          ) : pdfExists ? (
-            <NoPreview pdfUrl={pdfUrl} fileName={fileName} />
-          ) : (
-            <div className="flex flex-col items-center justify-center p-8 text-center h-full max-w-md">
-              <div className="w-20 h-20 bg-foreground/5 rounded-full flex items-center justify-center mb-6">
-                <FileText className="w-10 h-10 text-foreground/40" />
+          <div className="rounded-2xl border border-border bg-background p-5 md:p-6 flex flex-col gap-5">
+            <div className="flex items-center gap-4 lg:flex-col lg:items-start">
+              <img
+                src="/imRA.webp"
+                alt=""
+                width={72}
+                height={72}
+                className="w-16 h-16 lg:w-[72px] lg:h-[72px] rounded-full object-cover border border-border"
+              />
+              <div className="min-w-0">
+                <h1 className="text-xl md:text-2xl font-bold text-foreground tracking-tight leading-tight">Ro'zimuhammad Artikov</h1>
+                <p className="text-sm text-foreground/60 mt-1">
+                  {t('hero_title1')} {t('hero_title2')}
+                </p>
               </div>
-              <h3 className="text-2xl font-bold text-foreground mb-4">Resume Not Found</h3>
-              <p className="text-foreground/70 mb-6 leading-relaxed">
-                The resume file for <strong>{language.toUpperCase()}</strong> is currently missing. Please upload <code className="bg-foreground/10 px-2 py-1 rounded text-primary">{pdfUrl}</code> to the public folder.
-              </p>
             </div>
-          )}
-        </div>
 
-          {/* Custom Actions Footer - Floating style inside the glass container.
-              Only over the embedded preview; the no-preview card has its own buttons. */}
-          {pdfExists && canPreviewPdf && (
-          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 w-[90%] md:w-auto bg-background/80 backdrop-blur-xl border border-white/20 dark:border-white/10 rounded-2xl shadow-2xl flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 p-4 translate-y-0 opacity-100 transition-all duration-300">
-            <a href={pdfUrl} target="_blank" rel="noopener noreferrer" className="w-full sm:w-auto">
-              <span className={buttonClassName('outline', 'w-full flex items-center justify-center gap-2 px-8 py-6 rounded-xl hover:bg-primary/10 hover:text-primary transition-colors border-foreground/10')}>
-                <ExternalLink className="w-5 h-5" /> Open in New Tab
-              </span>
-            </a>
-            <a href={pdfUrl} download={fileName} className="w-full sm:w-auto">
-              <span className={buttonClassName('solid', 'w-full flex items-center justify-center gap-2 px-8 py-6 rounded-xl shadow-[0_0_20px_rgba(94,142,203,0.4)] hover:shadow-[0_0_30px_rgba(94,142,203,0.6)] transition-all')}>
-                <Download className="w-5 h-5" /> Download PDF
-              </span>
-            </a>
+            <div>
+              <p id="cv-language" className="text-xs font-medium uppercase tracking-wider text-foreground/50 mb-2">
+                {t('resume_language')}
+              </p>
+              <div role="radiogroup" aria-labelledby="cv-language" className="grid grid-cols-3 gap-1 p-1 rounded-xl bg-foreground/5">
+                {LANGUAGES.map(({ code, label }) => (
+                  <button
+                    key={code}
+                    type="button"
+                    role="radio"
+                    aria-checked={language === code}
+                    title={label}
+                    onClick={() => setLanguage(code)}
+                    className={cn(
+                      'h-9 rounded-lg text-xs font-semibold uppercase transition-colors focus-visible:outline-2 focus-visible:outline-primary',
+                      language === code
+                        ? 'bg-background text-foreground shadow-sm'
+                        : 'text-foreground/60 hover:text-foreground',
+                    )}
+                  >
+                    {code}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 lg:grid-cols-1 gap-2">
+              <a href={pdfUrl} download={fileName} className={buttonClassName('solid', 'flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm')}>
+                <Download className="w-4 h-4" /> {t('download_cv')}
+              </a>
+              <a href={pdfUrl} target="_blank" rel="noopener noreferrer" className={buttonClassName('outline', 'flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm')}>
+                <ExternalLink className="w-4 h-4" /> {t('resume_open')}
+              </a>
+            </div>
+
+            <div className="border-t border-border pt-4">
+              <p className="text-xs font-medium uppercase tracking-wider text-foreground/50 mb-2">{t('resume_contacts')}</p>
+              <ul className="grid grid-cols-2 lg:grid-cols-1 gap-1">
+                {CONTACTS.map(({ name, value, href, Icon }) => (
+                  <li key={name}>
+                    <a
+                      href={href}
+                      target={href.startsWith('mailto:') ? undefined : '_blank'}
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-3 rounded-lg px-2 py-2 text-sm text-foreground/70 hover:text-primary hover:bg-foreground/5 transition-colors focus-visible:outline-2 focus-visible:outline-primary"
+                    >
+                      <Icon className="w-4 h-4 shrink-0" />
+                      <span className="truncate">
+                        <span className="sr-only">{name}: </span>
+                        {value}
+                      </span>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
-          )}
-        </motion.div>
+        </motion.aside>
 
-    </div>
+        {/* The "desk": CV pages rendered as paper sheets */}
+        <motion.main
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.1 }}
+          aria-busy={status === 'loading'}
+          className="min-w-0 rounded-2xl bg-foreground/[0.04] border border-border p-3 sm:p-6 md:p-8"
+        >
+          {status === 'loading' && <p className="sr-only" role="status">{t('resume_loading')}</p>}
+          {status === 'error' && <NoPreview pdfUrl={pdfUrl} fileName={fileName} />}
+          {/* Always mounted (renders nothing on error) so switching language retries the load */}
+          <PdfPages url={pdfUrl} pageLabel={pageLabel} onStatusChange={setStatus} />
+        </motion.main>
+      </div>
     </PageWrapper>
   );
 };
