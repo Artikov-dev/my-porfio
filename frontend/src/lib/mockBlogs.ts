@@ -5,7 +5,7 @@ export interface BlogItem {
   image_url: string;
   tags: string[];
   reading_time: number;
-  views: number;
+  views: number; // 0 for the built-in sample posts: they have no real view count, so none is shown
   created_at: string;
 }
 
@@ -106,7 +106,7 @@ const [optimisticState, setOptimistic] = useOptimistic(
     image_url: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=2070&auto=format&fit=crop',
     tags: ['Architecture', 'React 19', 'Performance', 'TypeScript'],
     reading_time: 4,
-    views: 248,
+    views: 0,
     created_at: '2026-08-15T10:30:00.000Z',
   },
   {
@@ -199,7 +199,7 @@ io.on('connection', (socket) => {
     image_url: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?q=80&w=2070&auto=format&fit=crop',
     tags: ['WebSockets', 'Socket.io', 'Node.js', 'Real-Time'],
     reading_time: 5,
-    views: 189,
+    views: 0,
     created_at: '2026-08-28T14:15:00.000Z',
   },
   {
@@ -296,7 +296,7 @@ export class UserService {
     image_url: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?q=80&w=2068&auto=format&fit=crop',
     tags: ['Node.js', 'Clean Code', 'Architecture', 'PostgreSQL'],
     reading_time: 6,
-    views: 312,
+    views: 0,
     created_at: '2026-09-01T09:00:00.000Z',
   },
 ];

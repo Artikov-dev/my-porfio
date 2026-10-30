@@ -7,43 +7,7 @@ exports.ProjectService = void 0;
 const database_1 = require("../config/database");
 const error_middleware_1 = require("../middlewares/error.middleware");
 const redis_1 = __importDefault(require("../config/redis"));
-const DEFAULT_BACKEND_PROJECTS = [
-    {
-        id: 'proj-0',
-        title: { en: 'ControlLife - Task & Life Management System', uz: 'ControlLife - Topshiriqlar va Hayotni Boshqarish Tizimi', ru: 'ControlLife - Система Управления Задачами и Жизнью' },
-        description: { en: 'An all-in-one productivity and personal management dashboard designed to track tasks, goals, habits, and daily workflow efficiently.', uz: "Vazifalar, maqsadlar, odatlar va kunlik ish jarayonini samarali kuzatish uchun mo'ljallangan barchasi birda unumdorlik platformasi.", ru: 'Многофункциональная платформа продуктивности для эффективного отслеживания задач, целей, привычек и ежедневного рабочего процесса.' },
-        image_url: 'https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b?q=80&w=2072&auto=format&fit=crop',
-        github_url: 'https://github.com/Artikov-dev/controllife',
-        live_url: 'https://controllife.vercel.app',
-        tech_stack: ['React', 'TypeScript', 'Tailwind CSS', 'Node.js', 'PostgreSQL']
-    },
-    {
-        id: 'proj-1',
-        title: { en: 'Taigo - Modern Web Platform', uz: 'Taigo - Zamonaviy Veb Platforma', ru: 'Taigo - Современная Веб-Платформа' },
-        description: { en: 'A modern and intuitive digital platform built with cutting-edge web technologies for seamless performance and user engagement.', uz: "Yuqori tezlik va qulay foydalanuvchi interfeysiga ega ilg'or veb texnologiyalari asosida yaratilgan zamonaviy platforma.", ru: 'Современная цифровая платформа, созданная на передовых веб-технологиях для высокой производительности и удобства.' },
-        image_url: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=2070&auto=format&fit=crop',
-        github_url: 'https://github.com/Artikov-dev/taigo',
-        live_url: 'https://taigo-seven.vercel.app',
-        tech_stack: ['React', 'TypeScript', 'Tailwind CSS', 'Next.js']
-    },
-    {
-        id: 'proj-2',
-        title: { en: 'Clinic Management System', uz: 'Klinikani Boshqarish Tizimi', ru: 'Система Управления Клиникой' },
-        description: { en: 'A modern frontend application for managing clinic operations, patients, and appointments.', uz: 'Klinika faoliyati, bemorlar va qabullarni boshqarish uchun zamonaviy frontend ilovasi.', ru: 'Современное frontend приложение для управления операциями клиники, пациентами и приемами.' },
-        image_url: 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?q=80&w=2053&auto=format&fit=crop',
-        github_url: 'https://github.com/Artikov-dev/clinic-frontend',
-        live_url: 'https://clinic-frontend-roan.vercel.app',
-        tech_stack: ['React', 'TypeScript', 'Tailwind CSS']
-    },
-    {
-        id: 'proj-3',
-        title: { en: 'Fashion E-Commerce', uz: "Moda Onlayn Do'koni", ru: 'Модный Интернет-магазин' },
-        description: { en: 'An online fashion store with a stylish interface and seamless shopping experience.', uz: "Zamonaviy interfeys va qulay xarid tajribasiga ega onlayn moda do'koni.", ru: 'Онлайн-магазин модной одежды со стильным интерфейсом и удобным процессом покупок.' },
-        image_url: 'https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?q=80&w=2070&auto=format&fit=crop',
-        github_url: 'https://github.com/Artikov-dev/Fashion',
-        tech_stack: ['React', 'CSS', 'JavaScript']
-    }
-];
+const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 exports.ProjectService = {
     async getAllProjects() {
         // Try cache first
@@ -55,35 +19,31 @@ exports.ProjectService = {
         catch (e) {
             // Ignore cache errors
         }
-        try {
-            const result = await database_1.db.query('SELECT * FROM projects ORDER BY created_at DESC');
-            if (result.rows && result.rows.length > 0) {
-                try {
-                    await redis_1.default.set('projects', JSON.stringify(result.rows), 'EX', 3600);
-                }
-                catch (e) { }
-                return result.rows;
-            }
-            return DEFAULT_BACKEND_PROJECTS;
+        // No built-in fallback list here: the frontend already shows its own when this returns
+        // an empty list or fails, and a DB outage should surface as an error, not as fake data.
+        const result = await database_1.db.query('SELECT * FROM projects ORDER BY created_at DESC');
+        if (result.rows.length > 0) {
+            await redis_1.default.set('projects', JSON.stringify(result.rows), 'EX', 3600);
         }
-        catch (error) {
-            console.error('Database query failed for projects, returning fallback:', error);
-            return DEFAULT_BACKEND_PROJECTS;
-        }
+        return result.rows;
     },
     async getProjectById(id) {
-        try {
-            const result = await database_1.db.query('SELECT * FROM projects WHERE id = $1', [id]);
-            // Views are counted only by POST /projects/:id/view (rate-limited per IP); counting here too doubled them
-            if (result.rows.length > 0) {
-                return result.rows[0];
-            }
-        }
-        catch (e) { }
-        const fallback = DEFAULT_BACKEND_PROJECTS.find((p) => p.id === id);
-        if (fallback)
-            return fallback;
-        throw new error_middleware_1.CustomError('Project not found', 404);
+        if (!UUID_PATTERN.test(id))
+            throw new error_middleware_1.CustomError('Project not found', 404);
+        // Views are counted only by POST /projects/:id/view (rate-limited per IP); counting here too doubled them
+        const result = await database_1.db.query('SELECT * FROM projects WHERE id = $1', [id]);
+        if (result.rows.length === 0)
+            throw new error_middleware_1.CustomError('Project not found', 404);
+        return result.rows[0];
+    },
+    async incrementViews(id) {
+        // Built-in fallback items ('proj-0') aren't DB rows; a non-UUID id would make Postgres throw
+        if (!UUID_PATTERN.test(id))
+            return false;
+        const result = await database_1.db.query('UPDATE projects SET views = COALESCE(views, 0) + 1 WHERE id = $1', [id]);
+        // The cached list carries view counts; drop it so the admin dashboard isn't an hour behind
+        await redis_1.default.del('projects');
+        return (result.rowCount ?? 0) > 0;
     },
     async createProject(data) {
         const query = `
@@ -106,6 +66,8 @@ exports.ProjectService = {
         return result.rows[0];
     },
     async updateProject(id, data) {
+        if (!UUID_PATTERN.test(id))
+            throw new error_middleware_1.CustomError('Project not found', 404);
         const query = `
       UPDATE projects 
       SET title = $1, description = $2, content = $3, image_url = $4, github_url = $5, live_url = $6, tech_stack = $7
@@ -130,6 +92,8 @@ exports.ProjectService = {
         return result.rows[0];
     },
     async deleteProject(id) {
+        if (!UUID_PATTERN.test(id))
+            throw new error_middleware_1.CustomError('Project not found', 404);
         const result = await database_1.db.query('DELETE FROM projects WHERE id = $1 RETURNING id', [id]);
         if (result.rows.length === 0) {
             throw new error_middleware_1.CustomError('Project not found', 404);

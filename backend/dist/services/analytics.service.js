@@ -3,15 +3,36 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.AnalyticsService = void 0;
+exports.AnalyticsService = exports.hashIp = void 0;
+const crypto_1 = require("crypto");
 const database_1 = require("../config/database");
 const geoip_lite_1 = __importDefault(require("geoip-lite"));
+// The ip_address column holds this hash for new rows (older rows may still hold raw IPs until
+// `npm run db:hash-ips` is run). A dedicated salt keeps hashes stable when JWT secrets rotate.
+const hashIp = (ip) => (0, crypto_1.createHash)('sha256')
+    .update(`${process.env.IP_HASH_SALT || process.env.JWT_SECRET || ''}:${ip}`)
+    .digest('hex');
+exports.hashIp = hashIp;
+let locationColumnsReady = false;
+const ensureLocationColumns = async () => {
+    if (locationColumnsReady)
+        return;
+    await database_1.db.query(`
+    ALTER TABLE site_visits
+      ADD COLUMN IF NOT EXISTS latitude DOUBLE PRECISION,
+      ADD COLUMN IF NOT EXISTS longitude DOUBLE PRECISION;
+  `);
+    locationColumnsReady = true;
+};
 class AnalyticsService {
     static async recordVisit(data) {
         try {
-            await database_1.db.query(`INSERT INTO site_visits (ip_address, country, browser, os, device, path)
-         VALUES ($1, $2, $3, $4, $5, $6)`, [
-                data.ip_address,
+            await ensureLocationColumns();
+            await database_1.db.query(`INSERT INTO site_visits (ip_address, latitude, longitude, country, browser, os, device, path)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`, [
+                data.ip_hash,
+                data.latitude,
+                data.longitude,
                 data.country,
                 data.browser,
                 data.os,
@@ -119,13 +140,18 @@ class AnalyticsService {
     }
     static async getVisitorLocations() {
         try {
+            await ensureLocationColumns();
             const res = await database_1.db.query(`
-        SELECT DISTINCT ON (ip_address) ip_address, country
+        SELECT DISTINCT ON (ip_address) ip_address, country, latitude, longitude
         FROM site_visits
         ORDER BY ip_address, created_at DESC
         LIMIT 100
       `);
             const locations = res.rows.map((row) => {
+                if (row.latitude !== null && row.longitude !== null) {
+                    return { lat: row.latitude, lng: row.longitude, country: row.country };
+                }
+                // Legacy rows that still hold a raw IP
                 const geo = geoip_lite_1.default.lookup(row.ip_address);
                 if (geo && geo.ll) {
                     return { lat: geo.ll[0], lng: geo.ll[1], country: geo.country };

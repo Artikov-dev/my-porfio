@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { api } from '@/lib/api';
+import { api, refreshSession } from '@/lib/api';
 import { Mail, MessageCircle, Send, User } from 'lucide-react';
 import { useSocket } from '@/hooks/useSocket';
+import type { Socket } from 'socket.io-client';
+import toast from 'react-hot-toast';
 
 interface ContactMessage {
   id: string;
@@ -22,26 +24,56 @@ interface ChatMessage {
   is_admin?: boolean;
 }
 
+type ReplyResult = { ok: boolean; reason?: string };
+
+const REPLY_ERRORS: Record<string, string> = {
+  unauthorized: 'Session expired — please log in again to reply.',
+  timeout: 'The server did not confirm the reply. Check the connection and try again.',
+  invalid: 'Reply is empty or the chat session is invalid.',
+  server: 'Reply could not be saved on the server.',
+};
+
+// The server acknowledges every admin_reply, so a rejected or lost reply is reported
+const emitReply = (socket: Socket, payload: { session_id: string; text: string }) =>
+  new Promise<ReplyResult>((resolve) => {
+    socket.timeout(10000).emit('admin_reply', payload, (err: Error | null, res?: ReplyResult) => {
+      resolve(err || !res ? { ok: false, reason: 'timeout' } : res);
+    });
+  });
+
+const reconnect = (socket: Socket) =>
+  new Promise<void>((resolve, reject) => {
+    const timer = setTimeout(() => reject(new Error('reconnect timeout')), 15000);
+    socket.once('connect', () => {
+      clearTimeout(timer);
+      resolve();
+    });
+    socket.disconnect().connect();
+  });
+
 export const AdminMessages = () => {
   const [contacts, setContacts] = useState<ContactMessage[]>([]);
   const [chats, setChats] = useState<ChatMessage[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
   const [activeTab, setActiveTab] = useState<'contacts' | 'chats'>('chats');
-  
+
   const [replyText, setReplyText] = useState<{ [key: string]: string }>({});
+  const [sendingTo, setSendingTo] = useState<string | null>(null);
   const { socket } = useSocket();
 
   useEffect(() => {
     const fetchMessages = async () => {
       try {
-        const res = await api.get('/contact/messages', { timeout: 6000 });
+        // Longer than the default 6s: the first request may wake the backend from a cold start
+        const res = await api.get('/contact/messages', { timeout: 30000 });
         if (res?.data?.data) {
           setContacts(res.data.data.contacts || []);
           setChats(res.data.data.chats || []);
         }
-      } catch (err) {
-        setContacts([]);
-        setChats([]);
+      } catch {
+        // Shown as an error, not as an empty inbox that looks like "no messages"
+        setLoadError(true);
       } finally {
         setLoading(false);
       }
@@ -72,6 +104,14 @@ export const AdminMessages = () => {
     return <div className="text-foreground dark:text-white">Loading messages...</div>;
   }
 
+  if (loadError) {
+    return (
+      <div className="text-red-400 bg-red-400/10 border border-red-400/20 rounded-xl p-4">
+        Could not load messages — the server or database is unavailable. Try again in a moment.
+      </div>
+    );
+  }
+
   // Group chats by session_id
   const chatSessions = chats.reduce((acc, chat) => {
     if (!acc[chat.session_id]) {
@@ -81,16 +121,34 @@ export const AdminMessages = () => {
     return acc;
   }, {} as Record<string, ChatMessage[]>);
 
-  const handleReply = (e: React.FormEvent, sessionId: string) => {
+  const handleReply = async (e: React.FormEvent, sessionId: string) => {
     e.preventDefault();
-    if (!replyText[sessionId] || !socket) return;
+    const text = replyText[sessionId]?.trim();
+    if (!text || !socket || sendingTo) return;
 
-    socket.emit('admin_reply', {
-      session_id: sessionId,
-      text: replyText[sessionId]
-    });
+    setSendingTo(sessionId);
+    const payload = { session_id: sessionId, text };
+    let result = await emitReply(socket, payload);
 
-    setReplyText(prev => ({ ...prev, [sessionId]: '' }));
+    // The socket's admin rights end with the access token it connected with. Refresh the
+    // session, reconnect so the handshake carries the new cookie, and try once more.
+    if (!result.ok && result.reason === 'unauthorized') {
+      try {
+        await refreshSession();
+        await reconnect(socket);
+        result = await emitReply(socket, payload);
+      } catch {
+        result = { ok: false, reason: 'unauthorized' };
+      }
+    }
+    setSendingTo(null);
+
+    if (result.ok) {
+      setReplyText(prev => ({ ...prev, [sessionId]: '' }));
+    } else {
+      // The typed reply stays in the input so nothing is lost
+      toast.error(REPLY_ERRORS[result.reason ?? ''] ?? REPLY_ERRORS.server);
+    }
   };
 
   return (
@@ -121,7 +179,10 @@ export const AdminMessages = () => {
       <div className="space-y-6">
         {activeTab === 'chats' && (
           Object.keys(chatSessions).length === 0 ? <p className="text-foreground/50">No chat sessions yet.</p> :
-          Object.entries(chatSessions).map(([sessionId, sessionChats]) => {
+          // Messages inside a session are oldest-first; sessions themselves: most recent activity first
+          Object.entries(chatSessions)
+            .sort(([, a], [, b]) => Date.parse(b[b.length - 1].created_at) - Date.parse(a[a.length - 1].created_at))
+            .map(([sessionId, sessionChats]) => {
             const userName = sessionChats.find(c => !c.is_admin)?.name || 'Visitor';
             return (
               <div key={sessionId} className="glass p-5 rounded-2xl border border-white/5 flex flex-col gap-4">
@@ -162,7 +223,7 @@ export const AdminMessages = () => {
                   />
                   <button 
                     type="submit"
-                    disabled={!replyText[sessionId]}
+                    disabled={!replyText[sessionId]?.trim() || sendingTo !== null}
                     className="bg-primary hover:bg-accent-hover disabled:opacity-50 disabled:hover:bg-primary text-white p-3 rounded-xl transition-colors"
                   >
                     <Send className="w-4 h-4" />

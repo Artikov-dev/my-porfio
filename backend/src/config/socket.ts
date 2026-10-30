@@ -15,7 +15,10 @@ const MAX_NAME_LENGTH = 50;
 const MAX_TEXT_LENGTH = 1000;
 const CHAT_RATE_LIMIT = { max: 5, windowMs: 10_000 };
 
-const isAdminSocket = (socket: Socket) => socket.data.isAdmin === true;
+// Admin rights last only as long as the token from the handshake: an hour-old socket must not
+// keep admin powers after the token expired or the admin logged out.
+const isAdminSocket = (socket: Socket) =>
+  socket.data.isAdmin === true && Date.now() < (socket.data.adminUntil ?? 0);
 
 const getCookie = (header: string | undefined, name: string) => {
   for (const part of (header || '').split(';')) {
@@ -25,18 +28,19 @@ const getCookie = (header: string | undefined, name: string) => {
   return undefined;
 };
 
-// Reads the httpOnly accessToken cookie sent with the handshake (withCredentials: true)
-const authenticateSocket = (socket: Socket) => {
+// Reads the httpOnly accessToken cookie sent with the handshake (withCredentials: true).
+// Returns when admin rights expire (ms), or 0 for a regular visitor.
+const authenticateSocket = async (socket: Socket) => {
   try {
     const accessToken = getCookie(socket.handshake.headers.cookie, 'accessToken');
     if (accessToken) {
-      AuthService.verifyAccessToken(accessToken);
-      return true;
+      const decoded = await AuthService.verifyAccessToken(accessToken);
+      return (decoded.exp ?? 0) * 1000;
     }
   } catch {
-    // invalid / expired token → regular visitor
+    // invalid / expired / revoked token → regular visitor
   }
-  return false;
+  return 0;
 };
 
 const cleanString = (value: unknown, maxLength: number) =>
@@ -63,10 +67,17 @@ export const setupSocket = (server: HttpServer) => {
   // server restarts (connections dropped without a disconnect event) and drifted upwards.
   const broadcastActiveUsers = () => io.emit('active_users_update', io.of('/').sockets.size);
 
-  io.on('connection', async (socket) => {
+  // Auth runs as middleware (before 'connection'), so the event handlers below are attached
+  // synchronously and a visitor's immediate join_room is never missed.
+  io.use(async (socket, next) => {
+    socket.data.adminUntil = await authenticateSocket(socket);
+    socket.data.isAdmin = socket.data.adminUntil > Date.now();
+    next();
+  });
+
+  io.on('connection', (socket) => {
     logger.info(`🔌 Socket connected: ${socket.id}`);
 
-    socket.data.isAdmin = authenticateSocket(socket);
     if (socket.data.isAdmin) {
       socket.join(ADMIN_ROOM);
     }
@@ -123,17 +134,23 @@ export const setupSocket = (server: HttpServer) => {
 
     socket.on(
       'admin_reply',
-      async (data: { session_id?: unknown; text?: unknown }) => {
+      async (data: { session_id?: unknown; text?: unknown }, ack?: unknown) => {
+        // The admin page passes an ack callback so a rejected reply is reported, not silently lost
+        const respond = (result: { ok: boolean; reason?: string }) => {
+          if (typeof ack === 'function') ack(result);
+        };
+
         if (!isAdminSocket(socket)) {
           logger.warn(`Rejected admin_reply from non-admin socket ${socket.id}`);
-          return;
+          socket.leave(ADMIN_ROOM);
+          return respond({ ok: false, reason: 'unauthorized' });
         }
 
         const text = cleanString(data?.text, MAX_TEXT_LENGTH);
         const sessionId = typeof data?.session_id === 'string' && SESSION_ID_PATTERN.test(data.session_id)
           ? data.session_id
           : null;
-        if (!text || !sessionId) return;
+        if (!text || !sessionId) return respond({ ok: false, reason: 'invalid' });
 
         try {
           const result = await db.query(
@@ -145,8 +162,10 @@ export const setupSocket = (server: HttpServer) => {
           io.to(sessionId).emit('chat_reply', result.rows[0]);
           // Keep other admin tabs in sync
           io.to(ADMIN_ROOM).emit('new_admin_message', result.rows[0]);
+          respond({ ok: true });
         } catch (err) {
           logger.error('Failed to save admin reply:', err);
+          respond({ ok: false, reason: 'server' });
         }
       },
     );

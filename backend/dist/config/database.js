@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.connectDB = exports.db = void 0;
 const pg_1 = require("pg");
 const dotenv_1 = __importDefault(require("dotenv"));
+const logger_1 = require("./logger");
 dotenv_1.default.config();
 let isConnected = false;
 const isProduction = process.env.NODE_ENV === 'production';
@@ -18,8 +19,9 @@ const pool = new pg_1.Pool({
     max: 10,
 });
 pool.on('error', (err) => {
+    logger_1.logger.error(`PostgreSQL pool error: ${err.message}`);
     isConnected = false;
-    // Log once without crashing the process
+    // Logged without crashing the process; the next query reconnects
 });
 exports.db = {
     get isConnected() {
@@ -41,19 +43,19 @@ exports.db = {
 // Test connection without throwing uncaught errors
 const connectDB = async () => {
     if (!connectionString) {
-        console.warn('⚠️ DATABASE_URL is not set. Running in fallback memory mode.');
+        logger_1.logger.warn('⚠️ DATABASE_URL is not set. Running without a database.');
         return;
     }
     try {
         const client = await pool.connect();
         isConnected = true;
-        console.log('📦 Successfully connected to PostgreSQL database');
+        logger_1.logger.info('📦 Successfully connected to PostgreSQL database');
         client.release();
     }
     catch (error) {
         isConnected = false;
-        console.error('❌ Failed to connect to PostgreSQL database:', error?.message || error);
-        console.warn('⚠️ Server will continue in fallback mode. Note: Render Free PostgreSQL expires after 30-90 days.');
+        logger_1.logger.error(`❌ Failed to connect to PostgreSQL database: ${error?.message || error}`);
+        logger_1.logger.warn('⚠️ Server will continue without a database until it becomes reachable.');
     }
 };
 exports.connectDB = connectDB;

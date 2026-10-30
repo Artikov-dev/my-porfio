@@ -1,5 +1,6 @@
 import { Pool, QueryResult } from 'pg';
 import dotenv from 'dotenv';
+import { logger } from './logger';
 
 dotenv.config();
 
@@ -17,8 +18,9 @@ const pool = new Pool({
 });
 
 pool.on('error', (err: Error) => {
+  logger.error(`PostgreSQL pool error: ${err.message}`);
   isConnected = false;
-  // Log once without crashing the process
+  // Logged without crashing the process; the next query reconnects
 });
 
 export const db = {
@@ -41,19 +43,19 @@ export const db = {
 // Test connection without throwing uncaught errors
 export const connectDB = async () => {
   if (!connectionString) {
-    console.warn('⚠️ DATABASE_URL is not set. Running in fallback memory mode.');
+    logger.warn('⚠️ DATABASE_URL is not set. Running without a database.');
     return;
   }
 
   try {
     const client = await pool.connect();
     isConnected = true;
-    console.log('📦 Successfully connected to PostgreSQL database');
+    logger.info('📦 Successfully connected to PostgreSQL database');
     client.release();
   } catch (error: any) {
     isConnected = false;
-    console.error('❌ Failed to connect to PostgreSQL database:', error?.message || error);
-    console.warn('⚠️ Server will continue in fallback mode. Note: Render Free PostgreSQL expires after 30-90 days.');
+    logger.error(`❌ Failed to connect to PostgreSQL database: ${error?.message || error}`);
+    logger.warn('⚠️ Server will continue without a database until it becomes reachable.');
   }
 };
 

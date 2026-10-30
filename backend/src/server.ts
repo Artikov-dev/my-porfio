@@ -1,4 +1,3 @@
-// Trigger deployment
 import express, { Request, Response } from 'express';
 import http from 'http';
 import cors from 'cors';
@@ -7,6 +6,7 @@ import { connectDB } from './config/database';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import { logger } from './config/logger';
+import { assertRequiredEnv } from './config/env';
 import { setupSwagger } from './config/swagger';
 import { globalLimiter } from './middlewares/rateLimiter';
 import { errorHandler } from './middlewares/error.middleware';
@@ -94,6 +94,7 @@ app.use(errorHandler);
 
 // Initialize server
 const startServer = async () => {
+  assertRequiredEnv();
   await connectDB();
 
   const httpServer = http.createServer(app);

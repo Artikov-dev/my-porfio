@@ -1,9 +1,31 @@
+import { createHash } from 'crypto';
 import { db } from '../config/database';
 import geoip from 'geoip-lite';
 
+// The ip_address column holds this hash for new rows (older rows may still hold raw IPs until
+// `npm run db:hash-ips` is run). A dedicated salt keeps hashes stable when JWT secrets rotate.
+export const hashIp = (ip: string) =>
+  createHash('sha256')
+    .update(`${process.env.IP_HASH_SALT || process.env.JWT_SECRET || ''}:${ip}`)
+    .digest('hex');
+
+let locationColumnsReady = false;
+
+const ensureLocationColumns = async () => {
+  if (locationColumnsReady) return;
+  await db.query(`
+    ALTER TABLE site_visits
+      ADD COLUMN IF NOT EXISTS latitude DOUBLE PRECISION,
+      ADD COLUMN IF NOT EXISTS longitude DOUBLE PRECISION;
+  `);
+  locationColumnsReady = true;
+};
+
 export class AnalyticsService {
   static async recordVisit(data: {
-    ip_address: string;
+    ip_hash: string;
+    latitude: number | null;
+    longitude: number | null;
     country: string;
     browser: string;
     os: string;
@@ -11,11 +33,14 @@ export class AnalyticsService {
     path: string;
   }) {
     try {
+      await ensureLocationColumns();
       await db.query(
-        `INSERT INTO site_visits (ip_address, country, browser, os, device, path)
-         VALUES ($1, $2, $3, $4, $5, $6)`,
+        `INSERT INTO site_visits (ip_address, latitude, longitude, country, browser, os, device, path)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
         [
-          data.ip_address,
+          data.ip_hash,
+          data.latitude,
+          data.longitude,
           data.country,
           data.browser,
           data.os,
@@ -133,14 +158,19 @@ export class AnalyticsService {
 
   static async getVisitorLocations() {
     try {
+      await ensureLocationColumns();
       const res = await db.query(`
-        SELECT DISTINCT ON (ip_address) ip_address, country
+        SELECT DISTINCT ON (ip_address) ip_address, country, latitude, longitude
         FROM site_visits
         ORDER BY ip_address, created_at DESC
         LIMIT 100
       `);
 
       const locations = res.rows.map((row) => {
+        if (row.latitude !== null && row.longitude !== null) {
+          return { lat: row.latitude, lng: row.longitude, country: row.country };
+        }
+        // Legacy rows that still hold a raw IP
         const geo = geoip.lookup(row.ip_address);
         if (geo && geo.ll) {
           return { lat: geo.ll[0], lng: geo.ll[1], country: geo.country };

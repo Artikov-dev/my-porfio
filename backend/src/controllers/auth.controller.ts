@@ -58,7 +58,7 @@ export const verify2FA = async (
 
     // Must have passed the password step first
     AuthService.verifyPreAuthToken(req.cookies?.preAuthToken);
-    AuthService.verify2FA(token);
+    await AuthService.verify2FA(token);
 
     res.clearCookie('preAuthToken', baseCookieOptions);
     setAuthCookies(res);
@@ -119,7 +119,9 @@ export const refreshToken = async (
       return res.status(401).json({ status: 'fail', message: 'No refresh token provided' });
     }
 
-    AuthService.verifyRefreshToken(refreshTokenCookie);
+    await AuthService.verifyRefreshToken(refreshTokenCookie);
+    // Rotation: each refresh token works once, so a stolen copy stops working after the next refresh
+    await AuthService.revokeToken(refreshTokenCookie, process.env.REFRESH_TOKEN_SECRET);
     setAuthCookies(res);
 
     res.status(200).json({ status: 'success', message: 'Token refreshed successfully' });
@@ -134,6 +136,9 @@ export const logout = async (
   next: NextFunction,
 ) => {
   try {
+    // Invalidate the tokens server-side too, not just in this browser
+    await AuthService.revokeToken(req.cookies?.accessToken, process.env.JWT_SECRET);
+    await AuthService.revokeToken(req.cookies?.refreshToken, process.env.REFRESH_TOKEN_SECRET);
     res.clearCookie('accessToken', baseCookieOptions);
     res.clearCookie('refreshToken', baseCookieOptions);
     res.clearCookie('preAuthToken', baseCookieOptions);

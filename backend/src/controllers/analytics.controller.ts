@@ -1,15 +1,16 @@
 import { Request, Response } from 'express';
-import { AnalyticsService } from '../services/analytics.service';
+import { AnalyticsService, hashIp } from '../services/analytics.service';
 import UAParser from 'ua-parser-js';
 import geoip from 'geoip-lite';
 import { ADMIN_ROOM } from '../config/socket';
+import { logger } from '../config/logger';
 
 export const getAnalytics = async (req: Request, res: Response) => {
   try {
     const data = await AnalyticsService.getDashboardStats();
     res.json({ success: true, data });
   } catch (error) {
-    console.error('Analytics Error:', error);
+    logger.error(`Analytics error: ${error}`);
     res
       .status(500)
       .json({ success: false, message: 'Server error fetching analytics' });
@@ -21,7 +22,7 @@ export const getLocations = async (req: Request, res: Response) => {
     const data = await AnalyticsService.getVisitorLocations();
     res.json({ success: true, data });
   } catch (error) {
-    console.error('Get Locations Error:', error);
+    logger.error(`Get locations error: ${error}`);
     res.status(500).json({ success: false, message: 'Server error fetching locations' });
   }
 };
@@ -41,8 +42,12 @@ export const recordVisit = async (req: Request, res: Response) => {
 
     const geo = geoip.lookup(ip);
 
+    // Only a salted hash of the IP is stored (enough to count unique visitors), plus the
+    // approximate city coordinates the globe needs — never the raw address.
     await AnalyticsService.recordVisit({
-      ip_address: ip,
+      ip_hash: hashIp(ip),
+      latitude: geo?.ll?.[0] ?? null,
+      longitude: geo?.ll?.[1] ?? null,
       country: geo?.country || 'Unknown',
       browser,
       os,
@@ -60,7 +65,7 @@ export const recordVisit = async (req: Request, res: Response) => {
 
     res.status(200).json({ success: true });
   } catch (error) {
-    console.error('Record Visit Error:', error);
+    logger.error(`Record visit error: ${error}`);
     res.status(200).json({ success: false });
   }
 };

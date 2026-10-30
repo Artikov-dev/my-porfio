@@ -1,5 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { ProjectService } from '../services/project.service';
+import { CustomError } from '../middlewares/error.middleware';
+import { logger } from '../config/logger';
 
 export const getAllProjects = async (
   req: Request,
@@ -68,26 +70,22 @@ export const autoTranslate = async (
     const { default: translate } = await import('translate');
     translate.engine = 'google';
 
+    // Validated by translateSchema: non-empty text, from ∈ en | uz | ru
     const { text, from } = req.body;
-    if (!text || !from) {
-      return res
-        .status(400)
-        .json({ status: 'error', message: 'Missing text or from language' });
-    }
 
     const targetLangs = ['en', 'ru', 'uz'].filter((l) => l !== from);
+    const translations = await Promise.all(
+      targetLangs.map((to) => translate(text, { from, to })),
+    );
     const results: Record<string, string> = { [from]: text };
-
-    for (const target of targetLangs) {
-      // translate requires 'uz' or 'ru' or 'en'
-      let translated = await translate(text, { from, to: target });
-      results[target] = translated;
-    }
+    targetLangs.forEach((lang, i) => {
+      results[lang] = translations[i];
+    });
 
     res.status(200).json({ status: 'success', data: results });
   } catch (error) {
-    console.error('Translation error:', error);
-    next(error);
+    logger.error(`Translation error: ${error}`);
+    next(new CustomError('Translation service failed, please try again', 502));
   }
 };
 

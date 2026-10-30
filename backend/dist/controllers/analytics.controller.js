@@ -8,13 +8,14 @@ const analytics_service_1 = require("../services/analytics.service");
 const ua_parser_js_1 = __importDefault(require("ua-parser-js"));
 const geoip_lite_1 = __importDefault(require("geoip-lite"));
 const socket_1 = require("../config/socket");
+const logger_1 = require("../config/logger");
 const getAnalytics = async (req, res) => {
     try {
         const data = await analytics_service_1.AnalyticsService.getDashboardStats();
         res.json({ success: true, data });
     }
     catch (error) {
-        console.error('Analytics Error:', error);
+        logger_1.logger.error(`Analytics error: ${error}`);
         res
             .status(500)
             .json({ success: false, message: 'Server error fetching analytics' });
@@ -27,7 +28,7 @@ const getLocations = async (req, res) => {
         res.json({ success: true, data });
     }
     catch (error) {
-        console.error('Get Locations Error:', error);
+        logger_1.logger.error(`Get locations error: ${error}`);
         res.status(500).json({ success: false, message: 'Server error fetching locations' });
     }
 };
@@ -44,8 +45,12 @@ const recordVisit = async (req, res) => {
         const os = parser.getOS().name || 'Unknown';
         const device = parser.getDevice().type || 'desktop';
         const geo = geoip_lite_1.default.lookup(ip);
+        // Only a salted hash of the IP is stored (enough to count unique visitors), plus the
+        // approximate city coordinates the globe needs — never the raw address.
         await analytics_service_1.AnalyticsService.recordVisit({
-            ip_address: ip,
+            ip_hash: (0, analytics_service_1.hashIp)(ip),
+            latitude: geo?.ll?.[0] ?? null,
+            longitude: geo?.ll?.[1] ?? null,
             country: geo?.country || 'Unknown',
             browser,
             os,
@@ -62,7 +67,7 @@ const recordVisit = async (req, res) => {
         res.status(200).json({ success: true });
     }
     catch (error) {
-        console.error('Record Visit Error:', error);
+        logger_1.logger.error(`Record visit error: ${error}`);
         res.status(200).json({ success: false });
     }
 };

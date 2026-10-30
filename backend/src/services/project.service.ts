@@ -2,6 +2,8 @@ import { db } from '../config/database';
 import { CustomError } from '../middlewares/error.middleware';
 import redisClient from '../config/redis';
 
+const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 export interface ProjectData {
   title: Record<string, string>; // JSONB { en: '', uz: '', ru: '' }
   description: Record<string, string>;
@@ -11,44 +13,6 @@ export interface ProjectData {
   live_url?: string;
   tech_stack: string[];
 }
-
-const DEFAULT_BACKEND_PROJECTS = [
-  {
-    id: 'proj-0',
-    title: { en: 'ControlLife - Task & Life Management System', uz: 'ControlLife - Topshiriqlar va Hayotni Boshqarish Tizimi', ru: 'ControlLife - Система Управления Задачами и Жизнью' },
-    description: { en: 'An all-in-one productivity and personal management dashboard designed to track tasks, goals, habits, and daily workflow efficiently.', uz: "Vazifalar, maqsadlar, odatlar va kunlik ish jarayonini samarali kuzatish uchun mo'ljallangan barchasi birda unumdorlik platformasi.", ru: 'Многофункциональная платформа продуктивности для эффективного отслеживания задач, целей, привычек и ежедневного рабочего процесса.' },
-    image_url: 'https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b?q=80&w=2072&auto=format&fit=crop',
-    github_url: 'https://github.com/Artikov-dev/controllife',
-    live_url: 'https://controllife.vercel.app',
-    tech_stack: ['React', 'TypeScript', 'Tailwind CSS', 'Node.js', 'PostgreSQL']
-  },
-  {
-    id: 'proj-1',
-    title: { en: 'Taigo - Modern Web Platform', uz: 'Taigo - Zamonaviy Veb Platforma', ru: 'Taigo - Современная Веб-Платформа' },
-    description: { en: 'A modern and intuitive digital platform built with cutting-edge web technologies for seamless performance and user engagement.', uz: "Yuqori tezlik va qulay foydalanuvchi interfeysiga ega ilg'or veb texnologiyalari asosida yaratilgan zamonaviy platforma.", ru: 'Современная цифровая платформа, созданная на передовых веб-технологиях для высокой производительности и удобства.' },
-    image_url: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=2070&auto=format&fit=crop',
-    github_url: 'https://github.com/Artikov-dev/taigo',
-    live_url: 'https://taigo-seven.vercel.app',
-    tech_stack: ['React', 'TypeScript', 'Tailwind CSS', 'Next.js']
-  },
-  {
-    id: 'proj-2',
-    title: { en: 'Clinic Management System', uz: 'Klinikani Boshqarish Tizimi', ru: 'Система Управления Клиникой' },
-    description: { en: 'A modern frontend application for managing clinic operations, patients, and appointments.', uz: 'Klinika faoliyati, bemorlar va qabullarni boshqarish uchun zamonaviy frontend ilovasi.', ru: 'Современное frontend приложение для управления операциями клиники, пациентами и приемами.' },
-    image_url: 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?q=80&w=2053&auto=format&fit=crop',
-    github_url: 'https://github.com/Artikov-dev/clinic-frontend',
-    live_url: 'https://clinic-frontend-roan.vercel.app',
-    tech_stack: ['React', 'TypeScript', 'Tailwind CSS']
-  },
-  {
-    id: 'proj-3',
-    title: { en: 'Fashion E-Commerce', uz: "Moda Onlayn Do'koni", ru: 'Модный Интернет-магазин' },
-    description: { en: 'An online fashion store with a stylish interface and seamless shopping experience.', uz: "Zamonaviy interfeys va qulay xarid tajribasiga ega onlayn moda do'koni.", ru: 'Онлайн-магазин модной одежды со стильным интерфейсом и удобным процессом покупок.' },
-    image_url: 'https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?q=80&w=2070&auto=format&fit=crop',
-    github_url: 'https://github.com/Artikov-dev/Fashion',
-        tech_stack: ['React', 'CSS', 'JavaScript']
-  }
-];
 
 export const ProjectService = {
   async getAllProjects() {
@@ -60,36 +24,36 @@ export const ProjectService = {
       // Ignore cache errors
     }
 
-    try {
-      const result = await db.query(
-        'SELECT * FROM projects ORDER BY created_at DESC',
-      );
+    // No built-in fallback list here: the frontend already shows its own when this returns
+    // an empty list or fails, and a DB outage should surface as an error, not as fake data.
+    const result = await db.query(
+      'SELECT * FROM projects ORDER BY created_at DESC',
+    );
 
-      if (result.rows && result.rows.length > 0) {
-        try {
-          await redisClient.set('projects', JSON.stringify(result.rows), 'EX', 3600);
-        } catch (e) {}
-        return result.rows;
-      }
-      return DEFAULT_BACKEND_PROJECTS;
-    } catch (error) {
-      console.error('Database query failed for projects, returning fallback:', error);
-      return DEFAULT_BACKEND_PROJECTS;
+    if (result.rows.length > 0) {
+      await redisClient.set('projects', JSON.stringify(result.rows), 'EX', 3600);
     }
+    return result.rows;
   },
 
   async getProjectById(id: string) {
-    try {
-      const result = await db.query('SELECT * FROM projects WHERE id = $1', [id]);
-      // Views are counted only by POST /projects/:id/view (rate-limited per IP); counting here too doubled them
-      if (result.rows.length > 0) {
-        return result.rows[0];
-      }
-    } catch (e) {}
+    if (!UUID_PATTERN.test(id)) throw new CustomError('Project not found', 404);
+    // Views are counted only by POST /projects/:id/view (rate-limited per IP); counting here too doubled them
+    const result = await db.query('SELECT * FROM projects WHERE id = $1', [id]);
+    if (result.rows.length === 0) throw new CustomError('Project not found', 404);
+    return result.rows[0];
+  },
 
-    const fallback = DEFAULT_BACKEND_PROJECTS.find((p) => p.id === id);
-    if (fallback) return fallback;
-    throw new CustomError('Project not found', 404);
+  async incrementViews(id: string) {
+    // Built-in fallback items ('proj-0') aren't DB rows; a non-UUID id would make Postgres throw
+    if (!UUID_PATTERN.test(id)) return false;
+    const result = await db.query(
+      'UPDATE projects SET views = COALESCE(views, 0) + 1 WHERE id = $1',
+      [id],
+    );
+    // The cached list carries view counts; drop it so the admin dashboard isn't an hour behind
+    await redisClient.del('projects');
+    return (result.rowCount ?? 0) > 0;
   },
 
 
@@ -118,6 +82,7 @@ export const ProjectService = {
   },
 
   async updateProject(id: string, data: ProjectData) {
+    if (!UUID_PATTERN.test(id)) throw new CustomError('Project not found', 404);
     const query = `
       UPDATE projects 
       SET title = $1, description = $2, content = $3, image_url = $4, github_url = $5, live_url = $6, tech_stack = $7
@@ -145,6 +110,7 @@ export const ProjectService = {
   },
 
   async deleteProject(id: string) {
+    if (!UUID_PATTERN.test(id)) throw new CustomError('Project not found', 404);
     const result = await db.query(
       'DELETE FROM projects WHERE id = $1 RETURNING id',
       [id],

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo, useRef } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Search, 
@@ -105,7 +105,8 @@ export const CommandPalette = () => {
     }
   };
 
-  const items: CommandItem[] = useMemo(() => [
+  // Rebuilt every render (it is ~20 small objects): a memo here captured stale handlers
+  const items: CommandItem[] = [
     // Navigation
     {
       id: 'nav-home',
@@ -313,18 +314,15 @@ export const CommandPalette = () => {
         closePalette();
       },
     },
-  ], [t, language, theme]);
+  ];
 
-  const filteredItems = useMemo(() => {
-    if (!search.trim()) return items;
-    const q = search.toLowerCase().trim();
-    return items.filter(
+  const query = search.toLowerCase().trim();
+  const filteredItems = !query ? items : items.filter(
       (item) =>
-        item.title.toLowerCase().includes(q) ||
-        item.subtitle?.toLowerCase().includes(q) ||
-        item.keywords?.some((k) => k.toLowerCase().includes(q))
-    );
-  }, [items, search]);
+        item.title.toLowerCase().includes(query) ||
+        item.subtitle?.toLowerCase().includes(query) ||
+        item.keywords?.some((k) => k.toLowerCase().includes(query))
+  );
 
   useEffect(() => {
     setSelectedIndex(0);

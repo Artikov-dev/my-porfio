@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { api } from '@/lib/api';
-import { DEFAULT_BLOGS } from '@/lib/mockBlogs';
 import { Plus, Trash2, Save, X, RefreshCw, FileText, Edit2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
@@ -38,14 +37,13 @@ export const AdminBlogs = () => {
 
   const fetchBlogs = async () => {
     try {
-      const res = await api.get('/blogs', { timeout: 6000 });
-      if (res?.data?.data && Array.isArray(res.data.data) && res.data.data.length > 0) {
-        setBlogs(res.data.data);
-      } else {
-        setBlogs(DEFAULT_BLOGS as any);
-      }
+      // The admin sees the real database contents — never the public site's built-in sample posts,
+      // which aren't DB rows and can't be edited or deleted
+      const res = await api.get('/blogs', { timeout: 30000 });
+      setBlogs(Array.isArray(res?.data?.data) ? res.data.data : []);
     } catch {
-      setBlogs(DEFAULT_BLOGS as any);
+      setBlogs([]);
+      toast.error('Could not load posts — the server or database is unavailable.');
     } finally {
       setLoading(false);
     }

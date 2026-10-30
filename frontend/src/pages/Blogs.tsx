@@ -156,11 +156,15 @@ export const Blogs = () => {
                             <Clock className="w-3.5 h-3.5 text-primary" />
                             {blog.reading_time} {t('min_read')}
                           </span>
-                          <span>•</span>
-                          <span className="flex items-center gap-1">
-                            <Eye className="w-3.5 h-3.5 text-primary" />
-                            {blog.views} {t('views')}
-                          </span>
+                          {blog.views > 0 && (
+                            <>
+                              <span>•</span>
+                              <span className="flex items-center gap-1">
+                                <Eye className="w-3.5 h-3.5 text-primary" />
+                                {blog.views} {t('views')}
+                              </span>
+                            </>
+                          )}
                         </div>
 
                         <div className="flex items-center gap-1 text-primary font-semibold group-hover:translate-x-1 transition-transform">

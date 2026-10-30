@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { api } from '@/lib/api';
-import { DEFAULT_PROJECTS } from '@/lib/mockProjects';
+import toast from 'react-hot-toast';
 import { Plus, Edit2, Trash2, Globe, Link as LinkIcon, Save, X, RefreshCw } from 'lucide-react';
 
 const GithubIcon = ({ className }: { className?: string }) => (
@@ -46,14 +46,13 @@ export const AdminProjects = () => {
 
   const fetchProjects = async () => {
     try {
-      const res = await api.get('/projects', { timeout: 6000 });
-      if (res?.data?.data && Array.isArray(res.data.data) && res.data.data.length > 0) {
-        setProjects(res.data.data);
-      } else {
-        setProjects(DEFAULT_PROJECTS as any);
-      }
-    } catch (err) {
-      setProjects(DEFAULT_PROJECTS as any);
+      // The admin sees the real database contents — never the public site's built-in sample list,
+      // whose items aren't DB rows and can't be edited or deleted
+      const res = await api.get('/projects', { timeout: 30000 });
+      setProjects(Array.isArray(res?.data?.data) ? res.data.data : []);
+    } catch {
+      setProjects([]);
+      toast.error('Could not load projects — the server or database is unavailable.');
     } finally {
       setLoading(false);
     }

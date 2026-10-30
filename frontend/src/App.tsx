@@ -1,6 +1,5 @@
-// Trigger frontend deployment
 import React, { Suspense } from 'react';
-import { Routes, Route, useLocation } from 'react-router-dom';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import { FloatingNav } from '@/components/Navigation/FloatingNav';
 import { LiveStatus } from '@/components/ui/LiveStatus';
@@ -113,6 +112,8 @@ function App() {
 
               {/* Protected Admin Routes */}
               <Route path="/admin" element={<ProtectedRoute />}>
+                {/* Bare /admin used to render an empty layout */}
+                <Route index element={<Navigate to="/admin/dashboard" replace />} />
                 <Route element={<AdminLayout />}>
                   <Route path="dashboard" element={<AdminDashboard />} />
                   <Route path="messages" element={<AdminMessages />} />

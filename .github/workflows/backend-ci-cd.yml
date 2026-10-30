@@ -32,8 +32,20 @@ jobs:
     - name: Install dependencies
       run: npm ci
       
+    - name: Type check
+      run: npm run typecheck
+
+    - name: Test
+      run: npm test
+      env:
+        NODE_ENV: test
+
     - name: Build Project
       run: npm run build
+
+    # backend/dist is committed (Render runs it); fail if it was not rebuilt after a src change
+    - name: Check committed dist is up to date
+      run: git diff --exit-code -- dist
 
   deploy:
     needs: build-and-test

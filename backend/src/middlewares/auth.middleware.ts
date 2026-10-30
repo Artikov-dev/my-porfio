@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { CustomError } from './error.middleware';
 import { AuthService } from '../services/auth.service';
 
-export const requireAuth = (
+export const requireAuth = async (
   req: Request,
   res: Response,
   next: NextFunction,
@@ -23,8 +23,8 @@ export const requireAuth = (
       throw new CustomError('Not authorized, no token', 401);
     }
 
-    // Rejects expired tokens, wrong algorithms and non-admin (e.g. 2FA pre-auth) tokens
-    (req as any).user = AuthService.verifyAccessToken(token);
+    // Rejects expired, revoked, wrong-algorithm and non-admin (e.g. 2FA pre-auth) tokens
+    (req as any).user = await AuthService.verifyAccessToken(token);
 
     next();
   } catch (error) {

@@ -1,17 +1,11 @@
 import { z } from 'zod';
-import { httpUrl } from './project.schema';
-
-const localizedString = z.object({
-  en: z.string().min(1, 'English text is required'),
-  uz: z.string().min(1, 'Uzbek text is required'),
-  ru: z.string().min(1, 'Russian text is required'),
-});
+import { httpUrl, localizedString, tagList } from './project.schema';
 
 export const blogSchema = z.object({
   body: z.object({
-    title: localizedString,
-    content: localizedString,
+    title: localizedString(200),
+    content: localizedString(50000),
     image_url: httpUrl('Invalid image URL'),
-    tags: z.array(z.string()).min(1, 'At least one tag is required'),
+    tags: tagList('At least one tag is required'),
   }),
 });

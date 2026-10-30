@@ -1,4 +1,5 @@
 import { db } from '../config/database';
+import { logger } from '../config/logger';
 
 export interface SEOSettings {
   title: { en: string; uz: string; ru: string };
@@ -71,7 +72,7 @@ export class SEOService {
 
       return result.rows[0];
     } catch (err) {
-      console.warn('SEO DB unavailable, returning default SEO settings:', err);
+      logger.warn(`SEO DB unavailable, returning default SEO settings: ${err}`);
       return DEFAULT_SEO;
     }
   }

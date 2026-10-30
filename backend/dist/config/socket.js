@@ -14,7 +14,9 @@ const SESSION_ID_PATTERN = /^v_[A-Za-z0-9-]{4,64}$/;
 const MAX_NAME_LENGTH = 50;
 const MAX_TEXT_LENGTH = 1000;
 const CHAT_RATE_LIMIT = { max: 5, windowMs: 10_000 };
-const isAdminSocket = (socket) => socket.data.isAdmin === true;
+// Admin rights last only as long as the token from the handshake: an hour-old socket must not
+// keep admin powers after the token expired or the admin logged out.
+const isAdminSocket = (socket) => socket.data.isAdmin === true && Date.now() < (socket.data.adminUntil ?? 0);
 const getCookie = (header, name) => {
     for (const part of (header || '').split(';')) {
         const [key, ...rest] = part.trim().split('=');
@@ -23,19 +25,20 @@ const getCookie = (header, name) => {
     }
     return undefined;
 };
-// Reads the httpOnly accessToken cookie sent with the handshake (withCredentials: true)
-const authenticateSocket = (socket) => {
+// Reads the httpOnly accessToken cookie sent with the handshake (withCredentials: true).
+// Returns when admin rights expire (ms), or 0 for a regular visitor.
+const authenticateSocket = async (socket) => {
     try {
         const accessToken = getCookie(socket.handshake.headers.cookie, 'accessToken');
         if (accessToken) {
-            auth_service_1.AuthService.verifyAccessToken(accessToken);
-            return true;
+            const decoded = await auth_service_1.AuthService.verifyAccessToken(accessToken);
+            return (decoded.exp ?? 0) * 1000;
         }
     }
     catch {
-        // invalid / expired token → regular visitor
+        // invalid / expired / revoked token → regular visitor
     }
-    return false;
+    return 0;
 };
 const cleanString = (value, maxLength) => typeof value === 'string' ? value.trim().slice(0, maxLength) : '';
 const setupSocket = (server) => {
@@ -56,9 +59,15 @@ const setupSocket = (server) => {
     // Live count of open connections. A Redis counter used to be kept here, but it survived
     // server restarts (connections dropped without a disconnect event) and drifted upwards.
     const broadcastActiveUsers = () => io.emit('active_users_update', io.of('/').sockets.size);
-    io.on('connection', async (socket) => {
+    // Auth runs as middleware (before 'connection'), so the event handlers below are attached
+    // synchronously and a visitor's immediate join_room is never missed.
+    io.use(async (socket, next) => {
+        socket.data.adminUntil = await authenticateSocket(socket);
+        socket.data.isAdmin = socket.data.adminUntil > Date.now();
+        next();
+    });
+    io.on('connection', (socket) => {
         logger_1.logger.info(`🔌 Socket connected: ${socket.id}`);
-        socket.data.isAdmin = authenticateSocket(socket);
         if (socket.data.isAdmin) {
             socket.join(exports.ADMIN_ROOM);
         }
@@ -102,26 +111,34 @@ const setupSocket = (server) => {
                 logger_1.logger.error('Failed to save chat message:', err);
             }
         });
-        socket.on('admin_reply', async (data) => {
+        socket.on('admin_reply', async (data, ack) => {
+            // The admin page passes an ack callback so a rejected reply is reported, not silently lost
+            const respond = (result) => {
+                if (typeof ack === 'function')
+                    ack(result);
+            };
             if (!isAdminSocket(socket)) {
                 logger_1.logger.warn(`Rejected admin_reply from non-admin socket ${socket.id}`);
-                return;
+                socket.leave(exports.ADMIN_ROOM);
+                return respond({ ok: false, reason: 'unauthorized' });
             }
             const text = cleanString(data?.text, MAX_TEXT_LENGTH);
             const sessionId = typeof data?.session_id === 'string' && SESSION_ID_PATTERN.test(data.session_id)
                 ? data.session_id
                 : null;
             if (!text || !sessionId)
-                return;
+                return respond({ ok: false, reason: 'invalid' });
             try {
                 const result = await database_1.db.query('INSERT INTO chat_messages (name, text, session_id, is_admin) VALUES ($1, $2, $3, true) RETURNING *', ['Roma Artikov', text, sessionId]);
                 // Send the reply only to that visitor's session room
                 io.to(sessionId).emit('chat_reply', result.rows[0]);
                 // Keep other admin tabs in sync
                 io.to(exports.ADMIN_ROOM).emit('new_admin_message', result.rows[0]);
+                respond({ ok: true });
             }
             catch (err) {
                 logger_1.logger.error('Failed to save admin reply:', err);
+                respond({ ok: false, reason: 'server' });
             }
         });
     });

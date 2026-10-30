@@ -9,7 +9,7 @@ const error_middleware_1 = require("../middlewares/error.middleware");
 const submitContact = async (req, res, next) => {
     try {
         const { name, email, subject, body, location } = req.body;
-        const ip = req.ip || req.connection?.remoteAddress || 'Unknown IP';
+        const ip = req.ip || req.socket.remoteAddress || 'Unknown IP';
         // 1. Save to Database (safely)
         let saved = false;
         try {
@@ -50,30 +50,29 @@ const submitContact = async (req, res, next) => {
     }
 };
 exports.submitContact = submitContact;
+// Newest contact messages first. Chats come oldest-first so each conversation reads top to
+// bottom and live messages (appended by the admin page) land in the right place. Both are capped;
+// a DB failure is reported as an error instead of an empty inbox that looks like "no messages".
+const MESSAGE_LIMIT = 500;
 const getMessages = async (req, res, next) => {
     try {
-        let contacts = [];
-        let chats = [];
-        try {
-            const contactRes = await database_1.db.query('SELECT * FROM contacts ORDER BY created_at DESC');
-            contacts = contactRes.rows || [];
-        }
-        catch (e) { }
-        try {
-            const chatRes = await database_1.db.query('SELECT * FROM chat_messages ORDER BY created_at DESC');
-            chats = chatRes.rows || [];
-        }
-        catch (e) { }
+        const [contactRes, chatRes] = await Promise.all([
+            database_1.db.query('SELECT * FROM contacts ORDER BY created_at DESC LIMIT $1', [MESSAGE_LIMIT]),
+            database_1.db.query(`SELECT * FROM (
+           SELECT * FROM chat_messages ORDER BY created_at DESC LIMIT $1
+         ) recent ORDER BY created_at ASC`, [MESSAGE_LIMIT]),
+        ]);
         res.status(200).json({
             status: 'success',
             data: {
-                contacts,
-                chats,
+                contacts: contactRes.rows,
+                chats: chatRes.rows,
             },
         });
     }
     catch (error) {
-        next(error);
+        logger_1.logger.error(`Failed to load messages: ${error}`);
+        next(new error_middleware_1.CustomError('Could not load messages, the database is unavailable', 503));
     }
 };
 exports.getMessages = getMessages;

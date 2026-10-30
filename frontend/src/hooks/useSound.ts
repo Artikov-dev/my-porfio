@@ -32,7 +32,7 @@ export const useSound = () => {
 
       oscillator.start();
       oscillator.stop(ctx.currentTime + 0.08);
-    } catch (e) {}
+    } catch {}
   }, []);
 
   const playHover = useCallback(() => {
@@ -56,7 +56,7 @@ export const useSound = () => {
 
       oscillator.start();
       oscillator.stop(ctx.currentTime + 0.04);
-    } catch (e) {}
+    } catch {}
   }, []);
 
   const playMechanicalClick = useCallback(() => {
@@ -109,7 +109,7 @@ export const useSound = () => {
       gain2.connect(ctx.destination);
       osc2.start(now);
       osc2.stop(now + 0.055);
-    } catch (e) {}
+    } catch {}
   }, []);
 
 
@@ -132,7 +132,7 @@ export const useSound = () => {
       gain.connect(ctx.destination);
       osc.start(now);
       osc.stop(now + 0.22);
-    } catch (e) {}
+    } catch {}
   }, []);
 
   const playCyberSwitch = useCallback(() => {
@@ -154,7 +154,7 @@ export const useSound = () => {
       gain.connect(ctx.destination);
       osc.start(now);
       osc.stop(now + 0.15);
-    } catch (e) {}
+    } catch {}
   }, []);
 
   const playWhoosh = useCallback(() => {
@@ -176,7 +176,7 @@ export const useSound = () => {
       gain.connect(ctx.destination);
       osc.start(now);
       osc.stop(now + 0.35);
-    } catch (e) {}
+    } catch {}
   }, []);
 
   const playGlitch = useCallback(() => {
@@ -198,7 +198,7 @@ export const useSound = () => {
       gain.connect(ctx.destination);
       osc.start(now);
       osc.stop(now + 0.09);
-    } catch (e) {}
+    } catch {}
   }, []);
 
   const playNotification = useCallback(() => {
@@ -219,7 +219,7 @@ export const useSound = () => {
       gain1.connect(ctx.destination);
       osc1.start(now);
       osc1.stop(now + 0.25);
-    } catch (e) {}
+    } catch {}
   }, []);
 
   return { 

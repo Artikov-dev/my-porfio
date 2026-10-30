@@ -28,7 +28,7 @@ export const AdminSEO = () => {
         const res = await api.get('/seo', { timeout: 6000 });
         if (res?.data?.data) return res.data.data;
         return null;
-      } catch (err) {
+      } catch {
         return null;
       }
     }

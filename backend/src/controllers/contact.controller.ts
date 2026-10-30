@@ -12,7 +12,7 @@ export const submitContact = async (
 ) => {
   try {
     const { name, email, subject, body, location } = req.body;
-    const ip = req.ip || req.connection?.remoteAddress || 'Unknown IP';
+    const ip = req.ip || req.socket.remoteAddress || 'Unknown IP';
 
     // 1. Save to Database (safely)
     let saved = false;
@@ -65,38 +65,36 @@ export const submitContact = async (
   }
 };
 
+// Newest contact messages first. Chats come oldest-first so each conversation reads top to
+// bottom and live messages (appended by the admin page) land in the right place. Both are capped;
+// a DB failure is reported as an error instead of an empty inbox that looks like "no messages".
+const MESSAGE_LIMIT = 500;
+
 export const getMessages = async (
   req: Request,
   res: Response,
   next: NextFunction,
 ) => {
   try {
-    let contacts: any[] = [];
-    let chats: any[] = [];
-
-    try {
-      const contactRes = await db.query(
-        'SELECT * FROM contacts ORDER BY created_at DESC',
-      );
-      contacts = contactRes.rows || [];
-    } catch (e) {}
-
-    try {
-      const chatRes = await db.query(
-        'SELECT * FROM chat_messages ORDER BY created_at DESC',
-      );
-      chats = chatRes.rows || [];
-    } catch (e) {}
+    const [contactRes, chatRes] = await Promise.all([
+      db.query('SELECT * FROM contacts ORDER BY created_at DESC LIMIT $1', [MESSAGE_LIMIT]),
+      db.query(
+        `SELECT * FROM (
+           SELECT * FROM chat_messages ORDER BY created_at DESC LIMIT $1
+         ) recent ORDER BY created_at ASC`,
+        [MESSAGE_LIMIT],
+      ),
+    ]);
 
     res.status(200).json({
       status: 'success',
       data: {
-        contacts,
-        chats,
+        contacts: contactRes.rows,
+        chats: chatRes.rows,
       },
     });
   } catch (error) {
-    next(error);
+    logger.error(`Failed to load messages: ${error}`);
+    next(new CustomError('Could not load messages, the database is unavailable', 503));
   }
 };
-

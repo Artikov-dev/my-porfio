@@ -1,8 +1,9 @@
 import jwt from 'jsonwebtoken';
-const otplib = require('otplib');
-const authenticator = otplib.authenticator || otplib.default || otplib;
+import { generateSecret, generateURI, verify as verifyOTP } from 'otplib';
 import qrcode from 'qrcode';
 import bcrypt from 'bcrypt';
+import { randomUUID } from 'crypto';
+import redisClient from '../config/redis';
 import dotenv from 'dotenv';
 import { CustomError } from '../middlewares/error.middleware';
 import { logger } from '../config/logger';
@@ -25,6 +26,29 @@ if (!ADMIN_2FA_SECRET) {
 
 const JWT_OPTIONS: jwt.VerifyOptions = { algorithms: ['HS256'] };
 const PRE_AUTH_PURPOSE = '2fa_pending';
+let lastUsedTimeStep = -1;
+
+// Revoked token ids. Redis when available (survives restarts); the in-memory map covers
+// the case where Redis is offline.
+const revokedInMemory = new Map<string, number>(); // jti → exp (unix seconds)
+
+const revoke = async (jti: string, exp: number) => {
+  const ttl = exp - Math.floor(Date.now() / 1000);
+  if (ttl <= 0) return;
+  revokedInMemory.set(jti, exp);
+  await redisClient.set(`revoked:${jti}`, '1', 'EX', ttl);
+};
+
+const isRevoked = async (jti: string | undefined) => {
+  // Tokens issued before jti existed can't be revoked individually; they expire on their own
+  if (!jti) return false;
+  const now = Math.floor(Date.now() / 1000);
+  for (const [id, exp] of revokedInMemory) {
+    if (exp <= now) revokedInMemory.delete(id);
+  }
+  if (revokedInMemory.has(jti)) return true;
+  return (await redisClient.get(`revoked:${jti}`)) !== null;
+};
 
 export const ADMIN_PAYLOAD = { id: 'admin_id', role: 'admin' } as const;
 
@@ -49,20 +73,30 @@ export const AuthService = {
 
   // Generates a NEW secret for first-time setup. Put the returned secret into ADMIN_2FA_SECRET.
   async generate2FASetup() {
-    const secret = authenticator.generateSecret();
-    const otpauth = authenticator.keyuri(ADMIN_EMAIL || 'admin', 'artikov.dev Admin', secret);
+    const secret = generateSecret();
+    const otpauth = generateURI({ issuer: 'artikov.dev Admin', label: ADMIN_EMAIL || 'admin', secret });
     const qrCode = await qrcode.toDataURL(otpauth);
     return { secret, qrCode };
   },
 
-  verify2FA(token: string) {
+  // otplib v13's verify() is async and resolves to { valid }. The old code treated the returned
+  // Promise as a boolean, so every 6-digit code passed.
+  async verify2FA(token: string) {
     if (!ADMIN_2FA_SECRET) {
       throw new CustomError('2FA is not configured', 400);
     }
-    const isValid = authenticator.verify({ token, secret: ADMIN_2FA_SECRET });
-    if (!isValid) {
+    let result: { valid: boolean; timeStep?: number };
+    try {
+      // ±30s tolerance for clock drift between the phone and the server
+      result = await verifyOTP({ token, secret: ADMIN_2FA_SECRET, epochTolerance: 30 });
+    } catch {
+      result = { valid: false };
+    }
+    // A code can't be used twice (e.g. replayed by someone who saw it)
+    if (!result.valid || (result.timeStep !== undefined && result.timeStep <= lastUsedTimeStep)) {
       throw new CustomError('Invalid 2FA token', 401);
     }
+    if (result.timeStep !== undefined) lastUsedTimeStep = result.timeStep;
     return true;
   },
 
@@ -82,28 +116,49 @@ export const AuthService = {
     }
   },
 
-  // Returns the decoded payload only for real admin access tokens (not pre-auth tokens)
-  verifyAccessToken(token: string) {
+  // Returns the decoded payload only for real admin access tokens (not pre-auth tokens or logged-out ones)
+  async verifyAccessToken(token: string) {
     const decoded = jwt.verify(token, process.env.JWT_SECRET as string, JWT_OPTIONS) as any;
     if (decoded?.role !== 'admin') {
       throw new Error('Not an admin token');
     }
+    if (await isRevoked(decoded.jti)) {
+      throw new Error('Token revoked');
+    }
     return decoded;
   },
 
-  verifyRefreshToken(token: string) {
+  async verifyRefreshToken(token: string) {
+    let decoded: any;
     try {
-      const decoded = jwt.verify(token, process.env.REFRESH_TOKEN_SECRET as string, JWT_OPTIONS) as any;
+      decoded = jwt.verify(token, process.env.REFRESH_TOKEN_SECRET as string, JWT_OPTIONS);
       if (decoded?.role !== 'admin') throw new Error('Not an admin token');
-      return decoded;
     } catch (err) {
       throw new CustomError('Invalid or expired refresh token', 401);
+    }
+    if (await isRevoked(decoded.jti)) {
+      throw new CustomError('Invalid or expired refresh token', 401);
+    }
+    return decoded;
+  },
+
+  // Blocks a token until it would have expired anyway (logout, refresh-token rotation).
+  // Accepts either secret's tokens; anything that doesn't verify is already useless.
+  async revokeToken(token: string | undefined, secret: string | undefined) {
+    if (!token || !secret) return;
+    try {
+      const decoded = jwt.verify(token, secret, JWT_OPTIONS) as any;
+      if (decoded?.jti && decoded.exp) await revoke(decoded.jti, decoded.exp);
+    } catch {
+      // expired / invalid — nothing to revoke
     }
   },
 
   generateTokens(payload: object = ADMIN_PAYLOAD) {
+    // jti makes every token individually revocable
     const accessToken = jwt.sign(payload, process.env.JWT_SECRET as string, {
       expiresIn: (process.env.JWT_EXPIRES_IN || '1h') as any,
+      jwtid: randomUUID(),
     });
 
     const refreshToken = jwt.sign(
@@ -111,6 +166,7 @@ export const AuthService = {
       process.env.REFRESH_TOKEN_SECRET as string,
       {
         expiresIn: (process.env.REFRESH_TOKEN_EXPIRES_IN || '7d') as any,
+        jwtid: randomUUID(),
       },
     );
 

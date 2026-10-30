@@ -1,12 +1,5 @@
 import { z } from 'zod';
-import { httpUrl } from './project.schema';
-
-const localizedString = (max: number) =>
-  z.object({
-    en: z.string().min(1, 'English text is required').max(max),
-    uz: z.string().min(1, 'Uzbek text is required').max(max),
-    ru: z.string().min(1, 'Russian text is required').max(max),
-  });
+import { httpUrl, localizedString } from './project.schema';
 
 export const seoSchema = z.object({
   body: z.object({

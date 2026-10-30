@@ -13,8 +13,8 @@ This portfolio goes beyond a static HTML page. It includes enterprise-grade feat
 - 🧊 **3D WebGL Hero Section:** An interactive, floating geometric core built with `Three.js` (`@react-three/fiber`) that reacts to mouse movements.
 - 👨‍💻 **Hidden Hacker Terminal:** Press `` ` `` or `~` anywhere on the site to drop down a custom-built Linux-style terminal. Execute commands like `whoami`, `projects`, and `skills` directly in the browser!
 - 💬 **Two-Way Real-Time Live Chat:** A fully functional, session-based customer support chat widget using **Socket.io**. Visitors can chat with me in real-time, and I can reply instantly from a secured Admin Dashboard.
-- 🌍 **Deep i18n Localization:** The entire UI is strictly localized in English, Uzbek, and Russian. Zero hardcoded strings. State managed seamlessly via Context API.
-- 🔐 **Secure Admin Dashboard:** A hidden, protected admin panel (`/aadminsecret`) with full CRUD operations for managing projects, reading contact messages, and replying to live chats.
+- 🌍 **Deep i18n Localization:** The public site is fully localized in English, Uzbek, and Russian via a Context API dictionary (the private admin panel is English-only).
+- 🔐 **Secure Admin Dashboard:** A protected admin panel (password + TOTP 2FA, revocable sessions) with full CRUD operations for managing projects, reading contact messages, and replying to live chats.
 - 🚀 **Dynamic SEO & Open Graph:** Fully optimized for social sharing with dynamic meta tags via `react-helmet-async` and custom Open Graph banners.
 
 ## 🛠️ Tech Stack
@@ -56,8 +56,9 @@ Copy `backend/.env.example` to `backend/.env` and fill it in. The main variables
 PORT=5000
 DATABASE_URL=postgresql://user:password@localhost:5432/portfolio_db
 CLIENT_URL=http://localhost:5173
-JWT_SECRET=...            # long random string
-REFRESH_TOKEN_SECRET=...  # a different long random string
+JWT_SECRET=...            # 32+ random characters (the server refuses to start otherwise)
+REFRESH_TOKEN_SECRET=...  # a different 32+ character random string
+IP_HASH_SALT=...          # random string used to hash visitor IPs in analytics
 ADMIN_EMAIL=you@example.com
 ADMIN_PASSWORD_HASH=...   # npm run hash-password -- "your-password"
 ```
@@ -66,6 +67,14 @@ Run the backend server:
 ```bash
 npm run dev
 ```
+Checks (also run in CI):
+```bash
+npm run typecheck
+npm test
+```
+`backend/dist` is committed because Render runs it directly — run `npm run build` after changing `src` (CI fails if `dist` is stale).
+
+If analytics data was collected before IPs were hashed, run `npm run db:hash-ips` once.
 
 ### 3. Setup the Frontend
 Open a new terminal, navigate to the frontend directory, and install dependencies:
@@ -77,6 +86,7 @@ Run the development server:
 ```bash
 npm run dev
 ```
+Lint with `npm run lint`.
 
 The frontend will be available at `http://localhost:5173` and the backend API at `http://localhost:5000`.
 

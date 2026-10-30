@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SEOService = void 0;
 const database_1 = require("../config/database");
+const logger_1 = require("../config/logger");
 const DEFAULT_SEO = {
     title: {
         en: 'Roma Artikov | Full Stack Engineer & Creative Developer',
@@ -59,7 +60,7 @@ class SEOService {
             return result.rows[0];
         }
         catch (err) {
-            console.warn('SEO DB unavailable, returning default SEO settings:', err);
+            logger_1.logger.warn(`SEO DB unavailable, returning default SEO settings: ${err}`);
             return DEFAULT_SEO;
         }
     }

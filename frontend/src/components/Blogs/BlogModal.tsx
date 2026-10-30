@@ -237,11 +237,15 @@ export const BlogModal: React.FC<BlogModalProps> = ({ blog, onClose }) => {
                   <Clock className="w-4 h-4 text-primary" />
                   <span>{blog.reading_time} {t('min_read')}</span>
                 </div>
-                <span>•</span>
-                <div className="flex items-center gap-1.5">
-                  <Eye className="w-4 h-4 text-primary" />
-                  <span>{blog.views} {t('views')}</span>
-                </div>
+                {blog.views > 0 && (
+                  <>
+                  <span>•</span>
+                  <div className="flex items-center gap-1.5">
+                    <Eye className="w-4 h-4 text-primary" />
+                    <span>{blog.views} {t('views')}</span>
+                  </div>
+                  </>
+                )}
               </div>
 
               {/* Title */}

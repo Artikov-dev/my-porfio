@@ -14,7 +14,7 @@ export const AdminSystem = () => {
         const res = await api.get('/system/health', { timeout: 6000 });
         if (res?.data?.data) return res.data.data;
         return { status: 'OK', uptime: '99.9%', memoryUsage: { heapUsed: '45MB', heapTotal: '128MB' }, cpuLoad: '1.2%' };
-      } catch (err) {
+      } catch {
         return { status: 'OK', uptime: '99.9%', memoryUsage: { heapUsed: '45MB', heapTotal: '128MB' }, cpuLoad: '1.2%' };
       }
     },
@@ -28,7 +28,7 @@ export const AdminSystem = () => {
         const res = await api.get(`/system/logs?type=${logType}`, { timeout: 6000 });
         if (res?.data?.data?.logs) return res.data.data.logs as string[];
         return ['System online. Listening for events...'];
-      } catch (err) {
+      } catch {
         return ['System online. Remote backend logs unavailable.'];
       }
     },
