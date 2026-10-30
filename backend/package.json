@@ -9,6 +9,7 @@
     "start": "node dist/server.js",
     "db:init": "ts-node src/scripts/init-db.ts",
     "db:seed": "ts-node src/scripts/seed-projects.ts",
+    "db:seed-blog": "ts-node src/scripts/seed-blog.ts",
     "hash-password": "ts-node src/scripts/hash-password.ts",
     "db:hash-ips": "ts-node src/scripts/hash-visit-ips.ts",
     "typecheck": "tsc --noEmit",

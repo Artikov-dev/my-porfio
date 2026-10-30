@@ -8,6 +8,7 @@ const http_1 = __importDefault(require("http"));
 const cors_1 = __importDefault(require("cors"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const database_1 = require("./config/database");
+const schema_1 = require("./config/schema");
 const helmet_1 = __importDefault(require("helmet"));
 const morgan_1 = __importDefault(require("morgan"));
 const logger_1 = require("./config/logger");
@@ -28,8 +29,11 @@ const system_routes_1 = __importDefault(require("./routes/system.routes"));
 dotenv_1.default.config();
 const app = (0, express_1.default)();
 const PORT = process.env.PORT || 5000;
-// Trust proxy (Render uses reverse proxy)
-app.set('trust proxy', 1);
+// Number of reverse proxies in front of the app (Render's load balancer = 1). If another proxy
+// (e.g. Cloudflare) sits in front, req.ip becomes that proxy's address and every visitor shares
+// one rate-limit bucket — set TRUST_PROXY=2 then. Check with GET /api/system/client-ip (admin).
+const trustProxy = Number(process.env.TRUST_PROXY ?? 1);
+app.set('trust proxy', Number.isInteger(trustProxy) && trustProxy >= 0 ? trustProxy : 1);
 // CORS - MUST be first middleware to handle preflight requests
 const allowedOrigins = process.env.CLIENT_URL
     ? process.env.CLIENT_URL.split(',').map((url) => url.trim())
@@ -84,6 +88,23 @@ app.use(error_middleware_1.errorHandler);
 const startServer = async () => {
     (0, env_1.assertRequiredEnv)();
     await (0, database_1.connectDB)();
+    if (database_1.db.isConnected) {
+        try {
+            await (0, schema_1.ensureSchema)(database_1.db.query);
+            logger_1.logger.info('📦 Database schema is up to date');
+        }
+        catch (err) {
+            logger_1.logger.error(`❌ Could not apply database schema: ${err?.message || err}`);
+        }
+    }
+    // Daily cleanup of old analytics rows (first run shortly after boot)
+    const runPrune = () => (0, schema_1.pruneOldVisits)(database_1.db.query)
+        .then((removed) => removed > 0 && logger_1.logger.info(`🧹 Removed ${removed} old site visit(s)`))
+        .catch(() => {
+        // DB offline — try again tomorrow
+    });
+    setTimeout(runPrune, 60_000).unref();
+    setInterval(runPrune, 24 * 60 * 60 * 1000).unref();
     const httpServer = http_1.default.createServer(app);
     const io = (0, socket_1.setupSocket)(httpServer);
     app.set('io', io);

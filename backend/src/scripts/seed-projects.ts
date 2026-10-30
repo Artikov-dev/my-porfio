@@ -4,6 +4,13 @@ import path from 'path';
 
 dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 
+// Replaces ALL projects in the database the .env points at (which may be production).
+// Refuses to run unless --force is passed: npm run db:seed -- --force
+if (!process.argv.includes('--force')) {
+  console.error('Refusing to wipe existing projects without --force. Check DATABASE_URL first.');
+  process.exit(1);
+}
+
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: { rejectUnauthorized: false },

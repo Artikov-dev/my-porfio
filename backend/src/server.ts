@@ -2,7 +2,8 @@ import express, { Request, Response } from 'express';
 import http from 'http';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import { connectDB } from './config/database';
+import { connectDB, db } from './config/database';
+import { ensureSchema, pruneOldVisits } from './config/schema';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import { logger } from './config/logger';
@@ -26,8 +27,11 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Trust proxy (Render uses reverse proxy)
-app.set('trust proxy', 1);
+// Number of reverse proxies in front of the app (Render's load balancer = 1). If another proxy
+// (e.g. Cloudflare) sits in front, req.ip becomes that proxy's address and every visitor shares
+// one rate-limit bucket — set TRUST_PROXY=2 then. Check with GET /api/system/client-ip (admin).
+const trustProxy = Number(process.env.TRUST_PROXY ?? 1);
+app.set('trust proxy', Number.isInteger(trustProxy) && trustProxy >= 0 ? trustProxy : 1);
 
 // CORS - MUST be first middleware to handle preflight requests
 const allowedOrigins = process.env.CLIENT_URL
@@ -96,6 +100,25 @@ app.use(errorHandler);
 const startServer = async () => {
   assertRequiredEnv();
   await connectDB();
+
+  if (db.isConnected) {
+    try {
+      await ensureSchema(db.query);
+      logger.info('📦 Database schema is up to date');
+    } catch (err: any) {
+      logger.error(`❌ Could not apply database schema: ${err?.message || err}`);
+    }
+  }
+
+  // Daily cleanup of old analytics rows (first run shortly after boot)
+  const runPrune = () =>
+    pruneOldVisits(db.query)
+      .then((removed) => removed > 0 && logger.info(`🧹 Removed ${removed} old site visit(s)`))
+      .catch(() => {
+        // DB offline — try again tomorrow
+      });
+  setTimeout(runPrune, 60_000).unref();
+  setInterval(runPrune, 24 * 60 * 60 * 1000).unref();
 
   const httpServer = http.createServer(app);
   const io = setupSocket(httpServer);

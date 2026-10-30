@@ -4,7 +4,7 @@ import { api } from '@/lib/api';
 
 export const ProtectedRoute = () => {
   const [isVerifying, setIsVerifying] = useState(true);
-  // Access is granted only after the server confirms the session — never from localStorage
+  // Access is granted only after the server confirms the session
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
@@ -16,12 +16,10 @@ export const ProtectedRoute = () => {
 
         if (isMounted) {
           setIsAuthenticated(true);
-          localStorage.setItem('isAdmin', 'true');
         }
       } catch {
         if (isMounted) {
           setIsAuthenticated(false);
-          localStorage.removeItem('isAdmin');
         }
       } finally {
         if (isMounted) {

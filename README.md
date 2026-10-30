@@ -2,7 +2,7 @@
 
 Welcome to the repository of my personal portfolio and interactive digital resume. This project is engineered from the ground up to showcase my skills in building high-performance, secure, and visually stunning web applications.
 
-![Portfolio Banner](./frontend/public/og_banner.png)
+![Portfolio Banner](./frontend/public/og_banner.jpg)
 
 > **Note:** This project serves as my personal portfolio. It is designed not just to display information, but to demonstrate complex architectural concepts, real-time communication, and advanced UI/UX engineering.
 
@@ -76,6 +76,10 @@ npm test
 
 If analytics data was collected before IPs were hashed, run `npm run db:hash-ips` once.
 
+The database schema (tables + indexes) is applied automatically on every server start; `npm run db:init` does the same by hand and never deletes data. `db:seed` / `db:seed-blog` **replace** all projects / posts and refuse to run without `-- --force`.
+
+Optional backend settings: `TRUST_PROXY` (number of proxies in front of the API — check `GET /api/system/client-ip` as admin), `VISIT_RETENTION_DAYS` (default 365).
+
 ### 3. Setup the Frontend
 Open a new terminal, navigate to the frontend directory, and install dependencies:
 ```bash
@@ -87,6 +91,8 @@ Run the development server:
 npm run dev
 ```
 Lint with `npm run lint`.
+
+On Vercel, `api/blog-share.js` gives shared blog links their own preview (title / image) and `api/sitemap.js` serves `/sitemap.xml` including blog posts. A Content-Security-Policy runs in **report-only** mode (see `vercel.json`): once the browser console shows no CSP reports, rename the header to `Content-Security-Policy` to enforce it.
 
 The frontend will be available at `http://localhost:5173` and the backend API at `http://localhost:5000`.
 

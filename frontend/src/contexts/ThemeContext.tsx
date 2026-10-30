@@ -10,18 +10,22 @@ interface ThemeContextType {
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
-export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
-  const [theme, setTheme] = useState<Theme>('dark');
+const readStoredTheme = (): Theme | null => {
+  try {
+    const stored = localStorage.getItem('theme');
+    return stored === 'light' || stored === 'dark' ? stored : null;
+  } catch {
+    return null;
+  }
+};
 
-  useEffect(() => {
-    // Check local storage or system preference
-    const storedTheme = localStorage.getItem('theme') as Theme;
-    if (storedTheme) {
-      setTheme(storedTheme);
-    } else if (window.matchMedia('(prefers-color-scheme: light)').matches) {
-      setTheme('light');
-    }
-  }, []);
+const systemTheme = (): Theme =>
+  window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+
+export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
+  // The inline script in index.html already applied the theme before the first paint;
+  // start from the same value so React never renders the wrong one first.
+  const [theme, setTheme] = useState<Theme>(() => readStoredTheme() ?? systemTheme());
 
   useEffect(() => {
     const root = window.document.documentElement;
@@ -32,12 +36,32 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
       root.classList.remove('dark');
       root.setAttribute('data-theme', 'light');
     }
-    localStorage.setItem('theme', theme);
   }, [theme]);
+
+  // Until the visitor picks a theme themselves, follow the OS setting live
+  useEffect(() => {
+    const media = window.matchMedia('(prefers-color-scheme: light)');
+    const onChange = () => {
+      if (!readStoredTheme()) setTheme(systemTheme());
+    };
+    media.addEventListener('change', onChange);
+    return () => media.removeEventListener('change', onChange);
+  }, []);
+
+  // Only an explicit choice is remembered (it used to save the OS default on first visit,
+  // which then stopped following the OS forever)
+  const applyTheme = (next: Theme) => {
+    try {
+      localStorage.setItem('theme', next);
+    } catch {
+      // storage blocked — the choice lasts for this page view
+    }
+    setTheme(next);
+  };
 
   const toggleTheme = (e?: React.MouseEvent) => {
     if (!document.startViewTransition) {
-      setTheme(prev => prev === 'dark' ? 'light' : 'dark');
+      applyTheme(theme === 'dark' ? 'light' : 'dark');
       return;
     }
 
@@ -53,7 +77,7 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
     
     const transition = document.startViewTransition(() => {
       flushSync(() => {
-        setTheme(isDark ? 'light' : 'dark');
+        applyTheme(isDark ? 'light' : 'dark');
       });
     });
 

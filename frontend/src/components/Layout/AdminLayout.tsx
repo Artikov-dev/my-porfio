@@ -16,7 +16,6 @@ export const AdminLayout = () => {
     } catch {
       // Still leave the admin area locally
     }
-    localStorage.removeItem('isAdmin');
     // Drop the admin socket session
     socket?.disconnect().connect();
     navigate('/');
@@ -34,7 +33,7 @@ export const AdminLayout = () => {
   return (
     <div className="min-h-screen bg-background flex">
       {/* Sidebar */}
-      <aside className="w-64 border-r border-border bg-background/50 backdrop-blur-xl flex flex-col hidden md:flex">
+      <aside className="w-64 border-r border-border bg-background/50 backdrop-blur-xl hidden md:flex md:flex-col">
         <div className="h-16 flex items-center px-6 border-b border-border">
           <span className="text-xl font-bold text-foreground dark:text-white tracking-tight">RA. Admin</span>
         </div>
@@ -69,18 +68,47 @@ export const AdminLayout = () => {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col min-h-screen overflow-hidden">
-        <header className="h-16 border-b border-border bg-background/50 backdrop-blur-xl flex items-center justify-between px-6">
+      <main className="flex-1 min-w-0 flex flex-col min-h-screen overflow-hidden">
+        <header className="h-16 border-b border-border bg-background/50 backdrop-blur-xl flex items-center justify-between px-4 md:px-6">
           <h2 className="text-lg font-medium text-foreground dark:text-white">
             {navItems.find(i => location.pathname.startsWith(i.path))?.name || 'Admin'}
           </h2>
           <div className="flex items-center gap-4">
+            {/* The sidebar (and its Sign Out) is desktop-only */}
+            <button
+              onClick={handleLogout}
+              aria-label="Sign out"
+              className="md:hidden p-2 rounded-xl text-red-400 hover:bg-red-400/10 transition-all"
+            >
+              <LogOut className="w-5 h-5" />
+            </button>
             <div className="w-8 h-8 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center text-primary font-bold text-sm">
               RA
             </div>
           </div>
         </header>
-        <div className="flex-1 overflow-auto p-6 md:p-8">
+        {/* Mobile navigation: the sidebar is hidden below md, which left phones with no way to switch pages */}
+        <nav aria-label="Admin sections" className="md:hidden flex gap-2 overflow-x-auto px-4 py-2 border-b border-border bg-background/50 backdrop-blur-xl">
+          {navItems.map(item => {
+            const isActive = location.pathname.startsWith(item.path);
+            return (
+              <Link
+                key={item.path}
+                to={item.path}
+                aria-current={isActive ? 'page' : undefined}
+                className={`flex shrink-0 items-center gap-2 px-3 py-2 rounded-xl text-sm whitespace-nowrap transition-all ${
+                  isActive
+                    ? 'bg-primary/20 text-primary font-medium'
+                    : 'text-foreground/70 hover:bg-foreground/5 hover:text-foreground dark:text-white'
+                }`}
+              >
+                {item.icon}
+                {item.name}
+              </Link>
+            );
+          })}
+        </nav>
+        <div className="flex-1 overflow-auto p-4 md:p-8">
           <Outlet />
         </div>
       </main>

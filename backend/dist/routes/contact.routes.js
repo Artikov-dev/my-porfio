@@ -9,4 +9,5 @@ const rateLimiter_1 = require("../middlewares/rateLimiter");
 const router = (0, express_1.Router)();
 router.post('/', rateLimiter_1.contactLimiter, (0, validate_middleware_1.validate)(contact_schema_1.contactSchema), contact_controller_1.submitContact);
 router.get('/messages', auth_middleware_1.requireAuth, contact_controller_1.getMessages);
+router.get('/chat/:sessionId', contact_controller_1.getChatHistory);
 exports.default = router;

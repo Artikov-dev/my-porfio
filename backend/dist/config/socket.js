@@ -5,6 +5,7 @@ const socket_io_1 = require("socket.io");
 const logger_1 = require("./logger");
 const database_1 = require("./database");
 const auth_service_1 = require("../services/auth.service");
+const telegram_service_1 = require("../services/telegram.service");
 // Private room that only authenticated admin sockets join.
 // Chat transcripts and contact notifications are emitted here — never to everyone.
 exports.ADMIN_ROOM = 'admins';
@@ -58,7 +59,15 @@ const setupSocket = (server) => {
     });
     // Live count of open connections. A Redis counter used to be kept here, but it survived
     // server restarts (connections dropped without a disconnect event) and drifted upwards.
-    const broadcastActiveUsers = () => io.emit('active_users_update', io.of('/').sockets.size);
+    // Admin tabs are not visitors, so they aren't counted.
+    const broadcastActiveUsers = () => {
+        let visitors = 0;
+        for (const s of io.of('/').sockets.values()) {
+            if (!s.data.isAdmin)
+                visitors++;
+        }
+        io.emit('active_users_update', visitors);
+    };
     // Auth runs as middleware (before 'connection'), so the event handlers below are attached
     // synchronously and a visitor's immediate join_room is never missed.
     io.use(async (socket, next) => {
@@ -87,12 +96,18 @@ const setupSocket = (server) => {
         });
         // Simple per-socket sliding window to stop chat spam
         let chatTimestamps = [];
-        socket.on('chat_message', async (data) => {
+        // The visitor's widget passes an ack callback, so a message that wasn't stored is shown as
+        // "not delivered" instead of looking sent
+        socket.on('chat_message', async (data, ack) => {
+            const respond = (result) => {
+                if (typeof ack === 'function')
+                    ack(result);
+            };
             const now = Date.now();
             chatTimestamps = chatTimestamps.filter((t) => now - t < CHAT_RATE_LIMIT.windowMs);
             if (chatTimestamps.length >= CHAT_RATE_LIMIT.max) {
                 socket.emit('chat_error', { message: 'Too many messages, please slow down.' });
-                return;
+                return respond({ ok: false, reason: 'rate_limited' });
             }
             chatTimestamps.push(now);
             const name = cleanString(data?.name, MAX_NAME_LENGTH) || 'Guest';
@@ -101,15 +116,19 @@ const setupSocket = (server) => {
                 ? data.visitor_id
                 : null;
             if (!text || !sessionId)
-                return;
+                return respond({ ok: false, reason: 'invalid' });
             socket.join(sessionId);
             try {
                 const result = await database_1.db.query('INSERT INTO chat_messages (name, text, session_id, is_admin) VALUES ($1, $2, $3, false) RETURNING *', [name, text, sessionId]);
                 io.to(exports.ADMIN_ROOM).emit('new_admin_message', result.rows[0]);
+                respond({ ok: true });
             }
             catch (err) {
                 logger_1.logger.error('Failed to save chat message:', err);
+                return respond({ ok: false, reason: 'server' });
             }
+            // The admin panel is usually closed — ping Telegram so nobody waits for nothing
+            telegram_service_1.TelegramService.notifyChatMessage(name, text, sessionId).catch(() => { });
         });
         socket.on('admin_reply', async (data, ack) => {
             // The admin page passes an ack callback so a rejected reply is reported, not silently lost

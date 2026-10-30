@@ -23,7 +23,6 @@ export const AdminLogin = () => {
   const { socket } = useSocketContext();
 
   const onAuthenticated = () => {
-    localStorage.setItem('isAdmin', 'true'); // UI hint only — access is always verified by the server
     // Reconnect so the socket handshake carries the new auth cookie (admin chat room)
     socket?.disconnect().connect();
     navigate('/admin/dashboard');

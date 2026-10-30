@@ -37,6 +37,9 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       // Quietly handle connection errors during server sleeping/wake-up
     });
 
+    // A stale count would keep claiming people are online while the server is unreachable
+    socketInstance.on('disconnect', () => setActiveUsers(0));
+
     socketInstance.on('active_users_update', (users: number) => {
       setActiveUsers(users);
     });

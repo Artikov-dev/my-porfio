@@ -3,33 +3,64 @@ import { MessageCircle, X, Send, User } from 'lucide-react';
 import { useSocket } from '@/hooks/useSocket';
 import { useI18n } from '@/contexts/I18nContext';
 import toast from 'react-hot-toast';
+import { api } from '@/lib/api';
 
 interface ChatMessage {
   id: string;
   sender: 'user' | 'bot';
   text: string;
   timestamp: Date;
+  // Only for the visitor's own messages: the server confirms each one it stored
+  status?: 'sending' | 'sent' | 'failed';
 }
+
+interface StoredMessage {
+  id: string;
+  text: string;
+  is_admin: boolean;
+  created_at: string;
+}
+
+const UUID_ID = /^v_[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+const readStorage = (key: string) => {
+  try {
+    return localStorage.getItem(key);
+  } catch {
+    return null;
+  }
+};
+
+const writeStorage = (key: string, value: string) => {
+  try {
+    localStorage.setItem(key, value);
+  } catch {
+    // storage blocked — the chat still works for this page view
+  }
+};
+
+// Unguessable: this id is the room admin replies are delivered to, and the key to the history.
+// Older short ids are replaced, since the server only returns history for UUID ids.
+const getVisitorId = () => {
+  let id = readStorage('visitor_id');
+  if (!id || !UUID_ID.test(id)) {
+    id = 'v_' + crypto.randomUUID();
+    writeStorage('visitor_id', id);
+  }
+  return id;
+};
 
 export const LiveChat = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [hasStarted, setHasStarted] = useState(false);
-  const [name, setName] = useState('');
+  // The name is remembered, so a returning visitor goes straight back to their conversation
+  const [name, setName] = useState(() => readStorage('chat_name') || '');
+  const [hasStarted, setHasStarted] = useState(() => Boolean(readStorage('chat_name')));
+  const [historyLoaded, setHistoryLoaded] = useState(false);
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const { socket } = useSocket();
   const { t } = useI18n();
   const messagesEndRef = useRef<HTMLDivElement>(null);
-
-  const getVisitorId = () => {
-    let id = localStorage.getItem('visitor_id');
-    if (!id) {
-      // Unguessable: this id is the room that admin replies are delivered to
-      id = 'v_' + crypto.randomUUID();
-      localStorage.setItem('visitor_id', id);
-    }
-    return id;
-  };
 
   // Auto-scroll to bottom of chat
   const scrollToBottom = () => {
@@ -40,6 +71,44 @@ export const LiveChat = () => {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  // Restore the conversation (including admin replies sent while the visitor was away)
+  useEffect(() => {
+    if (!isOpen || !hasStarted || historyLoaded) return;
+    setHistoryLoaded(true);
+    api.get(`/contact/chat/${getVisitorId()}`, { timeout: 30000 })
+      .then((res) => {
+        const stored: StoredMessage[] = Array.isArray(res?.data?.data) ? res.data.data : [];
+        if (stored.length === 0) return;
+        setMessages((prev) => [
+          ...stored.map((m) => ({
+            id: m.id,
+            sender: m.is_admin ? 'bot' as const : 'user' as const,
+            text: m.text,
+            timestamp: new Date(m.created_at),
+            status: m.is_admin ? undefined : 'sent' as const,
+          })),
+          // keep anything typed while the history was loading
+          ...prev.filter((m) => m.id !== 'welcome' && !stored.some((s) => s.id === m.id)),
+        ]);
+      })
+      .catch(() => {
+        // backend asleep — the visitor can still chat
+      });
+  }, [isOpen, hasStarted, historyLoaded]);
+
+  // Returning visitors see a greeting instead of an empty panel
+  useEffect(() => {
+    if (hasStarted && messages.length === 0) {
+      setMessages([{
+        id: 'welcome',
+        sender: 'bot',
+        text: t('chat_welcome').replace('{name}', name.trim()),
+        timestamp: new Date(),
+      }]);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasStarted]);
 
   useEffect(() => {
     if (!socket) return;
@@ -55,9 +124,9 @@ export const LiveChat = () => {
     };
     socket.on('chat_error', handleError);
 
-    const handleReply = (data: { text: string }) => {
-      setMessages(prev => [...prev, {
-        id: Math.random().toString(),
+    const handleReply = (data: { id?: string; text: string }) => {
+      setMessages(prev => prev.some(m => m.id === data.id) ? prev : [...prev, {
+        id: data.id || crypto.randomUUID(),
         sender: 'bot',
         text: data.text,
         timestamp: new Date()
@@ -76,13 +145,8 @@ export const LiveChat = () => {
   const handleStartChat = (e: React.FormEvent) => {
     e.preventDefault();
     if (name.trim()) {
+      writeStorage('chat_name', name.trim());
       setHasStarted(true);
-      setMessages([{
-        id: 'welcome',
-        sender: 'bot',
-        text: t('chat_welcome').replace('{name}', name.trim()),
-        timestamp: new Date()
-      }]);
     }
   };
 
@@ -90,23 +154,21 @@ export const LiveChat = () => {
     e.preventDefault();
     if (!input.trim() || !socket) return;
 
-    const newMsg: ChatMessage = {
-      id: Math.random().toString(),
-      sender: 'user',
-      text: input,
-      timestamp: new Date()
-    };
-
-    setMessages(prev => [...prev, newMsg]);
-    
-    // Emit to backend with persistent visitor_id
-    socket.emit('chat_message', {
-      name,
-      text: input,
-      visitor_id: getVisitorId()
-    });
-
+    const text = input.trim();
+    const localId = crypto.randomUUID();
+    setMessages(prev => [...prev, { id: localId, sender: 'user', text, timestamp: new Date(), status: 'sending' }]);
     setInput('');
+
+    const setStatus = (status: ChatMessage['status']) =>
+      setMessages(prev => prev.map(m => (m.id === localId ? { ...m, status } : m)));
+
+    // socket.io buffers the emit while disconnected (e.g. backend cold start); the timeout
+    // covers that wait too
+    socket.timeout(30000).emit(
+      'chat_message',
+      { name: name.trim(), text, visitor_id: getVisitorId() },
+      (err: Error | null, res?: { ok: boolean }) => setStatus(!err && res?.ok ? 'sent' : 'failed'),
+    );
   };
 
   return (
@@ -185,6 +247,12 @@ export const LiveChat = () => {
                     >
                       {msg.text}
                     </div>
+                    {msg.status === 'failed' && (
+                      <span className="text-[10px] text-red-400 mt-1 mr-2">{t('chat_not_delivered')}</span>
+                    )}
+                    {msg.status === 'sending' && (
+                      <span className="text-[10px] text-foreground/40 mt-1 mr-2">…</span>
+                    )}
                   </div>
                 ))}
                 <div ref={messagesEndRef} />

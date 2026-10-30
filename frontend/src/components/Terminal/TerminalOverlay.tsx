@@ -5,6 +5,7 @@ import { MatrixRain } from './MatrixRain';
 import { SnakeGame } from './SnakeGame';
 import { isTypingTarget } from '@/lib/utils';
 import { getResume } from '@/lib/resume';
+import { EXPERIENCE, formatPeriod } from '@/lib/experience';
 import { useI18n } from '@/contexts/I18nContext';
 
 interface CommandOutput {
@@ -16,9 +17,10 @@ interface CommandOutput {
 export const TerminalOverlay = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [input, setInput] = useState('');
-  const [history, setHistory] = useState<CommandOutput[]>([
-    { id: 'welcome', type: 'output', text: 'Welcome to Roma OS v2.0.0' },
-    { id: 'welcome2', type: 'output', text: 'Type "help" to see available commands.' },
+  const { language, t } = useI18n();
+  const [history, setHistory] = useState<CommandOutput[]>(() => [
+    { id: 'welcome', type: 'output', text: t('term_welcome') },
+    { id: 'welcome2', type: 'output', text: t('term_help_hint') },
   ]);
   const [showMatrix, setShowMatrix] = useState(false);
   const [showSnake, setShowSnake] = useState(false);
@@ -26,7 +28,6 @@ export const TerminalOverlay = () => {
   const inputRef = useRef<HTMLInputElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
-  const { language } = useI18n();
 
   // Listen for `~` key to toggle terminal
   useEffect(() => {
@@ -66,12 +67,11 @@ export const TerminalOverlay = () => {
       case 'help':
         response = (
           <div className="flex flex-col gap-1 mt-2 text-primary/90">
-            <div><span className="text-foreground dark:text-white font-bold w-20 inline-block">whoami</span> - Display my short bio</div>
-            <div><span className="text-foreground dark:text-white font-bold w-20 inline-block">skills</span> - List my technical skills</div>
-            <div><span className="text-foreground dark:text-white font-bold w-20 inline-block">projects</span> - Go to projects page</div>
-            <div><span className="text-foreground dark:text-white font-bold w-20 inline-block">resume</span> - View my interactive resume</div>
-            <div><span className="text-foreground dark:text-white font-bold w-20 inline-block">clear</span> - Clear the terminal</div>
-            <div><span className="text-foreground dark:text-white font-bold w-20 inline-block">exit</span> - Close the terminal</div>
+            {(['whoami', 'skills', 'projects', 'resume', 'clear', 'exit'] as const).map((command) => (
+              <div key={command}>
+                <span className="text-foreground dark:text-white font-bold w-20 inline-block">{command}</span> - {t(`term_help_${command}`)}
+              </div>
+            ))}
           </div>
         );
         break;
@@ -94,14 +94,13 @@ export const TerminalOverlay = () => {
                 <span className="text-green-500">#</span> EXPERIENCE
               </h2>
               <div className="pl-4 border-l-2 border-green-500/20 flex flex-col gap-3">
-                <div>
-                  <p className="text-white font-bold">Full Stack Developer</p>
-                  <p className="text-green-500/70 text-xs mb-1">2023 - Present</p>
-                  <ul className="list-disc pl-4 text-green-400/90 text-xs space-y-1">
-                    <li>Developing highly interactive web applications using React and Node.js.</li>
-                    <li>Designing robust architectures for complex user interfaces.</li>
-                  </ul>
-                </div>
+                {EXPERIENCE.map((exp) => (
+                  <div key={exp.roleKey}>
+                    <p className="text-white font-bold">{t(exp.roleKey)} <span className="text-green-500/70 font-normal">@ {t(exp.companyKey)}</span></p>
+                    <p className="text-green-500/70 text-xs mb-1">{formatPeriod(exp, language, t('present'))}</p>
+                    <p className="text-green-400/90 text-xs">{t(exp.descKey)}</p>
+                  </div>
+                ))}
               </div>
             </div>
       
@@ -170,7 +169,7 @@ export const TerminalOverlay = () => {
       default:
         response = (
           <span className="text-red-400">
-            command not found: {trimmed}. Type "help" for a list of commands.
+            {t('term_not_found').replace('{cmd}', trimmed)}
           </span>
         );
     }
@@ -193,7 +192,8 @@ export const TerminalOverlay = () => {
       <button
         onClick={() => setIsOpen(true)}
         className="fixed bottom-40 right-4 md:bottom-24 md:right-6 z-[90] flex items-center justify-center w-10 h-10 md:w-12 md:h-12 rounded-full bg-slate-900 dark:bg-slate-800 text-green-400 shadow-lg hover:scale-110 transition-transform border border-slate-700"
-        title="Open Terminal (~)"
+        title={t('term_open')}
+        aria-label={t('term_open')}
       >
         <TerminalIcon size={18} />
       </button>
@@ -210,7 +210,7 @@ export const TerminalOverlay = () => {
           <TerminalIcon className="w-4 h-4" />
           <span className="text-xs tracking-wider">ROMA_TERMINAL</span>
         </div>
-        <button onClick={() => setIsOpen(false)} className="text-foreground dark:text-white/50 hover:text-foreground dark:text-white transition-colors">
+        <button onClick={() => setIsOpen(false)} aria-label={t('term_close')} className="text-foreground dark:text-white/50 hover:text-foreground dark:text-white transition-colors">
           <X className="w-4 h-4" />
         </button>
       </div>
@@ -239,6 +239,7 @@ export const TerminalOverlay = () => {
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
+            aria-label="Terminal command"
             className="flex-1 bg-transparent border-none outline-none text-foreground dark:text-white focus:ring-0"
             spellCheck={false}
             autoComplete="off"

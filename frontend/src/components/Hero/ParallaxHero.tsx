@@ -16,7 +16,20 @@ import { Typewriter } from '@/components/ui/Typewriter';
 // Starfield pulls in three.js + R3F (~280KB gzip); load it after first paint
 const Starfield = React.lazy(() => import('./Starfield').then(m => ({ default: m.Starfield })));
 
+// The fluid sim only reacts to a hovering mouse. On touch screens it never receives input
+// (pointer-events are off there) yet still ran its full simulation every frame, draining
+// battery for a static black canvas. Low-end machines skip it too.
+const canRunFluidSim = () => {
+  if (typeof window === 'undefined') return false;
+  if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return false;
+  const memory = (navigator as Navigator & { deviceMemory?: number }).deviceMemory;
+  if (memory !== undefined && memory < 4) return false;
+  if (navigator.hardwareConcurrency && navigator.hardwareConcurrency < 4) return false;
+  return true;
+};
+
 export const ParallaxHero = () => {
+  const [canRunFluid] = React.useState(canRunFluidSim);
   const { x, y } = useMousePosition();
   const { t, language } = useI18n();
   const { theme } = useTheme();
@@ -34,7 +47,7 @@ export const ParallaxHero = () => {
   return (
     <div className="relative min-h-screen flex items-center justify-center overflow-hidden bg-slate-50 dark:bg-black transition-colors duration-300">
       {/* 3D WebGL Fluid Background Scene */}
-      {!reduceMotion && <FluidBackground />}
+      {!reduceMotion && canRunFluid && <FluidBackground />}
 
       {/* Brilliant Stars Overlay (dark mode only — it's hidden in light mode anyway) */}
       {idle && theme === 'dark' && !reduceMotion && (

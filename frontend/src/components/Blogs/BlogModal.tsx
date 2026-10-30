@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Clock, Eye, Calendar, Share2, Check, ArrowLeft, Sparkles } from 'lucide-react';
 import { useI18n } from '@/contexts/I18nContext';
@@ -16,18 +16,42 @@ export const BlogModal: React.FC<BlogModalProps> = ({ blog, onClose }) => {
   const { t, language } = useI18n();
   const [copied, setCopied] = useState(false);
 
-  // Close modal on Escape key press
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+
+  // Escape closes; Tab stays inside the dialog; focus moves in on open and back on close
   useEffect(() => {
+    if (!blog) return;
+    const previouslyFocused = document.activeElement as HTMLElement | null;
+    closeButtonRef.current?.focus();
+
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
+      if (e.key === 'Escape') {
+        onClose();
+        return;
+      }
+      if (e.key !== 'Tab' || !dialogRef.current) return;
+      const focusable = dialogRef.current.querySelectorAll<HTMLElement>(
+        'a[href], button:not([disabled]), input, textarea, select, [tabindex]:not([tabindex="-1"])',
+      );
+      if (focusable.length === 0) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
     };
-    if (blog) {
-      document.body.style.overflow = 'hidden';
-      window.addEventListener('keydown', handleKeyDown);
-    }
+
+    document.body.style.overflow = 'hidden';
+    window.addEventListener('keydown', handleKeyDown);
     return () => {
       document.body.style.overflow = 'unset';
       window.removeEventListener('keydown', handleKeyDown);
+      previouslyFocused?.focus?.();
     };
   }, [blog, onClose]);
 
@@ -41,12 +65,26 @@ export const BlogModal: React.FC<BlogModalProps> = ({ blog, onClose }) => {
     { year: 'numeric', month: 'long', day: 'numeric' }
   );
 
-  const handleShare = () => {
+  const handleShare = async () => {
     const url = window.location.href;
-    navigator.clipboard.writeText(`${title} - ${url}`);
-    setCopied(true);
-    toast.success(t('copied') || 'Link copied!');
-    setTimeout(() => setCopied(false), 2500);
+    // Phones: the native share sheet. Elsewhere: the clipboard — and only report success
+    // when the copy actually worked (clipboard is unavailable on http / in some webviews)
+    if (navigator.share) {
+      try {
+        await navigator.share({ title, url });
+        return;
+      } catch (err) {
+        if ((err as Error)?.name === 'AbortError') return; // user closed the share sheet
+      }
+    }
+    try {
+      await navigator.clipboard.writeText(`${title} - ${url}`);
+      setCopied(true);
+      toast.success(t('copied') || 'Link copied!');
+      setTimeout(() => setCopied(false), 2500);
+    } catch {
+      toast.error(url);
+    }
   };
 
   // Helper to parse simple markdown to rich JSX elements
@@ -179,6 +217,10 @@ export const BlogModal: React.FC<BlogModalProps> = ({ blog, onClose }) => {
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 20 }}
           transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+          ref={dialogRef}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="blog-modal-title"
           className="relative w-full max-w-4xl max-h-[92vh] bg-background/95 dark:bg-slate-900/95 border border-white/20 dark:border-white/10 rounded-3xl shadow-2xl overflow-hidden flex flex-col z-10 backdrop-blur-2xl"
           onClick={(e) => e.stopPropagation()}
         >
@@ -193,6 +235,7 @@ export const BlogModal: React.FC<BlogModalProps> = ({ blog, onClose }) => {
               {copied ? <Check className="w-5 h-5 text-green-500" /> : <Share2 className="w-5 h-5" />}
             </button>
             <button
+              ref={closeButtonRef}
               onClick={onClose}
               aria-label="Close modal"
               className="p-2.5 rounded-full bg-background/80 dark:bg-slate-800/80 backdrop-blur-md border border-border text-foreground hover:text-red-500 hover:border-red-500/50 transition-all shadow-lg"
@@ -249,7 +292,7 @@ export const BlogModal: React.FC<BlogModalProps> = ({ blog, onClose }) => {
               </div>
 
               {/* Title */}
-              <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-foreground tracking-tight mb-8 leading-snug">
+              <h1 id="blog-modal-title" className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-foreground tracking-tight mb-8 leading-snug">
                 {title}
               </h1>
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 import { ScrollReveal } from '@/components/ui/ScrollReveal';
 import { Button } from '@/components/ui/Button';
@@ -16,6 +16,9 @@ const ContactForm = () => {
   const { t } = useI18n();
   const [form, setForm] = useState(EMPTY_FORM);
   const [sending, setSending] = useState(false);
+  // Anti-spam: a hidden field only bots fill in, and the time the form was open
+  const [website, setWebsite] = useState('');
+  const openedAt = useRef(Date.now());
 
   const update = (field: keyof typeof EMPTY_FORM) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
     setForm((prev) => ({ ...prev, [field]: e.target.value }));
@@ -29,9 +32,12 @@ const ContactForm = () => {
         email: form.email.trim(),
         subject: form.subject.trim() || null,
         body: form.body.trim(),
+        website,
+        elapsed_ms: Date.now() - openedAt.current,
       });
       toast.success(t('form_success'));
       setForm(EMPTY_FORM);
+      openedAt.current = Date.now();
     } catch (err: any) {
       toast.error(err?.response?.status === 429 ? t('form_rate_limited') : t('form_error'));
     } finally {
@@ -51,6 +57,11 @@ const ContactForm = () => {
           <label htmlFor="contact-email" className="text-sm text-foreground/70">{t('form_email')}</label>
           <input id="contact-email" type="email" required autoComplete="email" value={form.email} onChange={update('email')} className={inputClass} />
         </div>
+      </div>
+      {/* Honeypot: invisible to people and screen readers, filled in by naive bots */}
+      <div aria-hidden="true" className="absolute -left-[9999px] w-px h-px overflow-hidden">
+        <label htmlFor="contact-website">Website</label>
+        <input id="contact-website" tabIndex={-1} autoComplete="off" value={website} onChange={(e) => setWebsite(e.target.value)} />
       </div>
       <div className="space-y-2">
         <label htmlFor="contact-subject" className="text-sm text-foreground/70">{t('form_subject')}</label>

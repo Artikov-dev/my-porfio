@@ -9,5 +9,9 @@ exports.contactSchema = zod_1.z.object({
         subject: zod_1.z.string().max(200, 'Subject is too long').optional().nullable(),
         body: zod_1.z.string().min(10, 'Message is too short').max(2000, 'Message is too long'),
         location: zod_1.z.string().max(200).optional().nullable(),
+        // Anti-spam signals (see submitContact): a hidden field humans leave empty, and how long the
+        // form was open before sending
+        website: zod_1.z.string().max(200).optional().nullable(),
+        elapsed_ms: zod_1.z.number().int().nonnegative().optional().nullable(),
     }),
 });

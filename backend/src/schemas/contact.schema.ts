@@ -7,5 +7,9 @@ export const contactSchema = z.object({
     subject: z.string().max(200, 'Subject is too long').optional().nullable(),
     body: z.string().min(10, 'Message is too short').max(2000, 'Message is too long'),
     location: z.string().max(200).optional().nullable(),
+    // Anti-spam signals (see submitContact): a hidden field humans leave empty, and how long the
+    // form was open before sending
+    website: z.string().max(200).optional().nullable(),
+    elapsed_ms: z.number().int().nonnegative().optional().nullable(),
   }),
 });

@@ -3,23 +3,40 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getSystemLogs = exports.getSystemHealth = void 0;
+exports.getClientIp = exports.getSystemLogs = exports.getSystemHealth = void 0;
 const os_1 = __importDefault(require("os"));
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
+// On Render the app runs in a container: os.totalmem()/os.uptime() describe the whole host
+// machine, not this service. Use the cgroup memory limit when there is one.
+const readContainerMemoryLimit = () => {
+    for (const file of ['/sys/fs/cgroup/memory.max', '/sys/fs/cgroup/memory/memory.limit_in_bytes']) {
+        try {
+            const value = fs_1.default.readFileSync(file, 'utf8').trim();
+            const bytes = Number(value);
+            // 'max' or a huge sentinel value means "no limit"
+            if (Number.isFinite(bytes) && bytes > 0 && bytes < os_1.default.totalmem())
+                return bytes;
+        }
+        catch {
+            // not a cgroup container (e.g. local dev)
+        }
+    }
+    return os_1.default.totalmem();
+};
 const getSystemHealth = async (req, res, next) => {
     try {
-        const totalMem = os_1.default.totalmem();
-        const freeMem = os_1.default.freemem();
-        const usedMem = totalMem - freeMem;
+        const totalMem = readContainerMemoryLimit();
+        const usedMem = process.memoryUsage().rss;
         const cpuLoad = os_1.default.loadavg();
         res.status(200).json({
             success: true,
             data: {
-                uptime: os_1.default.uptime(),
+                // This Node process, not the host
+                uptime: process.uptime(),
                 memory: {
                     total: totalMem,
-                    free: freeMem,
+                    free: Math.max(totalMem - usedMem, 0),
                     used: usedMem,
                     usagePercentage: ((usedMem / totalMem) * 100).toFixed(2),
                 },
@@ -90,3 +107,16 @@ const getSystemLogs = async (req, res, next) => {
     }
 };
 exports.getSystemLogs = getSystemLogs;
+// Diagnostic for the TRUST_PROXY setting: compare `ip` with your real public IP. If it shows a
+// proxy/CDN address instead, raise TRUST_PROXY by one.
+const getClientIp = (req, res) => {
+    res.status(200).json({
+        success: true,
+        data: {
+            ip: req.ip,
+            forwardedFor: req.headers['x-forwarded-for'] ?? null,
+            trustProxy: req.app.get('trust proxy'),
+        },
+    });
+};
+exports.getClientIp = getClientIp;

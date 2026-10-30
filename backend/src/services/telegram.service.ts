@@ -58,7 +58,37 @@ if (process.env.NODE_ENV !== 'test' && isConfigured) {
 // whole message ("can't parse entities"), so the notification would be silently lost.
 const escapeMarkdown = (value: unknown) => String(value ?? '').replace(/([_*`\[])/g, '\\$1');
 
+// Live chat pings: the first message of a conversation, then at most one per session every
+// 10 minutes — enough to know someone is waiting without a notification per message.
+const CHAT_NOTIFY_INTERVAL_MS = 10 * 60 * 1000;
+const lastChatNotification = new Map<string, number>();
+
 export const TelegramService = {
+  async notifyChatMessage(name: string, text: string, sessionId: string) {
+    if (!isConfigured) return false;
+
+    const now = Date.now();
+    for (const [id, at] of lastChatNotification) {
+      if (now - at > CHAT_NOTIFY_INTERVAL_MS) lastChatNotification.delete(id);
+    }
+    if (lastChatNotification.has(sessionId)) return false;
+    lastChatNotification.set(sessionId, now);
+
+    const message = `
+💬 *Live chat* — reply from the admin panel
+
+👤 *${escapeMarkdown(name)}*
+${escapeMarkdown(text.slice(0, 500))}
+    `;
+    try {
+      await bot.telegram.sendMessage(ADMIN_CHAT_ID as string, message, { parse_mode: 'Markdown' });
+      return true;
+    } catch (error) {
+      logger.error('Failed to send Telegram chat notification', error);
+      return false;
+    }
+  },
+
   async sendContactMessage(
     name: string,
     email: string,

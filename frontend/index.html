@@ -12,6 +12,10 @@
     <link data-rh="true" rel="canonical" href="https://artikov.dev/" />
     <meta name="theme-color" content="#000000" />
 
+    <!-- Apply the theme before the first paint (React would otherwise flash dark for light-mode users).
+         Keep in sync with ThemeContext; its sha256 is allowed in the CSP in vercel.json. -->
+    <script>(function(){try{var t=localStorage.getItem('theme');if(t!=='light'&&t!=='dark'){t=window.matchMedia('(prefers-color-scheme: light)').matches?'light':'dark'}var r=document.documentElement;r.classList.toggle('dark',t==='dark');r.setAttribute('data-theme',t)}catch(e){}})()</script>
+
     <!-- Structured data: lets search engines show a profile card for the name -->
     <script type="application/ld+json">
       {

@@ -7,6 +7,12 @@ const database_1 = require("../config/database");
 const dotenv_1 = __importDefault(require("dotenv"));
 const path_1 = __importDefault(require("path"));
 dotenv_1.default.config({ path: path_1.default.resolve(__dirname, '../../.env') });
+// Replaces ALL blog posts in the database the .env points at (which may be production).
+// Refuses to run unless --force is passed: npm run db:seed -- --force
+if (!process.argv.includes('--force')) {
+    console.error('Refusing to wipe existing blog posts without --force. Check DATABASE_URL first.');
+    process.exit(1);
+}
 const seedBlog = async () => {
     try {
         console.log('Seeding blogs...');
