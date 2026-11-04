@@ -7,6 +7,7 @@
     "dev": "vite",
     "build": "tsc -b && vite build && node scripts/copy-404.mjs && node scripts/check-csp-hash.mjs",
     "lint": "oxlint src",
+    "test": "node --test \"tests/*.test.mjs\"",
     "check:size": "node scripts/check-bundle-size.mjs",
     "preview": "vite preview"
   },
