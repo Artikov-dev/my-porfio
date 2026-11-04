@@ -12,17 +12,18 @@ export const TextReveal: React.FC<TextRevealProps> = ({ text, className, delay =
   // Split text into words, then words into characters for a fluid reveal
   const words = text.split(' ');
 
+  // Letters slide up from below the clipped (overflow: hidden) line instead of fading in from
+  // opacity 0: the hero title is the page's Largest Contentful Paint, and transparent text
+  // doesn't count as painted, so the fade pushed LCP back by the whole animation.
   const container: Variants = {
-    hidden: { opacity: 0 },
+    hidden: {},
     visible: (i = 1) => ({
-      opacity: 1,
       transition: { staggerChildren: 0.03, delayChildren: delay * i },
     }),
   };
 
   const child: Variants = {
     visible: {
-      opacity: 1,
       y: 0,
       transition: {
         type: 'spring',
@@ -31,8 +32,7 @@ export const TextReveal: React.FC<TextRevealProps> = ({ text, className, delay =
       },
     },
     hidden: {
-      opacity: 0,
-      y: 20,
+      y: '110%',
       transition: {
         type: 'spring',
         damping: 12,
