@@ -1,4 +1,4 @@
-# 🚀 Roma Artikov - Senior Full-Stack Engineer Portfolio
+# 🚀 Roma Artikov - Full-Stack Engineer Portfolio
 
 Welcome to the repository of my personal portfolio and interactive digital resume. This project is engineered from the ground up to showcase my skills in building high-performance, secure, and visually stunning web applications.
 
