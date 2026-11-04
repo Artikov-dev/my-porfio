@@ -44,6 +44,41 @@ const authenticateSocket = async (socket: Socket) => {
   return 0;
 };
 
+// Socket.io ignores Express's 'trust proxy', so pick the client address the same way: the
+// TRUST_PROXY-th entry from the end of X-Forwarded-For is the one our own proxy appended
+// (earlier entries are client-controlled and can be spoofed).
+const getClientIp = (socket: Socket) => {
+  const hops = Number(process.env.TRUST_PROXY ?? 1);
+  const forwarded = String(socket.handshake.headers['x-forwarded-for'] || '')
+    .split(',')
+    .map((part) => part.trim())
+    .filter(Boolean);
+  if (Number.isInteger(hops) && hops > 0 && forwarded.length >= hops) {
+    return forwarded[forwarded.length - hops];
+  }
+  return socket.handshake.address;
+};
+
+// Chat rate limit per client IP, not per socket: reconnecting used to reset the budget
+const chatTimestampsByIp = new Map<string, number[]>();
+
+const isChatRateLimited = (ip: string) => {
+  const now = Date.now();
+  const recent = (chatTimestampsByIp.get(ip) || []).filter((t) => now - t < CHAT_RATE_LIMIT.windowMs);
+  const limited = recent.length >= CHAT_RATE_LIMIT.max;
+  if (!limited) recent.push(now);
+  chatTimestampsByIp.set(ip, recent);
+  return limited;
+};
+
+// Drop idle entries so the map doesn't grow with every visitor ever seen
+setInterval(() => {
+  const now = Date.now();
+  for (const [ip, timestamps] of chatTimestampsByIp) {
+    if (timestamps.every((t) => now - t >= CHAT_RATE_LIMIT.windowMs)) chatTimestampsByIp.delete(ip);
+  }
+}, 60_000).unref();
+
 const cleanString = (value: unknown, maxLength: number) =>
   typeof value === 'string' ? value.trim().slice(0, maxLength) : '';
 
@@ -108,8 +143,7 @@ export const setupSocket = (server: HttpServer) => {
       logger.info(`Page view recorded: ${cleanString(page, 200)} by ${socket.id}`);
     });
 
-    // Simple per-socket sliding window to stop chat spam
-    let chatTimestamps: number[] = [];
+    const clientIp = getClientIp(socket);
 
     // The visitor's widget passes an ack callback, so a message that wasn't stored is shown as
     // "not delivered" instead of looking sent
@@ -118,13 +152,10 @@ export const setupSocket = (server: HttpServer) => {
         if (typeof ack === 'function') ack(result);
       };
 
-      const now = Date.now();
-      chatTimestamps = chatTimestamps.filter((t) => now - t < CHAT_RATE_LIMIT.windowMs);
-      if (chatTimestamps.length >= CHAT_RATE_LIMIT.max) {
+      if (isChatRateLimited(clientIp)) {
         socket.emit('chat_error', { message: 'Too many messages, please slow down.' });
         return respond({ ok: false, reason: 'rate_limited' });
       }
-      chatTimestamps.push(now);
 
       const name = cleanString(data?.name, MAX_NAME_LENGTH) || 'Guest';
       const text = cleanString(data?.text, MAX_TEXT_LENGTH);

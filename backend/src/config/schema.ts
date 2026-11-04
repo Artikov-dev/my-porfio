@@ -104,3 +104,16 @@ export const pruneOldVisits = async (query: Query) => {
   );
   return result.rowCount ?? 0;
 };
+
+// Contact messages keep the sender's raw IP for abuse handling, which only matters while a
+// message is recent. After CONTACT_IP_RETENTION_DAYS the IP is removed; the message itself stays.
+export const pruneOldContactIps = async (query: Query) => {
+  const days = Number(process.env.CONTACT_IP_RETENTION_DAYS ?? 90);
+  if (!Number.isFinite(days) || days <= 0) return 0;
+  const result = await query(
+    `UPDATE contacts SET ip_address = NULL
+     WHERE ip_address IS NOT NULL AND created_at < NOW() - make_interval(days => $1)`,
+    [Math.floor(days)],
+  );
+  return result.rowCount ?? 0;
+};

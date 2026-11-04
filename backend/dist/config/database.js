@@ -39,6 +39,7 @@ exports.db = {
         }
     },
     getClient: () => pool.connect(),
+    close: () => pool.end(),
 };
 // Test connection without throwing uncaught errors
 const connectDB = async () => {

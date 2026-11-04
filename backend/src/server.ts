@@ -3,15 +3,14 @@ import http from 'http';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import { connectDB, db } from './config/database';
-import { ensureSchema, pruneOldVisits } from './config/schema';
+import { ensureSchema, pruneOldContactIps, pruneOldVisits } from './config/schema';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import { logger } from './config/logger';
 import { assertRequiredEnv } from './config/env';
-import { setupSwagger } from './config/swagger';
 import { globalLimiter } from './middlewares/rateLimiter';
 import { errorHandler } from './middlewares/error.middleware';
-import './config/redis'; // Initializes Redis connection
+import redisClient from './config/redis'; // Importing it also opens the Redis connection
 import cookieParser from 'cookie-parser';
 import { setupSocket } from './config/socket';
 import authRoutes from './routes/auth.routes';
@@ -52,8 +51,10 @@ app.use(cors(corsOptions));
 app.use(helmet({
   crossOriginResourcePolicy: { policy: 'cross-origin' },
 }));
+// Like 'combined' but without the client IP: analytics only ever stores a salted hash of it,
+// so the access log shouldn't keep the raw address either
 app.use(
-  morgan('combined', {
+  morgan(':method :url :status :res[content-length] - :response-time ms ":referrer" ":user-agent"', {
     stream: { write: (message: string) => logger.info(message.trim()) },
   }),
 );
@@ -84,13 +85,28 @@ app.use('/api/analytics', analyticsRoutes);
 app.use('/api/system', systemRoutes);
 
 // API Documentation — local/dev only; in production it would publish every (admin) endpoint
+// Loaded with require() so the swagger packages can stay devDependencies (not installed on Render)
 if (process.env.NODE_ENV !== 'production') {
-  setupSwagger(app);
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  require('./config/swagger').setupSwagger(app);
 }
 
-// Health check endpoint
-app.get('/health', (req: Request, res: Response) => {
-  res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
+// Health check endpoint. Always 200 while the process is up (Render would otherwise restart a
+// healthy server during a database outage); the body says whether DB and Redis are reachable.
+app.get('/health', async (req: Request, res: Response) => {
+  let database = false;
+  try {
+    await db.query('SELECT 1');
+    database = true;
+  } catch {
+    // reported below
+  }
+  res.status(200).json({
+    status: database ? 'ok' : 'degraded',
+    database,
+    redis: redisClient.isConnected,
+    timestamp: new Date().toISOString(),
+  });
 });
 
 // Global Error Handler (must be the last middleware)
@@ -110,13 +126,16 @@ const startServer = async () => {
     }
   }
 
-  // Daily cleanup of old analytics rows (first run shortly after boot)
+  // Daily cleanup of old analytics rows and contact IPs (first run shortly after boot)
   const runPrune = () =>
-    pruneOldVisits(db.query)
-      .then((removed) => removed > 0 && logger.info(`🧹 Removed ${removed} old site visit(s)`))
-      .catch(() => {
-        // DB offline — try again tomorrow
-      });
+    Promise.all([
+      pruneOldVisits(db.query)
+        .then((removed) => removed > 0 && logger.info(`🧹 Removed ${removed} old site visit(s)`)),
+      pruneOldContactIps(db.query)
+        .then((cleared) => cleared > 0 && logger.info(`🧹 Cleared the IP of ${cleared} old contact message(s)`)),
+    ]).catch(() => {
+      // DB offline — try again tomorrow
+    });
   setTimeout(runPrune, 60_000).unref();
   setInterval(runPrune, 24 * 60 * 60 * 1000).unref();
 
@@ -129,6 +148,22 @@ const startServer = async () => {
       `🚀 Server running in ${process.env.NODE_ENV} mode on port ${PORT}`,
     );
   });
+
+  // Render sends SIGTERM on every deploy: finish in-flight requests, then close sockets and the pool
+  let shuttingDown = false;
+  const shutdown = (signal: string) => {
+    if (shuttingDown) return;
+    shuttingDown = true;
+    logger.info(`🛑 ${signal} received, shutting down`);
+    setTimeout(() => process.exit(1), 10_000).unref();
+    // io.close() also closes the HTTP server (stops new connections, waits for open requests)
+    io.close(async () => {
+      await Promise.allSettled([db.close(), redisClient.quit()]);
+      process.exit(0);
+    });
+  };
+  process.on('SIGTERM', () => shutdown('SIGTERM'));
+  process.on('SIGINT', () => shutdown('SIGINT'));
 };
 
 startServer().catch((err) => {

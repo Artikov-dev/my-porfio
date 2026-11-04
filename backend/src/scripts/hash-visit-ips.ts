@@ -48,7 +48,8 @@ const run = async () => {
         [hashIp(ip), geo?.ll?.[0] ?? null, geo?.ll?.[1] ?? null, ip],
       );
     }
-    // Contact messages keep the sender IP for abuse handling, so they are left alone.
+    // Contact messages keep the sender IP for abuse handling, so they are left alone
+    // (the server clears it after CONTACT_IP_RETENTION_DAYS).
     await client.query('COMMIT');
     console.log('✅ Done.');
   } catch (err) {

@@ -94,9 +94,8 @@ const refreshToken = async (req, res, next) => {
         if (!refreshTokenCookie) {
             return res.status(401).json({ status: 'fail', message: 'No refresh token provided' });
         }
-        await auth_service_1.AuthService.verifyRefreshToken(refreshTokenCookie);
         // Rotation: each refresh token works once, so a stolen copy stops working after the next refresh
-        await auth_service_1.AuthService.revokeToken(refreshTokenCookie, process.env.REFRESH_TOKEN_SECRET);
+        await auth_service_1.AuthService.consumeRefreshToken(refreshTokenCookie);
         setAuthCookies(res);
         res.status(200).json({ status: 'success', message: 'Token refreshed successfully' });
     }

@@ -65,6 +65,23 @@ export default {
       return null;
     }
   },
+  // SET key value EX ttl NX — 'OK' only for the first caller, null if the key already exists.
+  // Returns undefined when Redis is offline, so callers can fall back to memory.
+  async setOnce(key: string, value: string, ttlSeconds: number) {
+    if (!isConnected) return undefined;
+    try {
+      return await redisClient.set(key, value, 'EX', ttlSeconds, 'NX');
+    } catch (e) {
+      return undefined;
+    }
+  },
+  async quit() {
+    try {
+      await redisClient.quit();
+    } catch (e) {
+      redisClient.disconnect();
+    }
+  },
   async del(key: string) {
     if (!isConnected) return null;
     try {

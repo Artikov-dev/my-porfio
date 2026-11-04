@@ -51,3 +51,13 @@ test('a refresh token is not accepted as an access token', async () => {
   const { refreshToken } = AuthService.generateTokens();
   await assert.rejects(AuthService.verifyAccessToken(refreshToken));
 });
+
+test('a refresh token can be consumed only once, even by parallel requests', async () => {
+  const { refreshToken } = AuthService.generateTokens();
+  const results = await Promise.allSettled([
+    AuthService.consumeRefreshToken(refreshToken),
+    AuthService.consumeRefreshToken(refreshToken),
+  ]);
+  assert.equal(results.filter((r) => r.status === 'fulfilled').length, 1);
+  await assert.rejects(AuthService.consumeRefreshToken(refreshToken), /Invalid or expired refresh token/);
+});

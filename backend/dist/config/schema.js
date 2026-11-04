@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.pruneOldVisits = exports.ensureSchema = void 0;
+exports.pruneOldContactIps = exports.pruneOldVisits = exports.ensureSchema = void 0;
 // The one place the database schema is defined. Every statement is idempotent
 // (IF NOT EXISTS), so it runs on every server start and from `npm run db:init`.
 // It never drops or deletes anything.
@@ -95,3 +95,14 @@ const pruneOldVisits = async (query) => {
     return result.rowCount ?? 0;
 };
 exports.pruneOldVisits = pruneOldVisits;
+// Contact messages keep the sender's raw IP for abuse handling, which only matters while a
+// message is recent. After CONTACT_IP_RETENTION_DAYS the IP is removed; the message itself stays.
+const pruneOldContactIps = async (query) => {
+    const days = Number(process.env.CONTACT_IP_RETENTION_DAYS ?? 90);
+    if (!Number.isFinite(days) || days <= 0)
+        return 0;
+    const result = await query(`UPDATE contacts SET ip_address = NULL
+     WHERE ip_address IS NOT NULL AND created_at < NOW() - make_interval(days => $1)`, [Math.floor(days)]);
+    return result.rowCount ?? 0;
+};
+exports.pruneOldContactIps = pruneOldContactIps;

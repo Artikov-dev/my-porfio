@@ -39,6 +39,19 @@ const revoke = async (jti, exp) => {
     revokedInMemory.set(jti, exp);
     await redis_1.default.set(`revoked:${jti}`, '1', 'EX', ttl);
 };
+// Like revoke(), but atomic: true only for the first caller. Two parallel refreshes with the
+// same token used to both pass the isRevoked() check and both get fresh tokens.
+const revokeOnce = async (jti, exp) => {
+    const ttl = exp - Math.floor(Date.now() / 1000);
+    if (ttl <= 0)
+        return false;
+    // No await between the check and the set, so this is race-free within the process
+    if (revokedInMemory.has(jti))
+        return false;
+    revokedInMemory.set(jti, exp);
+    // null → Redis already had it (claimed earlier, e.g. before a restart); undefined → Redis offline
+    return (await redis_1.default.setOnce(`revoked:${jti}`, '1', ttl)) !== null;
+};
 const isRevoked = async (jti) => {
     // Tokens issued before jti existed can't be revoked individually; they expire on their own
     if (!jti)
@@ -140,7 +153,15 @@ exports.AuthService = {
         }
         return decoded;
     },
-    // Blocks a token until it would have expired anyway (logout, refresh-token rotation).
+    // Rotation: verifies the refresh token and marks it used in one step, so it works exactly once
+    async consumeRefreshToken(token) {
+        const decoded = await this.verifyRefreshToken(token);
+        if (decoded.jti && decoded.exp && !(await revokeOnce(decoded.jti, decoded.exp))) {
+            throw new error_middleware_1.CustomError('Invalid or expired refresh token', 401);
+        }
+        return decoded;
+    },
+    // Blocks a token until it would have expired anyway (logout).
     // Accepts either secret's tokens; anything that doesn't verify is already useless.
     async revokeToken(token, secret) {
         if (!token || !secret)

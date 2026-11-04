@@ -38,6 +38,7 @@ export const db = {
     }
   },
   getClient: () => pool.connect(),
+  close: () => pool.end(),
 };
 
 // Test connection without throwing uncaught errors
